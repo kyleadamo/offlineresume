@@ -126,6 +126,7 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
         <Input value={p.phone} onChange={(e) => set('phone', e.target.value)} placeholder="Phone" />
       </div>
       <Input value={p.location} onChange={(e) => set('location', e.target.value)} placeholder="Location" />
+      <Input value={resume.targetRole} onChange={(e) => onUpdate({ targetRole: e.target.value })} placeholder="Target role (e.g., Senior Software Engineer)" />
     </div>
   );
 }
