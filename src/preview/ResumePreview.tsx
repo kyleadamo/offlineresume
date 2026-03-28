@@ -42,7 +42,20 @@ const ResumePreview = () => {
         ))}
       </div>
 
-      <div className="bg-card rounded-lg paper-shadow overflow-hidden">
+      <div
+        className="bg-card rounded-lg paper-shadow overflow-hidden"
+        onClick={(e) => {
+          let el = e.target as HTMLElement | null;
+          while (el && !el.getAttribute('data-section')) {
+            if (el === e.currentTarget) { el = null; break; }
+            el = el.parentElement;
+          }
+          if (el) {
+            const section = el.getAttribute('data-section')!;
+            window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
+          }
+        }}
+      >
         <div className="p-8 min-h-[842px]">
           <TemplateComponent resume={activeResume} />
         </div>
