@@ -44,7 +44,11 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
                 <div className="flex justify-between items-baseline">
                   <div>
                     <span className="font-semibold font-sans">{exp.role}</span>
-                    {exp.company && <span className="text-muted-foreground font-sans"> | {exp.company}</span>}
+                    {exp.company && (exp.companyUrl ? (
+                      <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground font-sans hover:text-foreground underline"> | {exp.company}</a>
+                    ) : (
+                      <span className="text-muted-foreground font-sans"> | {exp.company}</span>
+                    ))}
                   </div>
                   {(exp.startDate || exp.endDate) && (
                     <span className="text-xs text-muted-foreground font-sans italic shrink-0 ml-4">

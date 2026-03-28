@@ -139,6 +139,7 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
       id: crypto.randomUUID(),
       role: '',
       company: '',
+      companyUrl: '',
       startDate: '',
       endDate: '',
       bullets: [''],
@@ -165,6 +166,7 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
                 <Input value={item.role} onChange={(e) => updateItem(item.id, { role: e.target.value })} placeholder="Role" />
                 <Input value={item.company} onChange={(e) => updateItem(item.id, { company: e.target.value })} placeholder="Company" />
               </div>
+              <Input value={item.companyUrl || ''} onChange={(e) => updateItem(item.id, { companyUrl: e.target.value })} placeholder="Company URL (optional)" />
               <div className="grid grid-cols-2 gap-3">
                 <Input value={item.startDate} onChange={(e) => updateItem(item.id, { startDate: e.target.value })} placeholder="Start date" />
                 <Input value={item.endDate} onChange={(e) => updateItem(item.id, { endDate: e.target.value })} placeholder="End date (or Present)" />

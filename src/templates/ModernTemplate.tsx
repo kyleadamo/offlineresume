@@ -49,7 +49,11 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
               <div key={exp.id} className="pl-4 border-l border-border">
                 <div>
                   <span className="font-semibold">{exp.role}</span>
-                  {exp.company && <span className="text-accent font-medium"> @ {exp.company}</span>}
+                  {exp.company && (exp.companyUrl ? (
+                    <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-accent font-medium hover:underline"> @ {exp.company}</a>
+                  ) : (
+                    <span className="text-accent font-medium"> @ {exp.company}</span>
+                  ))}
                 </div>
                 {(exp.startDate || exp.endDate) && (
                   <div className="text-xs text-muted-foreground mt-0.5">
