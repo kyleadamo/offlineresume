@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const BuilderPage = () => {
   const { activeResume } = useResume();
@@ -53,6 +55,23 @@ function BuilderHeader() {
       <span className="text-xs text-muted-foreground">
         Saved {new Date(activeResume.lastEdited).toLocaleTimeString()}
       </span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => {
+          const { id, lastEdited, ...exportData } = activeResume;
+          const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `${activeResume.title.replace(/\s+/g, '-').toLowerCase()}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        }}
+      >
+        <Download className="w-4 h-4" />
+        Export JSON
+      </Button>
     </header>
   );
 }
