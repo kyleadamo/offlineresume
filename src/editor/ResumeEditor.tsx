@@ -38,7 +38,7 @@ const ResumeEditor = () => {
         <AccordionItem value="profile" id="editor-section-profile">
           <AccordionTrigger className="text-sm font-medium">Contact</AccordionTrigger>
           <AccordionContent>
-            <ProfileEditor resume={activeResume} onUpdate={update} onUpdateResume={update} />
+            <ProfileEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
