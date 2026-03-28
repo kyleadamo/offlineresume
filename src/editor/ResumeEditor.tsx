@@ -85,9 +85,42 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
   const set = (field: string, value: string) =>
     onUpdate({ profile: { ...p, [field]: value } });
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return; // 2MB limit
+    const reader = new FileReader();
+    reader.onload = () => set('photo', reader.result as string);
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="space-y-3">
-      <Input value={p.name} onChange={(e) => set('name', e.target.value)} placeholder="Full name" />
+      <div className="flex items-center gap-4">
+        <div className="relative group">
+          <label className="cursor-pointer block">
+            {p.photo ? (
+              <img src={p.photo} alt="Headshot" className="w-16 h-16 rounded-full object-cover border border-border" />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-secondary border border-dashed border-border flex items-center justify-center text-muted-foreground text-xs text-center leading-tight">
+                Add<br/>photo
+              </div>
+            )}
+            <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
+          </label>
+          {p.photo && (
+            <button
+              onClick={() => set('photo', '')}
+              className="absolute -top-1 -right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+            >
+              ×
+            </button>
+          )}
+        </div>
+        <div className="flex-1">
+          <Input value={p.name} onChange={(e) => set('name', e.target.value)} placeholder="Full name" />
+        </div>
+      </div>
       <div className="grid grid-cols-2 gap-3">
         <Input value={p.email} onChange={(e) => set('email', e.target.value)} placeholder="Email" />
         <Input value={p.phone} onChange={(e) => set('phone', e.target.value)} placeholder="Phone" />

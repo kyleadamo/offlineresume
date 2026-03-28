@@ -13,6 +13,9 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
     <div className="font-serif text-foreground text-sm leading-relaxed">
       {profile.name && (
         <div data-section="profile" className={`text-center mb-6 pb-4 border-b-2 border-foreground ${sectionClass}`}>
+          {profile.photo && (
+            <img src={profile.photo} alt={profile.name} className="w-20 h-20 rounded-full object-cover mx-auto mb-3 border-2 border-foreground" />
+          )}
           <h2 className="text-3xl font-semibold tracking-tight font-serif">{profile.name}</h2>
           {resume.targetRole && (
             <p className="text-muted-foreground font-sans text-sm mt-1">{resume.targetRole}</p>

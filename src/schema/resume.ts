@@ -9,6 +9,7 @@ export interface ResumeProfile {
   email: string;
   phone: string;
   location: string;
+  photo: string;
   links: ResumeLink[];
 }
 
@@ -88,6 +89,7 @@ export const createBlankResume = (): Resume => ({
     email: '',
     phone: '',
     location: '',
+    photo: '',
     links: [],
   },
   summary: '',

@@ -13,11 +13,18 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
     <div className="font-sans text-foreground text-sm leading-relaxed">
       {profile.name && (
         <div data-section="profile" className={`mb-6 ${sectionClass}`}>
-          <h2 className="text-2xl font-semibold tracking-tight">{profile.name}</h2>
-          <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-xs mt-1.5">
-            {profile.email && <span>{profile.email}</span>}
-            {profile.phone && <span>{profile.phone}</span>}
-            {profile.location && <span>{profile.location}</span>}
+          <div className="flex items-center gap-4">
+            {profile.photo && (
+              <img src={profile.photo} alt={profile.name} className="w-14 h-14 rounded-full object-cover shrink-0" />
+            )}
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight">{profile.name}</h2>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-xs mt-1.5">
+                {profile.email && <span>{profile.email}</span>}
+                {profile.phone && <span>{profile.phone}</span>}
+                {profile.location && <span>{profile.location}</span>}
+              </div>
+            </div>
           </div>
         </div>
       )}
