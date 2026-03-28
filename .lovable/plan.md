@@ -1,21 +1,38 @@
 
 
-## Fix Skills Section Alignment
+## Add Neo-Brutalist Resume Template
 
-**Problem:** In the Minimal and Professional templates, skills render as inline text with `category: skill1, skill2...` which wraps awkwardly and looks misaligned (as shown in the screenshot).
+### Overview
+Add a new "Brutalist" template with bold, raw aesthetics: thick black borders, high-contrast colors, chunky typography, and sharp corners — a distinctive alternative to the existing refined templates.
 
-**Solution:** Adopt the Modern template's badge/chip approach for all three templates, with slight style variations per template to maintain their distinct character.
+### Visual Direction
+- **Borders**: Thick 2-3px solid black borders around sections
+- **Typography**: Bold, uppercase headings; monospace or heavy sans-serif feel
+- **Colors**: High contrast — black/white with a vivid accent (yellow or red highlight blocks)
+- **Corners**: Sharp (no border-radius)
+- **Spacing**: Generous, deliberate gaps between blocks
+- **Skills**: Chunky bordered badges, no rounding
 
 ### Changes
 
-**`src/templates/MinimalTemplate.tsx`** — Skills section
-- Replace the inline `category: skill1, skill2` text layout with a two-row structure: bold category label on its own line, followed by a flex-wrap row of badge-style chips (`bg-secondary text-xs px-2 py-0.5 rounded`).
+**`src/schema/resume.ts`**
+- Add `'brutalist'` to the `TemplateId` union type
 
-**`src/templates/ProfessionalTemplate.tsx`** — Skills section
-- Same structural change: category label on its own line, skills as wrapped chips below. Use a slightly different chip style (e.g., `border border-border` outline pills) to keep the professional aesthetic distinct from Modern.
+**`src/templates/BrutalistTemplate.tsx`** (new file)
+- Full template component following the same `TemplateProps` interface
+- Profile: name in large bold uppercase, thick bottom border, contact info in monospace-style text
+- Photo: square with thick black border (no rounding)
+- Summary: inside a bordered box with a yellow/accent background strip
+- Experience: each entry in a bordered card with bold role, uppercase dates
+- Education: similar bordered blocks
+- Skills: chunky square badges with thick borders
+- Same `data-section` attributes and `sectionClass` hover behavior as other templates
 
-**`src/templates/ModernTemplate.tsx`** — No changes needed (already uses badges).
+**`src/preview/ResumePreview.tsx`**
+- Import `BrutalistTemplate`
+- Add to `templateMap`: `brutalist: BrutalistTemplate`
+- Add to `templateNames`: `{ id: 'brutalist', label: 'Brutalist' }`
 
 ### Result
-Each category gets its own block with a clear label and neatly wrapped skill chips below, eliminating the ragged inline text alignment issue.
+A fourth template option appears in the preview switcher. Clicking "Brutalist" renders the resume with a bold, neo-brutalist aesthetic while preserving all content and click-to-scroll interactivity.
 
