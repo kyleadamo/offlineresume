@@ -48,6 +48,12 @@ const ResumePreview = () => {
             {t.label}
           </button>
         ))}
+        <div className="ml-auto flex items-center gap-1.5">
+          <Button variant="outline" size="sm" onClick={() => setFullPageOpen(true)}>
+            <Maximize2 className="w-4 h-4" />
+            Full Page
+          </Button>
+        </div>
       </div>
 
       <div
