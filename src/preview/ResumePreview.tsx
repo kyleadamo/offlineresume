@@ -74,6 +74,12 @@ const ResumePreview = () => {
           <TemplateComponent resume={activeResume} />
         </div>
       </div>
+
+      <FullPagePreview
+        resume={activeResume}
+        open={fullPageOpen}
+        onOpenChange={setFullPageOpen}
+      />
     </div>
   );
 };
