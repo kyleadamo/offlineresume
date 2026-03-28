@@ -43,7 +43,7 @@ const ResumePreview = () => {
       </div>
 
       <div className="bg-card rounded-lg paper-shadow overflow-hidden">
-        <div className="p-8 min-h-[842px]" style={{ aspectRatio: '210/297' }}>
+        <div className="p-8 min-h-[842px]">
           <TemplateComponent resume={activeResume} />
         </div>
       </div>
