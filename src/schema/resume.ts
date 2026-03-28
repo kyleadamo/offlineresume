@@ -89,6 +89,7 @@ export const createBlankResume = (): Resume => ({
     email: '',
     phone: '',
     location: '',
+    photo: '',
     links: [],
   },
   summary: '',
