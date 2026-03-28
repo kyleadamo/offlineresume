@@ -2,12 +2,14 @@ import { useResume } from '@/hooks/ResumeContext';
 import MinimalTemplate from '@/templates/MinimalTemplate';
 import ProfessionalTemplate from '@/templates/ProfessionalTemplate';
 import ModernTemplate from '@/templates/ModernTemplate';
+import BrutalistTemplate from '@/templates/BrutalistTemplate';
 import { TemplateId } from '@/schema/resume';
 
 const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   minimal: MinimalTemplate,
   professional: ProfessionalTemplate,
   modern: ModernTemplate,
+  brutalist: BrutalistTemplate,
   compact: MinimalTemplate, // fallback for now
   editorial: ProfessionalTemplate, // fallback for now
 };
@@ -16,6 +18,7 @@ const templateNames: { id: TemplateId; label: string }[] = [
   { id: 'minimal', label: 'Minimal' },
   { id: 'professional', label: 'Professional' },
   { id: 'modern', label: 'Modern' },
+  { id: 'brutalist', label: 'Brutalist' },
 ];
 
 const ResumePreview = () => {
