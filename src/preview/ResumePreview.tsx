@@ -4,6 +4,10 @@ import ProfessionalTemplate from '@/templates/ProfessionalTemplate';
 import ModernTemplate from '@/templates/ModernTemplate';
 import BrutalistTemplate from '@/templates/BrutalistTemplate';
 import { TemplateId } from '@/schema/resume';
+import { Button } from '@/components/ui/button';
+import { Maximize2, Download } from 'lucide-react';
+import { useState } from 'react';
+import FullPagePreview from './FullPagePreview';
 
 const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   minimal: MinimalTemplate,
