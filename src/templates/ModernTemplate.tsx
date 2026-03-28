@@ -4,14 +4,15 @@ interface TemplateProps {
   resume: Resume;
 }
 
+const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
+
 const ModernTemplate = ({ resume }: TemplateProps) => {
   const { profile, summary, experience, education, skills } = resume;
 
   return (
     <div className="font-sans text-foreground text-sm leading-relaxed">
-      {/* Header with accent bar */}
       {profile.name && (
-        <div className="mb-6">
+        <div data-section="profile" className={`mb-6 ${sectionClass}`}>
           <div className="w-12 h-1 bg-accent rounded-full mb-3" />
           <h2 className="text-2xl font-bold tracking-tight">{profile.name}</h2>
           {resume.targetRole && (
@@ -25,16 +26,16 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Summary */}
       {summary && (
-        <div className="mb-5 pl-4 border-l-2 border-accent/30">
-          <p className="text-muted-foreground leading-relaxed">{summary}</p>
+        <div data-section="summary" className={`mb-5 ${sectionClass}`}>
+          <div className="pl-4 border-l-2 border-accent/30">
+            <p className="text-muted-foreground leading-relaxed">{summary}</p>
+          </div>
         </div>
       )}
 
-      {/* Experience */}
       {experience.length > 0 && (
-        <div className="mb-5">
+        <div data-section="experience" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
@@ -64,9 +65,8 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Education */}
       {education.length > 0 && (
-        <div className="mb-5">
+        <div data-section="education" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
@@ -86,9 +86,8 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Skills as tags */}
       {skills.length > 0 && (
-        <div>
+        <div data-section="skills" className={sectionClass}>
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Skills</h3>
           <div className="space-y-2">
             {skills.map((cat) => (

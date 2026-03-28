@@ -4,14 +4,15 @@ interface TemplateProps {
   resume: Resume;
 }
 
+const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
+
 const ProfessionalTemplate = ({ resume }: TemplateProps) => {
   const { profile, summary, experience, education, skills } = resume;
 
   return (
     <div className="font-serif text-foreground text-sm leading-relaxed">
-      {/* Header */}
       {profile.name && (
-        <div className="text-center mb-6 pb-4 border-b-2 border-foreground">
+        <div data-section="profile" className={`text-center mb-6 pb-4 border-b-2 border-foreground ${sectionClass}`}>
           <h2 className="text-3xl font-semibold tracking-tight font-serif">{profile.name}</h2>
           {resume.targetRole && (
             <p className="text-muted-foreground font-sans text-sm mt-1">{resume.targetRole}</p>
@@ -24,17 +25,15 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Summary */}
       {summary && (
-        <div className="mb-5">
+        <div data-section="summary" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-2 font-sans">Professional Summary</h3>
           <p className="text-muted-foreground leading-relaxed font-sans text-sm">{summary}</p>
         </div>
       )}
 
-      {/* Experience */}
       {experience.length > 0 && (
-        <div className="mb-5">
+        <div data-section="experience" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
@@ -66,9 +65,8 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Education */}
       {education.length > 0 && (
-        <div className="mb-5">
+        <div data-section="education" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
@@ -90,9 +88,8 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Skills */}
       {skills.length > 0 && (
-        <div>
+        <div data-section="skills" className={sectionClass}>
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Skills</h3>
           <div className="space-y-1.5 font-sans">
             {skills.map((cat) => (

@@ -6,24 +6,43 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Plus, Trash2, GripVertical } from 'lucide-react';
 import { ExperienceItem, EducationItem, SkillCategory } from '@/schema/resume';
+import { useState, useEffect, useCallback } from 'react';
+
+const SECTIONS = ['profile', 'summary', 'experience', 'education', 'skills'];
 
 const ResumeEditor = () => {
   const { activeResume, updateResume } = useResume();
+  const [openSections, setOpenSections] = useState<string[]>(SECTIONS);
+
+  const scrollToSection = useCallback((section: string) => {
+    setOpenSections((prev) => prev.includes(section) ? prev : [...prev, section]);
+    setTimeout(() => {
+      const el = document.getElementById(`editor-section-${section}`);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+  }, []);
+
+  useEffect(() => {
+    const handler = (e: Event) => scrollToSection((e as CustomEvent).detail);
+    window.addEventListener('scroll-to-section', handler);
+    return () => window.removeEventListener('scroll-to-section', handler);
+  }, [scrollToSection]);
+
   if (!activeResume) return null;
 
   const update = (changes: Partial<Resume>) => updateResume(activeResume.id, changes);
 
   return (
     <div className="p-6 space-y-2 animate-fade-in">
-      <Accordion type="multiple" defaultValue={['profile', 'summary', 'experience', 'education', 'skills']}>
-        <AccordionItem value="profile">
+      <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
+        <AccordionItem value="profile" id="editor-section-profile">
           <AccordionTrigger className="text-sm font-medium">Contact</AccordionTrigger>
           <AccordionContent>
             <ProfileEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="summary">
+        <AccordionItem value="summary" id="editor-section-summary">
           <AccordionTrigger className="text-sm font-medium">Summary</AccordionTrigger>
           <AccordionContent>
             <Textarea
@@ -36,21 +55,21 @@ const ResumeEditor = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="experience">
+        <AccordionItem value="experience" id="editor-section-experience">
           <AccordionTrigger className="text-sm font-medium">Experience</AccordionTrigger>
           <AccordionContent>
             <ExperienceEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="education">
+        <AccordionItem value="education" id="editor-section-education">
           <AccordionTrigger className="text-sm font-medium">Education</AccordionTrigger>
           <AccordionContent>
             <EducationEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="skills">
+        <AccordionItem value="skills" id="editor-section-skills">
           <AccordionTrigger className="text-sm font-medium">Skills</AccordionTrigger>
           <AccordionContent>
             <SkillsEditor resume={activeResume} onUpdate={update} />

@@ -4,14 +4,15 @@ interface TemplateProps {
   resume: Resume;
 }
 
+const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
+
 const MinimalTemplate = ({ resume }: TemplateProps) => {
   const { profile, summary, experience, education, skills } = resume;
 
   return (
     <div className="font-sans text-foreground text-sm leading-relaxed">
-      {/* Header */}
       {profile.name && (
-        <div className="mb-6">
+        <div data-section="profile" className={`mb-6 ${sectionClass}`}>
           <h2 className="text-2xl font-semibold tracking-tight">{profile.name}</h2>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground text-xs mt-1.5">
             {profile.email && <span>{profile.email}</span>}
@@ -21,16 +22,14 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Summary */}
       {summary && (
-        <div className="mb-5">
+        <div data-section="summary" className={`mb-5 ${sectionClass}`}>
           <p className="text-muted-foreground leading-relaxed">{summary}</p>
         </div>
       )}
 
-      {/* Experience */}
       {experience.length > 0 && (
-        <div className="mb-5">
+        <div data-section="experience" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
@@ -62,9 +61,8 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Education */}
       {education.length > 0 && (
-        <div className="mb-5">
+        <div data-section="education" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
@@ -88,9 +86,8 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Skills */}
       {skills.length > 0 && (
-        <div>
+        <div data-section="skills" className={sectionClass}>
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">Skills</h3>
           <div className="space-y-1.5">
             {skills.map((cat) => (
@@ -103,7 +100,6 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {/* Empty state */}
       {!profile.name && !summary && experience.length === 0 && (
         <div className="text-center text-muted-foreground py-20">
           <p className="text-lg">Your resume will appear here</p>
