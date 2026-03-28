@@ -98,11 +98,17 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
       {skills.length > 0 && (
         <div data-section="skills" className={sectionClass}>
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Skills</h3>
-          <div className="space-y-1.5 font-sans">
+          <div className="space-y-2 font-sans">
             {skills.map((cat) => (
-              <div key={cat.id} className="flex gap-2">
-                {cat.category && <span className="font-medium shrink-0">{cat.category}:</span>}
-                <span className="text-muted-foreground">{cat.skills.join(' · ')}</span>
+              <div key={cat.id}>
+                {cat.category && <span className="text-xs font-medium text-muted-foreground block mb-1">{cat.category}</span>}
+                <div className="flex flex-wrap gap-1.5">
+                  {cat.skills.map((skill, i) => (
+                    <span key={i} className="border border-border text-foreground text-xs px-2 py-0.5 rounded-full">
+                      {skill}
+                    </span>
+                  ))}
+                </div>
               </div>
             ))}
           </div>
