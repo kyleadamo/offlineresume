@@ -33,7 +33,7 @@ const WorkspaceEntry = () => {
     {
       icon: ClipboardPaste,
       title: 'Paste resume',
-      description: 'Paste text and we'll structure it',
+      description: "Paste text and we'll structure it",
       onClick: () => navigate('/import?mode=paste'),
     },
   ];
