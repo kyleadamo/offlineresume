@@ -1,3 +1,4 @@
+/* Resume context provider */
 import React, { createContext, useContext, ReactNode } from 'react';
 import { Resume } from '@/schema/resume';
 import { useResumeStore } from '@/hooks/useResumeStore';
