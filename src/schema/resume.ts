@@ -9,6 +9,7 @@ export interface ResumeProfile {
   email: string;
   phone: string;
   location: string;
+  photo: string;
   links: ResumeLink[];
 }
 
