@@ -13,15 +13,22 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
     <div className="font-sans text-foreground text-sm leading-relaxed">
       {profile.name && (
         <div data-section="profile" className={`mb-6 ${sectionClass}`}>
-          <div className="w-12 h-1 bg-accent rounded-full mb-3" />
-          <h2 className="text-2xl font-bold tracking-tight">{profile.name}</h2>
-          {resume.targetRole && (
-            <p className="text-accent font-medium text-sm mt-0.5">{resume.targetRole}</p>
-          )}
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-muted-foreground text-xs mt-2">
-            {profile.email && <span className="bg-secondary px-2 py-0.5 rounded">{profile.email}</span>}
-            {profile.phone && <span className="bg-secondary px-2 py-0.5 rounded">{profile.phone}</span>}
-            {profile.location && <span className="bg-secondary px-2 py-0.5 rounded">{profile.location}</span>}
+          <div className="flex items-center gap-4">
+            {profile.photo && (
+              <img src={profile.photo} alt={profile.name} className="w-16 h-16 rounded-lg object-cover shrink-0" />
+            )}
+            <div>
+              <div className="w-12 h-1 bg-accent rounded-full mb-3" />
+              <h2 className="text-2xl font-bold tracking-tight">{profile.name}</h2>
+              {resume.targetRole && (
+                <p className="text-accent font-medium text-sm mt-0.5">{resume.targetRole}</p>
+              )}
+              <div className="flex flex-wrap gap-x-3 gap-y-1 text-muted-foreground text-xs mt-2">
+                {profile.email && <span className="bg-secondary px-2 py-0.5 rounded">{profile.email}</span>}
+                {profile.phone && <span className="bg-secondary px-2 py-0.5 rounded">{profile.phone}</span>}
+                {profile.location && <span className="bg-secondary px-2 py-0.5 rounded">{profile.location}</span>}
+              </div>
+            </div>
           </div>
         </div>
       )}
