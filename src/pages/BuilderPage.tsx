@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
+import { Download } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const BuilderPage = () => {
   const { activeResume } = useResume();
