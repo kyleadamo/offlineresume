@@ -44,7 +44,11 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                 <div className="flex justify-between items-baseline">
                   <div>
                     <span className="font-medium">{exp.role}</span>
-                    {exp.company && <span className="text-muted-foreground"> · {exp.company}</span>}
+                    {exp.company && (exp.companyUrl ? (
+                      <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground underline"> · {exp.company}</a>
+                    ) : (
+                      <span className="text-muted-foreground"> · {exp.company}</span>
+                    ))}
                   </div>
                   {(exp.startDate || exp.endDate) && (
                     <span className="text-xs text-muted-foreground shrink-0 ml-4">
