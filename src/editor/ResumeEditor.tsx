@@ -139,6 +139,7 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
       id: crypto.randomUUID(),
       role: '',
       company: '',
+      companyUrl: '',
       startDate: '',
       endDate: '',
       bullets: [''],
