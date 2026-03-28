@@ -27,13 +27,14 @@ const templateNames: { id: TemplateId; label: string }[] = [
 
 const ResumePreview = () => {
   const { activeResume, updateResume } = useResume();
+  const [fullPageOpen, setFullPageOpen] = useState(false);
   if (!activeResume) return null;
 
   const TemplateComponent = templateMap[activeResume.templateId] || MinimalTemplate;
 
   return (
     <div className="p-6 space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         {templateNames.map((t) => (
           <button
             key={t.id}
