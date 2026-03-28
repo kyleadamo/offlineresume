@@ -4,6 +4,10 @@ import ProfessionalTemplate from '@/templates/ProfessionalTemplate';
 import ModernTemplate from '@/templates/ModernTemplate';
 import BrutalistTemplate from '@/templates/BrutalistTemplate';
 import { TemplateId } from '@/schema/resume';
+import { Button } from '@/components/ui/button';
+import { Maximize2, Download } from 'lucide-react';
+import { useState } from 'react';
+import FullPagePreview from './FullPagePreview';
 
 const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   minimal: MinimalTemplate,
@@ -23,13 +27,14 @@ const templateNames: { id: TemplateId; label: string }[] = [
 
 const ResumePreview = () => {
   const { activeResume, updateResume } = useResume();
+  const [fullPageOpen, setFullPageOpen] = useState(false);
   if (!activeResume) return null;
 
   const TemplateComponent = templateMap[activeResume.templateId] || MinimalTemplate;
 
   return (
     <div className="p-6 space-y-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         {templateNames.map((t) => (
           <button
             key={t.id}
@@ -43,6 +48,12 @@ const ResumePreview = () => {
             {t.label}
           </button>
         ))}
+        <div className="ml-auto flex items-center gap-1.5">
+          <Button variant="outline" size="sm" onClick={() => setFullPageOpen(true)}>
+            <Maximize2 className="w-4 h-4" />
+            Full Page
+          </Button>
+        </div>
       </div>
 
       <div
@@ -63,6 +74,12 @@ const ResumePreview = () => {
           <TemplateComponent resume={activeResume} />
         </div>
       </div>
+
+      <FullPagePreview
+        resume={activeResume}
+        open={fullPageOpen}
+        onOpenChange={setFullPageOpen}
+      />
     </div>
   );
 };
