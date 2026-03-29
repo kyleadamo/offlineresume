@@ -129,9 +129,6 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
             [data-pdf-section] {
               break-inside: avoid;
             }
-            [data-section] {
-              break-inside: avoid;
-            }
           </style>
         </head>
         <body>
