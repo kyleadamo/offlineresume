@@ -1,5 +1,6 @@
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
+import { getVisibleSections } from './useSectionOrder';
 
 interface TemplateProps {
   resume: Resume;
@@ -13,6 +14,93 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
   const education = allEdu.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
   const projects = allProj.filter(e => !e.hidden);
+  const visibleSections = getVisibleSections(resume);
+
+  const sectionRenderers: Record<string, () => React.ReactNode> = {
+    summary: () => summary ? (
+      <div key="summary" data-section="summary" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-bold uppercase text-center mb-1.5 border-b border-muted-foreground/30 pb-0.5">Objective</h3>
+        <p className="text-muted-foreground leading-relaxed text-center">{summary}</p>
+      </div>
+    ) : null,
+    experience: () => experience.length > 0 ? (
+      <div key="experience" data-section="experience" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Professional Experience</h3>
+        <div className="space-y-4">
+          {experience.map((exp) => (
+            <div key={exp.id} data-pdf-section>
+              <div className="flex justify-between items-baseline">
+                <div>
+                  <span className="font-bold">{exp.role}</span>
+                  {exp.company && (exp.companyUrl ? (
+                    <><span className="text-muted-foreground">, </span><a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground underline">{exp.company}</a></>
+                  ) : (
+                    <span className="text-muted-foreground">, {exp.company}</span>
+                  ))}
+                </div>
+                {(exp.startDate || exp.endDate) && <span className="text-xs text-muted-foreground shrink-0 ml-4 italic">{exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ''}</span>}
+              </div>
+              {exp.bullets.filter(Boolean).length > 0 && (
+                <ul className="mt-1 space-y-0.5 text-muted-foreground pl-4">
+                  {exp.bullets.filter(Boolean).map((b, i) => <li key={i} className="list-disc">{b}</li>)}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
+    education: () => education.length > 0 ? (
+      <div key="education" data-section="education" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Education</h3>
+        <div className="space-y-2">
+          {education.map((edu) => (
+            <div key={edu.id} data-pdf-section>
+              <div className="flex justify-between items-baseline">
+                <div>
+                  <span className="font-bold">{edu.institution}</span>
+                  {(edu.degree || edu.field) && <span className="text-muted-foreground">, {[edu.degree, edu.field].filter(Boolean).join(' in ')}</span>}
+                </div>
+                {(edu.startDate || edu.endDate) && <span className="text-xs text-muted-foreground shrink-0 ml-4 italic">{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ''}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
+    skills: () => skills.length > 0 ? (
+      <div key="skills" data-section="skills" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Skills</h3>
+        <div className="space-y-1">
+          {skills.map((cat) => (
+            <div key={cat.id} data-pdf-section className="text-xs">
+              {cat.category && <span className="font-bold">{cat.category}: </span>}
+              <span className="text-muted-foreground">{cat.skills.map(s => typeof s === 'string' ? s : s.name).join(', ')}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
+    projects: () => projects.length > 0 ? (
+      <div key="projects" data-section="projects" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Projects</h3>
+        <div className="space-y-2">
+          {projects.map((proj) => (
+            <div key={proj.id} data-pdf-section>
+              <span className="font-bold">{proj.name}</span>
+              {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">{proj.url.replace(/^https?:\/\//, '')}</a>}
+              {proj.description && <span className="text-muted-foreground"> — {proj.description}</span>}
+              {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
+                <ul className="mt-1 text-xs text-muted-foreground list-disc list-inside space-y-0.5">
+                  {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
+                </ul>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
+  };
 
   return (
     <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Times New Roman', 'Source Serif 4', Georgia, serif" }}>
@@ -37,105 +125,7 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
         </div>
       )}
 
-      {summary && (
-        <div data-section="summary" className={`mb-5 ${sectionClass}`}>
-          <h3 className="text-sm font-bold uppercase text-center mb-1.5 border-b border-muted-foreground/30 pb-0.5">Objective</h3>
-          <p className="text-muted-foreground leading-relaxed text-center">{summary}</p>
-        </div>
-      )}
-
-      {experience.length > 0 && (
-        <div data-section="experience" className={`mb-5 ${sectionClass}`}>
-          <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Professional Experience</h3>
-          <div className="space-y-4">
-            {experience.map((exp) => (
-              <div key={exp.id} data-pdf-section>
-                <div className="flex justify-between items-baseline">
-                  <div>
-                    <span className="font-bold">{exp.role}</span>
-                    {exp.company && (exp.companyUrl ? (
-                      <><span className="text-muted-foreground">, </span><a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground underline">{exp.company}</a></>
-                    ) : (
-                      <span className="text-muted-foreground">, {exp.company}</span>
-                    ))}
-                  </div>
-                  {(exp.startDate || exp.endDate) && (
-                    <span className="text-xs text-muted-foreground shrink-0 ml-4 italic">
-                      {exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ''}
-                    </span>
-                  )}
-                </div>
-                {exp.bullets.filter(Boolean).length > 0 && (
-                  <ul className="mt-1 space-y-0.5 text-muted-foreground pl-4">
-                    {exp.bullets.filter(Boolean).map((b, i) => (
-                      <li key={i} className="list-disc">{b}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {education.length > 0 && (
-        <div data-section="education" className={`mb-5 ${sectionClass}`}>
-          <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Education</h3>
-          <div className="space-y-2">
-            {education.map((edu) => (
-              <div key={edu.id} data-pdf-section>
-                <div className="flex justify-between items-baseline">
-                  <div>
-                    <span className="font-bold">{edu.institution}</span>
-                    {(edu.degree || edu.field) && (
-                      <span className="text-muted-foreground">, {[edu.degree, edu.field].filter(Boolean).join(' in ')}</span>
-                    )}
-                  </div>
-                  {(edu.startDate || edu.endDate) && (
-                    <span className="text-xs text-muted-foreground shrink-0 ml-4 italic">
-                      {edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ''}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {skills.length > 0 && (
-        <div data-section="skills" className={`mb-5 ${sectionClass}`}>
-          <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Skills</h3>
-          <div className="space-y-1">
-            {skills.map((cat) => (
-              <div key={cat.id} data-pdf-section className="text-xs">
-                {cat.category && <span className="font-bold">{cat.category}: </span>}
-                <span className="text-muted-foreground">{cat.skills.map(s => typeof s === 'string' ? s : s.name).join(', ')}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {projects && projects.length > 0 && (
-        <div data-section="projects" className={`mb-5 ${sectionClass}`}>
-          <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">Projects</h3>
-          <div className="space-y-2">
-            {projects.map((proj) => (
-              <div key={proj.id} data-pdf-section>
-                <span className="font-bold">{proj.name}</span>
-                {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">{proj.url.replace(/^https?:\/\//, '')}</a>}
-                {proj.description && <span className="text-muted-foreground"> — {proj.description}</span>}
-                {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
-                  <ul className="mt-1 text-xs text-muted-foreground list-disc list-inside space-y-0.5">
-                    {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {visibleSections.map((id) => sectionRenderers[id]?.())}
 
       {certifications && certifications.length > 0 && (
         <div data-section="certifications" className={`mb-5 ${sectionClass}`}>
