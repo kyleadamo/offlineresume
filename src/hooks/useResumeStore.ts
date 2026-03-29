@@ -10,7 +10,10 @@ function loadResumes(): Resume[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed;
+    return parsed.map((r: Resume) => ({
+      ...r,
+      sectionOrder: r.sectionOrder ?? DEFAULT_SECTION_ORDER.map(s => ({ ...s })),
+    }));
   } catch {
     return [];
   }
