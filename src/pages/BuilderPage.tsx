@@ -41,7 +41,7 @@ const BuilderPage = () => {
   );
 };
 
-function BuilderHeader() {
+function BuilderHeader({ editorCollapsed, onToggleEditor }: { editorCollapsed: boolean; onToggleEditor: () => void }) {
   const { activeResume, updateResume } = useResume();
   const navigate = useNavigate();
 
@@ -49,6 +49,9 @@ function BuilderHeader() {
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-4 shrink-0">
+      <Button variant="ghost" size="icon" onClick={onToggleEditor} title={editorCollapsed ? 'Show editor' : 'Hide editor'}>
+        {editorCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+      </Button>
       <button
         onClick={() => navigate('/')}
         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
