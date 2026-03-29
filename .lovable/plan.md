@@ -1,27 +1,19 @@
 
 
-## Fix Modern Template Contact Info Alignment
+## Add Visual Contrast to Editor Sections
 
-### Root Cause
-The `LinkedInDisplay` and `WebsiteDisplay` components accept a `className` that **replaces** their default flex/alignment classes. The Modern template passes only visual styling (`bg-secondary px-2 py-0.5 rounded`) without layout utilities, so icons and text lose proper alignment.
+### Problem
+The accordion sections (Contact, Summary, Experience, etc.) blend together with minimal visual separation — just thin borders from the default `AccordionItem`.
 
-### Fix — `src/templates/ModernTemplate.tsx`
+### Fix — `src/editor/ResumeEditor.tsx`
 
-Update the className passed to both components to include `inline-flex items-center gap-1`:
+1. **Style each `AccordionItem`** with a background, border, rounded corners, and padding to create card-like sections:
+   - Add `className="bg-secondary/30 border border-border rounded-lg mb-3 px-4"` to each `AccordionItem`
 
-```
-// Before
-className="bg-secondary px-2 py-0.5 rounded hover:underline"
+2. **Boost the trigger text** — make section headers larger and bolder:
+   - Change `className="text-sm font-medium"` → `className="text-sm font-semibold uppercase tracking-wide text-foreground"`
 
-// After  
-className="inline-flex items-center gap-1 bg-secondary px-2 py-0.5 rounded hover:underline"
-```
+3. **Increase outer spacing** — change `space-y-2` → `space-y-1` on the wrapper (the `mb-3` on items handles spacing)
 
-This ensures:
-- Icons vertically center within the badge pill
-- Icon + text pairs align properly when full URL is shown
-- Icon-only badges still look consistent (small pill with centered icon)
-
-### Files to change
-1. `src/templates/ModernTemplate.tsx` — lines 35-36, add `inline-flex items-center gap-1` to both component classNames
+Single file change: `src/templates/` files are untouched.
 
