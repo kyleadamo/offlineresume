@@ -135,6 +135,11 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
       </div>
     ) : null,
   };
+
+  return (
+    <div className="font-serif text-foreground text-sm leading-relaxed">
+      {profile.name && (
+        <div data-section="profile" className={`text-center mb-6 pb-4 border-b-2 border-foreground ${sectionClass}`}>
           {profile.photo && (
             <img src={profile.photo} alt={profile.name} className="w-20 h-20 rounded-full object-cover mx-auto mb-3 border-2 border-foreground" />
           )}

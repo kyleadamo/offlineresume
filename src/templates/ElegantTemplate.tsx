@@ -118,7 +118,9 @@ const ElegantTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
-  };
+
+  return (
+    <div className="font-sans text-foreground text-sm leading-relaxed" style={{ letterSpacing: '0.01em' }}>
       {profile.name && (
         <div data-section="profile" className={`mb-8 ${sectionClass}`}>
           <div className="flex items-center gap-5">

@@ -118,7 +118,9 @@ const AcademicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
-  };
+
+  return (
+    <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
       {profile.name && (
         <div data-section="profile" className={`mb-6 text-center ${sectionClass}`}>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">Curriculum Vitae</p>

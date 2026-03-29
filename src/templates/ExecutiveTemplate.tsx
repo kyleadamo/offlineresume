@@ -121,7 +121,9 @@ const ExecutiveTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
-  };
+
+  return (
+    <div className="font-serif text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
       {profile.name && (
         <div data-section="profile" className={`mb-6 text-center ${sectionClass}`}>
           <div className="flex items-center justify-center gap-5">

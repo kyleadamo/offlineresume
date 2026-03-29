@@ -115,7 +115,9 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
-  };
+
+  return (
+    <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Times New Roman', 'Source Serif 4', Georgia, serif" }}>
       {profile.name && (
         <div data-section="profile" className={`mb-5 text-center ${sectionClass}`}>
           <h2 className="text-2xl font-bold tracking-wide uppercase">{profile.name}</h2>

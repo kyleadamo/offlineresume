@@ -109,6 +109,8 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
       </div>
     ) : null,
   };
+
+  const sidebarSections: Record<string, () => React.ReactNode> = {
     skills: () => skills.length > 0 ? (
       <div key="skills" data-section="skills" className={`mb-3 ${sectionClass}`}>
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-0.5">Skills</h3>

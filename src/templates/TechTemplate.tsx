@@ -128,7 +128,9 @@ const TechTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
-  };
+
+  return (
+    <div className="font-mono text-foreground text-sm leading-relaxed">
       {profile.name && (
         <div data-section="profile" className={`mb-6 ${sectionClass}`}>
           <div className="flex items-center gap-4">
