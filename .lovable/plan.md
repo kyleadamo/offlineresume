@@ -1,62 +1,27 @@
 
 
-## Skill Badges with Donut Charts (Infographic Template)
+## Remove Skill % Fields & Fix Experience Timeline Alignment
 
-### Overview
-Replace the bar chart skill visualization in the Infographic template with badge-style chips, each containing a small inline SVG donut/radial chart showing the user's self-reported proficiency percentage. The data model changes to support per-skill percentages, with backward compatibility for existing data.
+### Changes
 
-### Data Model — `src/schema/resume.ts`
+**1. `src/editor/ResumeEditor.tsx`** — Remove the proficiency % input
+- Remove the `<Input type="number">` for level and the `%` label from each skill row (lines 507-516)
+- Keep the skill name input and delete button
+- In `addSkill`, stop setting `level: 75` — just add `{ name: '' }`
 
-Change `SkillCategory.skills` from `string[]` to `SkillItem[]`:
+**2. `src/templates/InfographicTemplate.tsx`** — Remove donut charts from skill badges
+- Remove the SVG donut circle rendering (lines 64-81)
+- Keep the badge pill styling, just show the skill name text inside `bg-secondary rounded-full` badges
 
-```ts
-export interface SkillItem {
-  name: string;
-  level?: number; // 0-100 percentage, optional
-}
-```
+**3. `src/templates/InfographicTemplate.tsx`** — Fix experience timeline vertical line alignment
+- The circle dots are `w-2.5 h-2.5` (10px) positioned at `left: -14px`, `top: 1.5` (6px)
+- The vertical line is at `left: 1.5` (6px from the `pl-5` container edge)
+- To center the line through the dots: the dot center is at `-14px + 5px = -9px` from content edge, which is `20px - 9px = 11px` from the `pl-5` container's left edge
+- Adjust the vertical line `left` value and the dot `left` value so they share the same horizontal center. Set vertical line to `left: [6px]` (matching dot center) with `w-0.5`, and adjust dot positioning accordingly
 
-Keep `skills: string[]` support via a migration helper — on load, if an entry is a plain string, convert it to `{ name: str, level: 75 }`.
+Concrete fix: set the vertical line to `left-[6px]` and dot to `-left-[14px]` with `top-[5px]` — or more precisely, calculate so the 2px-wide line center (left + 1px) equals the dot center (dot-left + 5px). Current: line center = 6px+1px = 7px, dot center = 20px-14px+5px = 11px. Fix: move line to `left-[10px]` so line center = 11px, matching dot center.
 
-Update `SkillCategory`:
-```ts
-export interface SkillCategory {
-  id: string;
-  category: string;
-  skills: (string | SkillItem)[];  // backward compat
-  hidden?: boolean;
-}
-```
-
-Add a normalizer utility: `normalizeSkill(s: string | SkillItem): SkillItem`.
-
-### Editor — `src/editor/ResumeEditor.tsx`
-
-Replace the single comma-separated `<Input>` for skills with a list of individual skill rows. Each row has:
-- Text input for skill name
-- Number input (0-100) for proficiency level (optional, defaults to 75)
-- Delete button per skill
-- "Add skill" button at the bottom of each category
-
-The comma-separated input approach is replaced so users can set percentages per skill.
-
-### Infographic Template — `src/templates/InfographicTemplate.tsx`
-
-Replace the bar chart rendering with a flex-wrap badge layout. Each badge contains:
-- A small (20×20px) inline SVG donut chart using `stroke-dasharray` / `stroke-dashoffset` on a `<circle>` — no charting library needed
-- The skill name text next to it
-- Styled as a rounded pill/badge (`bg-secondary rounded-full px-2.5 py-1 inline-flex items-center gap-1.5`)
-
-The donut uses two circles: a background track and a colored arc whose length = `percentage / 100 * circumference`.
-
-### Other 11 Templates
-
-Use `normalizeSkill()` to extract `.name` and render skills the same way they do now (badges/text). The `level` field is simply ignored — no visual change for non-infographic templates.
-
-### Files to change
-1. `src/schema/resume.ts` — add `SkillItem` interface, update `SkillCategory`
-2. `src/editor/ResumeEditor.tsx` — per-skill row editor with name + level inputs
-3. `src/templates/InfographicTemplate.tsx` — donut badge rendering
-4. All other 11 templates — use `normalizeSkill()` to safely read `.name`
-5. `src/hooks/useResumeStore.ts` — migrate old string[] skills on load
+### Files
+1. `src/editor/ResumeEditor.tsx`
+2. `src/templates/InfographicTemplate.tsx`
 
