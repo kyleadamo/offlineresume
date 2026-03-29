@@ -2,14 +2,26 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
 import { useCoverLetter } from '@/hooks/CoverLetterContext';
-import { FileText, Upload, ClipboardPaste, Plus, Mail } from 'lucide-react';
+import { FileText, Upload, ClipboardPaste, Plus, Mail, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const WorkspaceEntry = () => {
   const navigate = useNavigate();
-  const { createResume, resumes, setActive } = useResume();
-  const { createLetter, letters, setActive: setActiveLetter } = useCoverLetter();
+  const { createResume, resumes, setActive, deleteResume } = useResume();
+  const { createLetter, letters, setActive: setActiveLetter, deleteLetter } = useCoverLetter();
   const [tab, setTab] = useState<'resumes' | 'letters'>('resumes');
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'resume' | 'letter'; id: string; name: string } | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.type === 'resume') deleteResume(deleteTarget.id);
+    else deleteLetter(deleteTarget.id);
+    setDeleteTarget(null);
+  };
 
   const handleStartBlank = () => {
     createResume();
@@ -160,10 +172,10 @@ const WorkspaceEntry = () => {
             </h3>
             <div className="grid gap-3">
               {resumes.slice(0, 5).map((resume) => (
-                <button
+                <div
                   key={resume.id}
+                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left cursor-pointer"
                   onClick={() => handleOpenExisting(resume.id)}
-                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left"
                 >
                   <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -176,7 +188,13 @@ const WorkspaceEntry = () => {
                     <div>{new Date(resume.lastEdited).toLocaleDateString()}</div>
                     <div>{new Date(resume.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
-                </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ type: 'resume', id: resume.id, name: resume.title }); }}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               ))}
             </div>
           </motion.div>
@@ -195,10 +213,10 @@ const WorkspaceEntry = () => {
             </h3>
             <div className="grid gap-3">
               {letters.slice(0, 5).map((letter) => (
-                <button
+                <div
                   key={letter.id}
+                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left cursor-pointer"
                   onClick={() => handleOpenExistingLetter(letter.id)}
-                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left"
                 >
                   <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
                   <div className="min-w-0 flex-1">
@@ -211,11 +229,35 @@ const WorkspaceEntry = () => {
                     <div>{new Date(letter.lastEdited).toLocaleDateString()}</div>
                     <div>{new Date(letter.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
-                </button>
+                  <button
+                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ type: 'letter', id: letter.id, name: letter.title }); }}
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               ))}
             </div>
           </motion.div>
         )}
+
+        {/* Delete confirmation dialog */}
+        <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete {deleteTarget?.type === 'resume' ? 'resume' : 'cover letter'}?</AlertDialogTitle>
+              <AlertDialogDescription>
+                "{deleteTarget?.name}" will be permanently deleted. This cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </motion.div>
     </div>
   );
