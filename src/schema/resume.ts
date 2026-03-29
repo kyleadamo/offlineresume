@@ -137,4 +137,5 @@ export const createBlankResume = (): Resume => ({
   skills: [],
   certifications: [],
   customSections: [],
+  sectionOrder: DEFAULT_SECTION_ORDER.map(s => ({ ...s })),
 });
