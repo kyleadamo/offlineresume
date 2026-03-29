@@ -30,6 +30,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
               {profile.email && <span>{profile.email}</span>}
               {profile.phone && <span>{profile.phone}</span>}
               {profile.location && <span>{profile.location}</span>}
+              <LinkedInDisplay profile={profile} />
             </div>
           </div>
         </div>

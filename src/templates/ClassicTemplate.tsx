@@ -21,6 +21,8 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
             {profile.phone && <span>{profile.phone}</span>}
             {profile.location && <span>|</span>}
             {profile.location && <span>{profile.location}</span>}
+            {profile.linkedin && <span>|</span>}
+            <LinkedInDisplay profile={profile} />
             {profile.links?.map((link) => (
               <><span key={`sep-${link.id}`}>|</span><a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline">{link.label}</a></>
             ))}
