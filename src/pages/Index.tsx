@@ -47,7 +47,7 @@ const WorkspaceEntry = () => {
         className="w-full max-w-2xl"
       >
         <div className="text-center mb-12">
-          <h1 className="text-foreground mb-3">Resume Studio</h1>
+          <h1 className="text-foreground mb-3">LocalCV</h1>
           <p className="text-muted-foreground text-lg">
             Start with what you have. We'll shape it from there.
           </p>
