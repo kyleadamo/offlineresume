@@ -155,7 +155,4 @@
     break-inside: avoid;
   }
 
-  [data-section] {
-    break-inside: avoid;
-  }
 }
