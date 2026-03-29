@@ -8,7 +8,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const MinimalTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience, education, skills } = resume;
+  const { profile, summary, experience, education, skills, projects } = resume;
 
   return (
     <div className="font-sans text-foreground text-sm leading-relaxed">
