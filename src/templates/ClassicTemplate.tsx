@@ -23,7 +23,7 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
             {profile.location && <span>{profile.location}</span>}
             {profile.linkedin && <span>|</span>}
             <LinkedInDisplay profile={profile} />
-            {profile.links?.map((link) => (
+            {profile.links?.filter(link => !(profile.linkedin && link.label?.toLowerCase() === 'linkedin')).map((link) => (
               <><span key={`sep-${link.id}`}>|</span><a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline">{link.label}</a></>
             ))}
           </div>

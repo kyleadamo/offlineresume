@@ -31,7 +31,7 @@ const ElegantTemplate = ({ resume }: TemplateProps) => {
             {profile.phone && <span>{profile.phone}</span>}
             {profile.location && <span>{profile.location}</span>}
             <LinkedInDisplay profile={profile} />
-            {profile.links?.map((link) => (
+            {profile.links?.filter(link => !(profile.linkedin && link.label?.toLowerCase() === 'linkedin')).map((link) => (
               <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline">{link.label}</a>
             ))}
           </div>
