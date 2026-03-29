@@ -42,6 +42,10 @@ const sectionEditorMap: Record<string, { label: string; component: (resume: Resu
     label: 'Skills',
     component: (resume, update) => <SkillsEditor resume={resume} onUpdate={update} />,
   },
+  references: {
+    label: 'References',
+    component: (resume, update) => <ReferencesEditor resume={resume} onUpdate={update} />,
+  },
 };
 
 const ResumeEditor = () => {
