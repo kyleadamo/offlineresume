@@ -117,7 +117,7 @@ const CoverLetterPreview = () => {
 
           {/* Greeting */}
           {activeLetter.greeting && (
-            <div style={{ marginBottom: '1em' }}>{activeLetter.greeting}</div>
+            <div style={{ marginBottom: '1em' }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.greeting) }} />
           )}
 
           {/* Body */}
