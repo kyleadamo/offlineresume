@@ -1,24 +1,24 @@
 
 
-## Add Personal Website Field to Contact Section
+## Add Visibility Toggle to Resume Entries
+
+### Overview
+Add a `hidden` boolean field to experience, education, project, and skill category items. Hidden entries remain in the data but are filtered out in templates and PDF output. The editor shows an eye/eye-off toggle for each entry.
 
 ### Changes
 
-**1. `src/schema/resume.ts`** — Add two new fields to `ResumeProfile`:
-- `website: string` — the URL
-- `websiteDisplayFull: boolean` — toggle icon-only vs icon+URL
+**1. `src/schema/resume.ts`**
+- Add `hidden?: boolean` to `ExperienceItem`, `EducationItem`, `ProjectItem`, and `SkillCategory` interfaces
 
-Update `createBlankResume` defaults accordingly.
+**2. `src/editor/ResumeEditor.tsx`**
+- Import `Eye`, `EyeOff` from lucide-react
+- In each section editor (Experience, Education, Projects, Skills), add a toggle button next to the delete button
+- When hidden, apply reduced opacity to the card (`opacity-50`) so the user can see it's inactive
+- Toggle sets `hidden: !item.hidden` via the existing `updateItem` call
 
-**2. `src/templates/LinkedInBadge.tsx`** — Add a `WebsiteDisplay` export mirroring `LinkedInDisplay`:
-- Uses `Globe` icon from lucide-react
-- When `websiteDisplayFull` is true: icon + URL text
-- When false: icon only
-- Same baseline alignment approach (`items-baseline`, `relative top-[0.5px]`)
+**3. All 12 templates**
+- Filter out hidden items before rendering: `experience.filter(e => !e.hidden)`, same for education, projects, skills
+- This automatically excludes them from PDF print since templates are what gets printed
 
-**3. `src/editor/ResumeEditor.tsx`** — In `ProfileEditor`, add below the LinkedIn field:
-- Input for website URL
-- When filled, show a Switch toggle for "Show full URL (otherwise icon only)" — same pattern as LinkedIn
-
-**4. All 12 templates** — Add `<WebsiteDisplay profile={profile} />` next to `<LinkedInDisplay>` in the contact info row. Also filter out links labeled "website"/"personal site" when the dedicated field is filled (same dedup pattern as LinkedIn).
+No changes needed to localStorage persistence, JSON export, or the SortableList — hidden items stay in the arrays and maintain their order.
 
