@@ -132,9 +132,9 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
               <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-medium text-muted-foreground block mb-1">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
-                  {cat.skills.map((skill, i) => (
+                  {cat.skills.map((rawSkill, i) => (
                     <span key={i} className="bg-secondary text-foreground text-xs px-2 py-0.5 rounded">
-                      {skill}
+                      {typeof rawSkill === 'string' ? rawSkill : rawSkill.name}
                     </span>
                   ))}
                 </div>
