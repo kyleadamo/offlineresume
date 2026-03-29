@@ -299,6 +299,88 @@ function EducationEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: P
   );
 }
 
+function ProjectsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Partial<Resume>) => void }) {
+  const items = resume.projects;
+
+  const addItem = () => {
+    const newItem: ProjectItem = {
+      id: crypto.randomUUID(),
+      name: '',
+      description: '',
+      url: '',
+      highlights: [''],
+    };
+    onUpdate({ projects: [...items, newItem] });
+  };
+
+  const updateItem = (id: string, changes: Partial<ProjectItem>) => {
+    onUpdate({ projects: items.map((item) => (item.id === id ? { ...item, ...changes } : item)) });
+  };
+
+  const removeItem = (id: string) => {
+    onUpdate({ projects: items.filter((item) => item.id !== id) });
+  };
+
+  return (
+    <div className="space-y-4">
+      {items.map((item) => (
+        <div key={item.id} className="p-4 bg-secondary/50 rounded-lg space-y-3 group">
+          <div className="flex items-start gap-2">
+            <div className="flex-1 space-y-3">
+              <Input value={item.name} onChange={(e) => updateItem(item.id, { name: e.target.value })} placeholder="Project name" />
+              <Textarea
+                value={item.description}
+                onChange={(e) => updateItem(item.id, { description: e.target.value })}
+                placeholder="Brief description..."
+                rows={2}
+                className="resize-none"
+              />
+              <Input value={item.url} onChange={(e) => updateItem(item.id, { url: e.target.value })} placeholder="Project URL (optional)" />
+              <div className="space-y-2">
+                {item.highlights.map((highlight, hi) => (
+                  <div key={hi} className="flex gap-2">
+                    <span className="text-muted-foreground mt-2 text-xs">•</span>
+                    <Input
+                      value={highlight}
+                      onChange={(e) => {
+                        const newHighlights = [...item.highlights];
+                        newHighlights[hi] = e.target.value;
+                        updateItem(item.id, { highlights: newHighlights });
+                      }}
+                      placeholder="Key highlight..."
+                      className="flex-1"
+                    />
+                    {item.highlights.length > 1 && (
+                      <button
+                        onClick={() => updateItem(item.id, { highlights: item.highlights.filter((_, i) => i !== hi) })}
+                        className="text-muted-foreground hover:text-destructive transition-colors"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+                <button
+                  onClick={() => updateItem(item.id, { highlights: [...item.highlights, ''] })}
+                  className="text-xs text-muted-foreground hover:text-accent transition-colors"
+                >
+                  + Add highlight
+                </button>
+              </div>
+            </div>
+            <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors mt-2">
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      ))}
+      <Button variant="outline" size="sm" onClick={addItem} className="w-full">
+        <Plus className="w-4 h-4 mr-2" /> Add project
+      </Button>
+    </div>
+  );
+}
+
 function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Partial<Resume>) => void }) {
   const items = resume.skills;
 
