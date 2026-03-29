@@ -8,7 +8,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const ProfessionalTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience, education, skills } = resume;
+  const { profile, summary, experience, education, skills, projects } = resume;
 
   return (
     <div className="font-serif text-foreground text-sm leading-relaxed">
@@ -90,6 +90,26 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
                   <span className="text-xs text-muted-foreground font-sans italic shrink-0 ml-4">
                     {edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ''}
                   </span>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {projects && projects.length > 0 && (
+        <div data-section="projects" className={sectionClass}>
+          <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Projects</h3>
+          <div className="space-y-3 font-sans">
+            {projects.map((proj) => (
+              <div key={proj.id} data-pdf-section>
+                <span className="font-semibold">{proj.name}</span>
+                {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">{proj.url.replace(/^https?:\/\//, '')}</a>}
+                {proj.description && <p className="text-muted-foreground text-xs mt-0.5">{proj.description}</p>}
+                {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
+                  <ul className="mt-1 text-xs text-muted-foreground list-disc list-inside space-y-0.5">
+                    {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
+                  </ul>
                 )}
               </div>
             ))}

@@ -8,7 +8,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer transition-colors duration-150 hover:bg-yellow-100/30 -mx-2 px-2 py-0.5";
 
 const BrutalistTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience, education, skills } = resume;
+  const { profile, summary, experience, education, skills, projects } = resume;
 
   return (
     <div className="font-mono text-foreground text-sm leading-relaxed">
@@ -98,6 +98,26 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
                   <div className="text-xs font-bold uppercase mt-1">
                     {edu.startDate}{edu.endDate ? ` — ${edu.endDate}` : ''}
                   </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {projects && projects.length > 0 && (
+        <div data-section="projects" className={sectionClass}>
+          <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">Projects</h3>
+          <div className="space-y-3">
+            {projects.map((proj) => (
+              <div key={proj.id} data-pdf-section>
+                <span className="font-bold">{proj.name}</span>
+                {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">{proj.url.replace(/^https?:\/\//, '')}</a>}
+                {proj.description && <p className="text-muted-foreground text-xs mt-0.5">{proj.description}</p>}
+                {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
+                  <ul className="mt-1 text-xs text-muted-foreground list-disc list-inside space-y-0.5">
+                    {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
+                  </ul>
                 )}
               </div>
             ))}
