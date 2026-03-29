@@ -130,11 +130,14 @@
   }
 
   .resume-print-content,
-  .resume-print-content * {
+  .resume-print-content *,
+  .cl-print-content,
+  .cl-print-content * {
     visibility: visible;
   }
 
-  .resume-print-content {
+  .resume-print-content,
+  .cl-print-content {
     position: absolute;
     left: 0;
     top: 0;
