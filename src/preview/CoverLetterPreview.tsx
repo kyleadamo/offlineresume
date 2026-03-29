@@ -23,15 +23,20 @@ const PAGE_SIZES: Record<PageSize, { label: string; widthMm: number; heightMm: n
   letter: { label: 'US Letter', widthMm: 215.9, heightMm: 279.4, cssSize: 'letter' },
 };
 
+function renderInlineMarkdown(text: string): string {
+  return text
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#2563eb;text-decoration:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<u>$1</u>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>');
+}
+
 function renderMarkdown(text: string): string {
-  // Simple markdown: bold, italic, paragraphs
   return text
     .split(/\n\n+/)
     .map((para) => {
-      const html = para
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br/>');
+      const html = renderInlineMarkdown(para).replace(/\n/g, '<br/>');
       return `<p style="margin:0 0 1em 0;line-height:1.6">${html}</p>`;
     })
     .join('');
