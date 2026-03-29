@@ -39,17 +39,12 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
                 ))}
               </div>
               {(exp.startDate || exp.endDate) && (
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {exp.startDate}{exp.endDate ? ` → ${exp.endDate}` : ''}
-                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">{exp.startDate}{exp.endDate ? ` → ${exp.endDate}` : ''}</div>
               )}
               {exp.bullets.filter(Boolean).length > 0 && (
                 <ul className="mt-1.5 space-y-0.5 text-muted-foreground">
                   {exp.bullets.filter(Boolean).map((b, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-accent shrink-0">–</span>
-                      <span>{b}</span>
-                    </li>
+                    <li key={i} className="flex gap-2"><span className="text-accent shrink-0">–</span><span>{b}</span></li>
                   ))}
                 </ul>
               )}
@@ -65,14 +60,8 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           {education.map((edu) => (
             <div key={edu.id} data-pdf-section className="pl-4 border-l border-border">
               <span className="font-semibold">{edu.institution}</span>
-              {(edu.degree || edu.field) && (
-                <span className="text-muted-foreground"> · {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>
-              )}
-              {(edu.startDate || edu.endDate) && (
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {edu.startDate}{edu.endDate ? ` → ${edu.endDate}` : ''}
-                </div>
-              )}
+              {(edu.degree || edu.field) && <span className="text-muted-foreground"> · {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>}
+              {(edu.startDate || edu.endDate) && <div className="text-xs text-muted-foreground mt-0.5">{edu.startDate}{edu.endDate ? ` → ${edu.endDate}` : ''}</div>}
             </div>
           ))}
         </div>
@@ -137,6 +126,14 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
       </div>
     ) : null,
   };
+
+  return (
+    <div className="font-sans text-foreground text-sm leading-relaxed">
+      {profile.name && (
+        <div data-section="profile" className={`mb-6 ${sectionClass}`}>
+          <div className="flex items-center gap-4">
+            {profile.photo && (
+              <img src={profile.photo} alt={profile.name} className="w-16 h-16 rounded-lg object-cover shrink-0" />
             )}
             <div>
               <div className="w-12 h-1 bg-accent rounded-full mb-3" />
