@@ -1,27 +1,27 @@
 
 
-## Remove Skill % Fields & Fix Experience Timeline Alignment
+## Fix Modern Template Contact Info Alignment
 
-### Changes
+### Root Cause
+The `LinkedInDisplay` and `WebsiteDisplay` components accept a `className` that **replaces** their default flex/alignment classes. The Modern template passes only visual styling (`bg-secondary px-2 py-0.5 rounded`) without layout utilities, so icons and text lose proper alignment.
 
-**1. `src/editor/ResumeEditor.tsx`** — Remove the proficiency % input
-- Remove the `<Input type="number">` for level and the `%` label from each skill row (lines 507-516)
-- Keep the skill name input and delete button
-- In `addSkill`, stop setting `level: 75` — just add `{ name: '' }`
+### Fix — `src/templates/ModernTemplate.tsx`
 
-**2. `src/templates/InfographicTemplate.tsx`** — Remove donut charts from skill badges
-- Remove the SVG donut circle rendering (lines 64-81)
-- Keep the badge pill styling, just show the skill name text inside `bg-secondary rounded-full` badges
+Update the className passed to both components to include `inline-flex items-center gap-1`:
 
-**3. `src/templates/InfographicTemplate.tsx`** — Fix experience timeline vertical line alignment
-- The circle dots are `w-2.5 h-2.5` (10px) positioned at `left: -14px`, `top: 1.5` (6px)
-- The vertical line is at `left: 1.5` (6px from the `pl-5` container edge)
-- To center the line through the dots: the dot center is at `-14px + 5px = -9px` from content edge, which is `20px - 9px = 11px` from the `pl-5` container's left edge
-- Adjust the vertical line `left` value and the dot `left` value so they share the same horizontal center. Set vertical line to `left: [6px]` (matching dot center) with `w-0.5`, and adjust dot positioning accordingly
+```
+// Before
+className="bg-secondary px-2 py-0.5 rounded hover:underline"
 
-Concrete fix: set the vertical line to `left-[6px]` and dot to `-left-[14px]` with `top-[5px]` — or more precisely, calculate so the 2px-wide line center (left + 1px) equals the dot center (dot-left + 5px). Current: line center = 6px+1px = 7px, dot center = 20px-14px+5px = 11px. Fix: move line to `left-[10px]` so line center = 11px, matching dot center.
+// After  
+className="inline-flex items-center gap-1 bg-secondary px-2 py-0.5 rounded hover:underline"
+```
 
-### Files
-1. `src/editor/ResumeEditor.tsx`
-2. `src/templates/InfographicTemplate.tsx`
+This ensures:
+- Icons vertically center within the badge pill
+- Icon + text pairs align properly when full URL is shown
+- Icon-only badges still look consistent (small pill with centered icon)
+
+### Files to change
+1. `src/templates/ModernTemplate.tsx` — lines 35-36, add `inline-flex items-center gap-1` to both component classNames
 
