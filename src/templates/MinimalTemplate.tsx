@@ -25,6 +25,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                 {profile.phone && <span>{profile.phone}</span>}
                 {profile.location && <span>{profile.location}</span>}
                 <LinkedInDisplay profile={profile} />
+                <WebsiteDisplay profile={profile} />
               </div>
             </div>
           </div>
