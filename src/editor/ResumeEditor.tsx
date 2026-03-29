@@ -1,5 +1,5 @@
 import { useResume } from '@/hooks/ResumeContext';
-import { Resume } from '@/schema/resume';
+import { Resume, SectionConfig, DEFAULT_SECTION_ORDER } from '@/schema/resume';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
