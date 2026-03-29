@@ -1,51 +1,62 @@
 
-Diagnosed root cause: the blank cover letter PDF is most likely caused by the global print stylesheet, not the iframe itself.
 
-What I found
-- In `src/index.css`, the print rules do this:
-  - `body * { visibility: hidden; }`
-  - then only `.resume-print-content, .resume-print-content * { visibility: visible; }`
-- In `src/preview/CoverLetterPreview.tsx`, the PDF content is injected into:
-  - `<div class="cl-print-content">...</div>`
-- That means when print mode starts, the entire cover letter document is hidden, because there is no matching print override for `.cl-print-content`.
+## Skill Badges with Donut Charts (Infographic Template)
 
-Why resume works but cover letter is blank
-- Resume export uses the class name `resume-print-content`, which the global print CSS explicitly reveals.
-- Cover letter export uses a different class name, `cl-print-content`, which stays hidden during printing.
-- This fully explains a blank print preview and blank saved PDF even though the DOM content exists.
+### Overview
+Replace the bar chart skill visualization in the Infographic template with badge-style chips, each containing a small inline SVG donut/radial chart showing the user's self-reported proficiency percentage. The data model changes to support per-skill percentages, with backward compatibility for existing data.
 
-Implementation plan
-1. Update the global print CSS in `src/index.css`
-- Extend the existing print visibility rules to also include:
-  - `.cl-print-content`
-  - `.cl-print-content *`
-- Mirror the same positioning rule currently used for `.resume-print-content` so the cover letter print container is also laid out correctly in print.
+### Data Model — `src/schema/resume.ts`
 
-2. Keep the iframe-based print flow in `src/preview/CoverLetterPreview.tsx`
-- The iframe/font-loading approach is not the main blocker based on the current code.
-- No structural rewrite is needed first; the visibility mismatch should be fixed before changing the print mechanism again.
+Change `SkillCategory.skills` from `string[]` to `SkillItem[]`:
 
-3. Optional cleanup for consistency
-- Either:
-  - keep `cl-print-content` and support both classes in global print CSS, or
-  - rename the cover letter print wrapper to `resume-print-content` for shared behavior.
-- I’d prefer supporting both class names to keep resume and cover letter semantics explicit.
-
-Technical detail
-```text
-Current print chain:
-
-global print CSS
-  hides: body *
-  shows: .resume-print-content only
-
-cover letter iframe HTML
-  renders into: .cl-print-content
-
-result
-  cover letter remains hidden at print time
+```ts
+export interface SkillItem {
+  name: string;
+  level?: number; // 0-100 percentage, optional
+}
 ```
 
-Files to change
-- `src/index.css`
-- Possibly no change needed in `src/preview/CoverLetterPreview.tsx` unless we choose to rename the wrapper class for consistency
+Keep `skills: string[]` support via a migration helper — on load, if an entry is a plain string, convert it to `{ name: str, level: 75 }`.
+
+Update `SkillCategory`:
+```ts
+export interface SkillCategory {
+  id: string;
+  category: string;
+  skills: (string | SkillItem)[];  // backward compat
+  hidden?: boolean;
+}
+```
+
+Add a normalizer utility: `normalizeSkill(s: string | SkillItem): SkillItem`.
+
+### Editor — `src/editor/ResumeEditor.tsx`
+
+Replace the single comma-separated `<Input>` for skills with a list of individual skill rows. Each row has:
+- Text input for skill name
+- Number input (0-100) for proficiency level (optional, defaults to 75)
+- Delete button per skill
+- "Add skill" button at the bottom of each category
+
+The comma-separated input approach is replaced so users can set percentages per skill.
+
+### Infographic Template — `src/templates/InfographicTemplate.tsx`
+
+Replace the bar chart rendering with a flex-wrap badge layout. Each badge contains:
+- A small (20×20px) inline SVG donut chart using `stroke-dasharray` / `stroke-dashoffset` on a `<circle>` — no charting library needed
+- The skill name text next to it
+- Styled as a rounded pill/badge (`bg-secondary rounded-full px-2.5 py-1 inline-flex items-center gap-1.5`)
+
+The donut uses two circles: a background track and a colored arc whose length = `percentage / 100 * circumference`.
+
+### Other 11 Templates
+
+Use `normalizeSkill()` to extract `.name` and render skills the same way they do now (badges/text). The `level` field is simply ignored — no visual change for non-infographic templates.
+
+### Files to change
+1. `src/schema/resume.ts` — add `SkillItem` interface, update `SkillCategory`
+2. `src/editor/ResumeEditor.tsx` — per-skill row editor with name + level inputs
+3. `src/templates/InfographicTemplate.tsx` — donut badge rendering
+4. All other 11 templates — use `normalizeSkill()` to safely read `.name`
+5. `src/hooks/useResumeStore.ts` — migrate old string[] skills on load
+
