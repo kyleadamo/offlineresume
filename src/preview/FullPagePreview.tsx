@@ -186,7 +186,7 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
           <div
             ref={printRef}
             className="bg-white shadow-lg relative"
-            style={{ width: '210mm', minHeight: '297mm', padding: '12mm 16mm' }}
+            style={{ width: `${currentPage.widthMm}mm`, minHeight: `${currentPage.heightMm}mm`, padding: '12mm 16mm' }}
           >
             <TemplateComponent resume={resume} />
             {showPageBreaks && pageBreakLines.map((top, i) => (
