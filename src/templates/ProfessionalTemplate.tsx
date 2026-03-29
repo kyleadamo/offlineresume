@@ -77,7 +77,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
-              <div key={edu.id} className="flex justify-between items-baseline">
+              <div key={edu.id} data-pdf-section className="flex justify-between items-baseline">
                 <div className="font-sans">
                   <span className="font-semibold">{edu.institution}</span>
                   {(edu.degree || edu.field) && (
