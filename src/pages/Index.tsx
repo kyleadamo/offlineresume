@@ -11,9 +11,17 @@ import {
 
 const WorkspaceEntry = () => {
   const navigate = useNavigate();
-  const { createResume, resumes, setActive } = useResume();
-  const { createLetter, letters, setActive: setActiveLetter } = useCoverLetter();
+  const { createResume, resumes, setActive, deleteResume } = useResume();
+  const { createLetter, letters, setActive: setActiveLetter, deleteLetter } = useCoverLetter();
   const [tab, setTab] = useState<'resumes' | 'letters'>('resumes');
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'resume' | 'letter'; id: string; name: string } | null>(null);
+
+  const handleConfirmDelete = () => {
+    if (!deleteTarget) return;
+    if (deleteTarget.type === 'resume') deleteResume(deleteTarget.id);
+    else deleteLetter(deleteTarget.id);
+    setDeleteTarget(null);
+  };
 
   const handleStartBlank = () => {
     createResume();
