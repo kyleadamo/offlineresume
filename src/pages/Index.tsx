@@ -2,8 +2,12 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
 import { useCoverLetter } from '@/hooks/CoverLetterContext';
-import { FileText, Upload, ClipboardPaste, Plus, Mail } from 'lucide-react';
+import { FileText, Upload, ClipboardPaste, Plus, Mail, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 const WorkspaceEntry = () => {
   const navigate = useNavigate();
