@@ -109,6 +109,7 @@ export interface Resume {
   skills: SkillCategory[];
   certifications: CertificationItem[];
   customSections: CustomSection[];
+  sectionOrder: SectionConfig[];
 }
 
 export const createBlankResume = (): Resume => ({
