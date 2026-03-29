@@ -81,7 +81,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
-              <div key={edu.id} className="pl-4 border-l border-border">
+              <div key={edu.id} data-pdf-section className="pl-4 border-l border-border">
                 <span className="font-semibold">{edu.institution}</span>
                 {(edu.degree || edu.field) && (
                   <span className="text-muted-foreground"> · {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>
