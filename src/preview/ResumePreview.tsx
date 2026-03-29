@@ -63,7 +63,7 @@ const ResumePreview = () => {
   const activeMoreLabel = moreTemplates.find((t) => t.id === activeResume.templateId)?.label;
 
   return (
-    <div className="p-6 space-y-4 max-w-[1200px] mx-auto">
+    <div className="py-8 px-6 space-y-4 max-w-[1200px] mx-auto">
       <div className="flex items-center gap-2 flex-wrap">
         {primaryTemplates.map((t) => (
           <button
@@ -120,21 +120,22 @@ const ResumePreview = () => {
         </div>
       </div>
 
-      <div
-        className="bg-card rounded-lg paper-shadow overflow-hidden"
-        onClick={(e) => {
-          let el = e.target as HTMLElement | null;
-          while (el && !el.getAttribute('data-section')) {
-            if (el === e.currentTarget) { el = null; break; }
-            el = el.parentElement;
-          }
-          if (el) {
-            const section = el.getAttribute('data-section')!;
-            window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
-          }
-        }}
-      >
-        <div className="p-8 min-h-[842px]">
+      <div className="flex justify-center">
+        <div
+          className="bg-white shadow-lg relative"
+          style={{ width: '215.9mm', padding: '12mm 16mm' }}
+          onClick={(e) => {
+            let el = e.target as HTMLElement | null;
+            while (el && !el.getAttribute('data-section')) {
+              if (el === e.currentTarget) { el = null; break; }
+              el = el.parentElement;
+            }
+            if (el) {
+              const section = el.getAttribute('data-section')!;
+              window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
+            }
+          }}
+        >
           <TemplateComponent resume={activeResume} />
         </div>
       </div>
