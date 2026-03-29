@@ -24,7 +24,7 @@ const BuilderPage = () => {
         editorCollapsed={editorCollapsed}
         onToggleEditor={() => setEditorCollapsed((c) => !c)}
       />
-      <ResizablePanelGroup direction="horizontal" className="flex-1">
+      <ResizablePanelGroup direction="horizontal" className="flex-1 overflow-hidden">
         {!editorCollapsed && (
           <>
             <ResizablePanel defaultSize={40} minSize={25} maxSize={60} className="overflow-y-auto border-r border-border">
