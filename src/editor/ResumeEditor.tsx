@@ -13,6 +13,37 @@ import { SortableList, toStringItems, fromStringItems, type StringItem } from '@
 
 const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills'];
 
+const sectionEditorMap: Record<string, { label: string; component: (resume: Resume, update: (c: Partial<Resume>) => void) => React.ReactNode }> = {
+  summary: {
+    label: 'Summary',
+    component: (resume, update) => (
+      <Textarea
+        value={resume.summary}
+        onChange={(e) => update({ summary: e.target.value })}
+        placeholder="Write a brief professional summary..."
+        rows={4}
+        className="resize-none"
+      />
+    ),
+  },
+  experience: {
+    label: 'Experience',
+    component: (resume, update) => <ExperienceEditor resume={resume} onUpdate={update} />,
+  },
+  education: {
+    label: 'Education',
+    component: (resume, update) => <EducationEditor resume={resume} onUpdate={update} />,
+  },
+  projects: {
+    label: 'Projects',
+    component: (resume, update) => <ProjectsEditor resume={resume} onUpdate={update} />,
+  },
+  skills: {
+    label: 'Skills',
+    component: (resume, update) => <SkillsEditor resume={resume} onUpdate={update} />,
+  },
+};
+
 const ResumeEditor = () => {
   const { activeResume, updateResume } = useResume();
   const [openSections, setOpenSections] = useState<string[]>(SECTIONS);
