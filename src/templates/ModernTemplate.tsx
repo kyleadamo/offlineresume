@@ -46,7 +46,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
-              <div key={exp.id} className="pl-4 border-l border-border">
+              <div key={exp.id} data-pdf-section className="pl-4 border-l border-border">
                 <div>
                   <span className="font-semibold">{exp.role}</span>
                   {exp.company && (exp.companyUrl ? (
