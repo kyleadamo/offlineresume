@@ -128,9 +128,9 @@ const CoverLetterPreview = () => {
           {/* Closing */}
           {activeLetter.closing && (
             <div style={{ marginTop: '1.5em' }}>
-              <div>{activeLetter.closing}</div>
+              <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.closing) }} />
               {activeLetter.senderName && (
-                <div style={{ marginTop: '2em', fontWeight: 600 }}>{activeLetter.senderName}</div>
+                <div style={{ marginTop: '2em', fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.senderName) }} />
               )}
             </div>
           )}
