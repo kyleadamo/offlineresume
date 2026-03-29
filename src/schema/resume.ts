@@ -45,6 +45,7 @@ export interface ProjectItem {
   description: string;
   url: string;
   highlights: string[];
+  hidden?: boolean;
 }
 
 export interface SkillCategory {
