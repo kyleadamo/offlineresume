@@ -23,15 +23,20 @@ const PAGE_SIZES: Record<PageSize, { label: string; widthMm: number; heightMm: n
   letter: { label: 'US Letter', widthMm: 215.9, heightMm: 279.4, cssSize: 'letter' },
 };
 
+function renderInlineMarkdown(text: string): string {
+  return text
+    .replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" style="color:#2563eb;text-decoration:underline" target="_blank" rel="noopener noreferrer">$1</a>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<u>$1</u>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>');
+}
+
 function renderMarkdown(text: string): string {
-  // Simple markdown: bold, italic, paragraphs
   return text
     .split(/\n\n+/)
     .map((para) => {
-      const html = para
-        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-        .replace(/\*(.+?)\*/g, '<em>$1</em>')
-        .replace(/\n/g, '<br/>');
+      const html = renderInlineMarkdown(para).replace(/\n/g, '<br/>');
       return `<p style="margin:0 0 1em 0;line-height:1.6">${html}</p>`;
     })
     .join('');
@@ -90,8 +95,8 @@ const CoverLetterPreview = () => {
           {/* Sender info */}
           {(activeLetter.senderName || activeLetter.senderContact) && (
             <div style={{ textAlign: 'right', marginBottom: '2em', fontSize: '10pt' }}>
-              {activeLetter.senderName && <div style={{ fontWeight: 600 }}>{activeLetter.senderName}</div>}
-              {activeLetter.senderContact && <div style={{ color: '#555' }}>{activeLetter.senderContact}</div>}
+              {activeLetter.senderName && <div style={{ fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.senderName) }} />}
+              {activeLetter.senderContact && <div style={{ color: '#555' }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.senderContact) }} />}
             </div>
           )}
 
@@ -103,16 +108,16 @@ const CoverLetterPreview = () => {
           {/* Recipient block */}
           {(activeLetter.recipientName || activeLetter.companyName) && (
             <div style={{ marginBottom: '1.5em' }}>
-              {activeLetter.recipientName && <div>{activeLetter.recipientName}</div>}
-              {activeLetter.recipientTitle && <div>{activeLetter.recipientTitle}</div>}
-              {activeLetter.companyName && <div>{activeLetter.companyName}</div>}
-              {activeLetter.companyAddress && <div>{activeLetter.companyAddress}</div>}
+              {activeLetter.recipientName && <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.recipientName) }} />}
+              {activeLetter.recipientTitle && <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.recipientTitle) }} />}
+              {activeLetter.companyName && <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.companyName) }} />}
+              {activeLetter.companyAddress && <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.companyAddress) }} />}
             </div>
           )}
 
           {/* Greeting */}
           {activeLetter.greeting && (
-            <div style={{ marginBottom: '1em' }}>{activeLetter.greeting}</div>
+            <div style={{ marginBottom: '1em' }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.greeting) }} />
           )}
 
           {/* Body */}
@@ -123,9 +128,9 @@ const CoverLetterPreview = () => {
           {/* Closing */}
           {activeLetter.closing && (
             <div style={{ marginTop: '1.5em' }}>
-              <div>{activeLetter.closing}</div>
+              <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.closing) }} />
               {activeLetter.senderName && (
-                <div style={{ marginTop: '2em', fontWeight: 600 }}>{activeLetter.senderName}</div>
+                <div style={{ marginTop: '2em', fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.senderName) }} />
               )}
             </div>
           )}
