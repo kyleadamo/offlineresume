@@ -40,7 +40,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
-              <div key={exp.id}>
+              <div key={exp.id} data-pdf-section>
                 <div className="flex justify-between items-baseline">
                   <div>
                     <span className="font-medium">{exp.role}</span>
