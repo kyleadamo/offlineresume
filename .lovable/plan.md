@@ -1,37 +1,30 @@
 
 
-## Full-Page Preview and PDF Download
+## PDF Page Breaks and Preview Indicators
 
-### Overview
-Add two features: (1) a full-page preview modal to view the resume without the editor panel, and (2) a "Download PDF" button that generates a cleanly formatted PDF using the browser's print API with `@media print` styles.
+### Problem
+The current PDF export uses padding on a single container div, so margins only appear on page 1. Subsequent pages have no top/bottom margins, and content breaks arbitrarily mid-section.
 
-### Approach: Browser Print-to-PDF
-Using `window.print()` with a print-specific stylesheet is the most reliable way to get pixel-perfect PDF output that matches the preview exactly — no third-party library needed. The template renders as HTML/CSS, so the browser's print engine captures it faithfully.
+### Solution
+
+**1. Fix PDF margins** — Use `@page { margin: 12mm 16mm; }` instead of padding on the wrapper div. This gives consistent margins on every printed page automatically.
+
+**2. Control page breaks** — Apply `break-inside: avoid` only to meaningful content blocks (experience entries, education entries, skill categories) via `data-pdf-section` attributes on template elements, not on `*`.
+
+**3. Page break preview checkbox** — Add a "Show page breaks" checkbox in the full-page preview toolbar. When enabled, render dashed red lines at intervals of `297mm - 24mm` (A4 height minus top+bottom margins) to visualize where pages will split.
 
 ### Changes
 
-**`src/preview/ResumePreview.tsx`**
-- Add "Full Page" and "Download PDF" buttons next to the template switcher
-- "Full Page" opens a `Dialog` (full-screen) showing just the resume template at A4 dimensions
-- "Download PDF" opens the same full-page view in a new window and triggers `window.print()`, which lets the user save as PDF via the browser's native dialog
+**`src/preview/FullPagePreview.tsx`**
+- Add `showPageBreaks` state and a `Checkbox` + label in the toolbar
+- When enabled, overlay horizontal dashed lines at each page boundary (every ~273mm of content height)
+- Change print CSS: use `@page { margin: 12mm 16mm; }`, remove padding from wrapper, remove `* { break-inside: avoid }`, add targeted `[data-pdf-section] { break-inside: avoid; }` and `[data-section] { break-inside: avoid; }`
 
-**`src/preview/FullPagePreview.tsx`** (new file)
-- A dialog/modal component that renders the resume template at A4 size (210mm × 297mm) centered on a neutral background
-- Contains "Download PDF" and "Close" buttons in a floating toolbar
-- The PDF download function: opens a print-optimized window containing just the resume content with print CSS that hides everything except the resume, sets A4 page size, removes margins
+**`src/templates/MinimalTemplate.tsx`**, **`ProfessionalTemplate.tsx`**, **`ModernTemplate.tsx`**, **`BrutalistTemplate.tsx`**
+- Add `data-pdf-section` attribute to each individual experience entry, education entry, project entry, and skill category block (the inner items, not the whole section) so they won't split across pages but the section as a whole can flow across pages
 
-**`src/index.css`**
-- Add `@media print` rules: hide all UI chrome, set the resume container to fill the page, A4 page size with zero margins, ensure colors print (`-webkit-print-color-adjust: exact`)
-
-### PDF Formatting Details
-- Page size: A4 (210mm × 297mm)
-- Margins: controlled by the template padding (matching preview)
-- Colors print accurately via `print-color-adjust: exact`
-- Photos, borders, backgrounds all preserved
-- Multi-page support via CSS `break-inside: avoid` on sections
-
-### Technical Notes
-- No new dependencies required
-- Uses `Dialog` from shadcn/ui for the full-page modal
-- Print approach ensures WYSIWYG — what you see in preview is exactly what prints
+### Page Break Indicator Implementation
+- Calculate content height via ref, divide by usable page height (`297mm - 24mm = 273mm ≈ 1032px at 96dpi`)
+- Render absolute-positioned dashed lines at each multiple of that height
+- Lines only visible when checkbox is checked, never in print output
 
