@@ -1,24 +1,34 @@
 
 
-## Paper-Style Background for Preview Pane
+## Fix Editor Scroll & Replace Full Page with Download PDF + Options Menu
 
-### Problem
-The full-page preview shows the resume on a white paper-like background with padding, shadow, and a fixed width — but the main workspace preview pane lacks this treatment. Also, in both views, the paper background should extend to the bottom of the content with equal top/bottom margin.
+### 1. Fix editor pane scrolling
 
-### Changes
+**`src/pages/BuilderPage.tsx`** — The editor `ResizablePanel` has `overflow-y-auto` but the parent `ResizablePanelGroup` needs `overflow-hidden` on its container to constrain height. The `flex-1` on the panel group isn't creating a bounded height context.
 
-**`src/preview/ResumePreview.tsx`**
-- Replace the current `bg-card rounded-lg paper-shadow` wrapper (lines 123-140) with a paper-style treatment matching the full-page preview:
-  - Set a fixed paper width (e.g. `215.9mm` / US Letter width) instead of fluid
-  - Add `bg-white shadow-lg` styling like FullPagePreview
-  - Use padding `12mm 16mm` to match print margins
-  - Remove `min-h-[842px]` — let content determine height naturally
-- Wrap the paper div in a centered container with `bg-muted/50` (or use the existing `bg-secondary/50` from the parent) and padding top/bottom for equal spacing
-- The outer `max-w-[1200px]` stays to constrain the overall area; the paper sits centered within it
+- Change `ResizablePanelGroup` className from `"flex-1"` to `"flex-1 overflow-hidden"` so both child panels get a bounded height and their individual overflow settings work.
 
-**`src/preview/FullPagePreview.tsx`**
-- The paper div (line 208-227) already has top padding via `py-8` on the scroll container — this gives equal top/bottom margin around the paper. No changes needed here since `py-8` already provides symmetric spacing.
+### 2. Replace Full Page button with Download PDF + options menu
 
-### Result
-Both the workspace preview and full-page preview show the resume on a white, paper-width background with shadow, with equal margin above and below the content.
+**`src/preview/ResumePreview.tsx`**:
+- Remove `FullPagePreview` import, `fullPageOpen` state, and the `<FullPagePreview>` component usage
+- Remove `Maximize2` icon import
+- Add imports: `Download`, `MoreVertical` from lucide-react; `DropdownMenu` components; `Select` components; `Checkbox`; `Label`
+- Add state for `pageSize` (default `'letter'`), `showPageBreaks`, `pageBreakLines`
+- Move the PDF download logic (from `FullPagePreview.tsx`) into this component, using a `printRef` on the paper div
+- Add page break calculation logic (from `FullPagePreview.tsx`) tied to the paper div
+- Replace the "Full Page" button area with:
+  - **Download PDF** button (calls the print-based PDF export)
+  - **Vertical 3-dot menu** (DropdownMenu) containing:
+    - Paper Size selector (A4 / US Letter)
+    - Show Page Breaks toggle checkbox
+- Render page break indicator lines on the paper div when enabled
+
+### 3. Clean up
+
+- `FullPagePreview.tsx` can remain in the codebase (unused) or be deleted. Will delete it to keep things clean.
+
+### Technical details
+
+The PDF download reuses the same `window.open` + `window.print()` approach from FullPagePreview, with the page size and email footer. The paper div width adjusts based on the selected page size. Page break lines are calculated using `ResizeObserver` on the paper div.
 
