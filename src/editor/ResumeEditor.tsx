@@ -128,6 +128,27 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
         <Input value={p.phone} onChange={(e) => set('phone', e.target.value)} placeholder="Phone" />
       </div>
       <Input value={p.location} onChange={(e) => set('location', e.target.value)} placeholder="Location" />
+      <div className="space-y-2">
+        <Input
+          value={p.linkedin || ''}
+          onChange={(e) => set('linkedin', e.target.value)}
+          placeholder="LinkedIn URL (e.g., linkedin.com/in/username)"
+        />
+        {p.linkedin && (
+          <div className="flex items-center gap-2">
+            <Switch
+              id="linkedin-display"
+              checked={p.linkedinDisplayFull ?? false}
+              onCheckedChange={(checked) =>
+                onUpdate({ profile: { ...p, linkedinDisplayFull: checked } })
+              }
+            />
+            <Label htmlFor="linkedin-display" className="text-xs text-muted-foreground cursor-pointer">
+              Show full URL (otherwise icon only)
+            </Label>
+          </div>
+        )}
+      </div>
       <Input value={resume.targetRole} onChange={(e) => onUpdate({ targetRole: e.target.value })} placeholder="Target role (e.g., Senior Software Engineer)" />
     </div>
   );
