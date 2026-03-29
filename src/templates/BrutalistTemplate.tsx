@@ -87,7 +87,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
-              <div key={edu.id} className="border-[2px] border-foreground p-3">
+              <div key={edu.id} data-pdf-section className="border-[2px] border-foreground p-3">
                 <span className="font-black uppercase">{edu.institution}</span>
                 {(edu.degree || edu.field) && (
                   <span className="text-muted-foreground"> // {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>
