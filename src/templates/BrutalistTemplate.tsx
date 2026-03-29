@@ -8,7 +8,11 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer transition-colors duration-150 hover:bg-yellow-100/30 -mx-2 px-2 py-0.5";
 
 const BrutalistTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience, education, skills, projects } = resume;
+  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects } = resume;
+  const experience = allExperience.filter(e => !e.hidden);
+  const education = allEducation.filter(e => !e.hidden);
+  const skills = allSkills.filter(e => !e.hidden);
+  const projects = allProjects.filter(e => !e.hidden);
 
   return (
     <div className="font-mono text-foreground text-sm leading-relaxed">
