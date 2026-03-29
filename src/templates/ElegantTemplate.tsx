@@ -9,7 +9,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const ElegantTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience: allExp, education: allEdu, skills: allSkills, certifications, projects: allProj } = resume;
+  const { profile, summary, experience: allExp, education: allEdu, skills: allSkills, certifications, projects: allProj, references = [] } = resume;
   const experience = allExp.filter(e => !e.hidden);
   const education = allEdu.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
