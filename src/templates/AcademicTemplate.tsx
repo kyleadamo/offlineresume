@@ -111,6 +111,11 @@ const AcademicTemplate = ({ resume }: TemplateProps) => {
                 <span className="font-medium">{proj.name}</span>
                 {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">[link]</a>}
                 {proj.description && <p className="text-muted-foreground text-xs mt-0.5">{proj.description}</p>}
+                {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
+                  <ul className="mt-1 text-xs text-muted-foreground list-disc list-inside space-y-0.5">
+                    {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
+                  </ul>
+                )}
               </div>
             ))}
           </div>

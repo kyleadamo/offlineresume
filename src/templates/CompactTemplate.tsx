@@ -111,7 +111,13 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
                 {projects.map((proj) => (
                   <div key={proj.id} data-pdf-section>
                     <span className="font-semibold">{proj.name}</span>
+                    {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">{proj.url.replace(/^https?:\/\//, '')}</a>}
                     {proj.description && <span className="text-muted-foreground"> — {proj.description}</span>}
+                    {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
+                      <ul className="mt-0.5 text-xs text-muted-foreground list-disc list-inside">
+                        {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
+                      </ul>
+                    )}
                   </div>
                 ))}
               </div>
