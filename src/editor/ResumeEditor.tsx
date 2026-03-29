@@ -270,7 +270,7 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
         onReorder={(reordered) => onUpdate({ experience: reordered })}
         className="space-y-4"
         renderItem={(item, dragHandle) => (
-          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+          <div className={`p-4 bg-secondary/50 rounded-lg space-y-3 ${item.hidden ? 'opacity-50' : ''}`}>
             <div className="flex items-start gap-2">
               <div className="mt-2.5">{dragHandle}</div>
               <div className="flex-1 space-y-3">
@@ -288,6 +288,9 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
                   onChange={(bullets) => updateItem(item.id, { bullets })}
                 />
               </div>
+              <button onClick={() => updateItem(item.id, { hidden: !item.hidden })} className="text-muted-foreground hover:text-foreground transition-colors mt-2" title={item.hidden ? 'Show in resume' : 'Hide from resume'}>
+                {item.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
               <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors mt-2">
                 <Trash2 className="w-4 h-4" />
               </button>
