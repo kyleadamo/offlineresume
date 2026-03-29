@@ -1,28 +1,30 @@
 
 
-## Fix LinkedIn Icon + Text Alignment
+## Fix LinkedIn Display: Remove Extra Text & Fix Icon Alignment
 
-### Problem
-When "Show full LinkedIn" is toggled on, only the text URL is displayed. The screenshot shows the user wants the LinkedIn icon **and** the text "LinkedIn" displayed together, with the icon baseline-aligned with surrounding text and close to the label.
+### Changes — `src/templates/LinkedInBadge.tsx`
 
-### Changes
+**1. Full URL mode** — Currently shows icon + URL text. No "LinkedIn" label exists in code, so this should be correct. Will verify the rendered output matches. If the user is seeing stale content, the rebuild will fix it.
 
-**`src/templates/LinkedInBadge.tsx`**
-- When `linkedinDisplayFull` is true: render both the icon and the text inside the same `<a>` tag, using `inline-flex items-baseline gap-1` so the icon sits on the text baseline and stays tight to the label
-- Add `relative top-[1px]` or `self-end` to fine-tune the icon's vertical position to match surrounding text
-- Keep icon-only mode unchanged for when the toggle is off
+**2. Icon-only mode — fix vertical alignment**
+The icon-only `<a>` tag currently has no flex alignment. It needs `inline-flex items-baseline` so the icon sits on the text baseline of sibling elements in the contact row.
 
 ```tsx
-if (profile.linkedinDisplayFull) {
-  return (
-    <a href={url} target="_blank" rel="noopener noreferrer" 
-       className={className || "inline-flex items-center gap-1 hover:underline"}>
-      <LinkedInIcon className="w-3 h-3 shrink-0" />
-      <span>LinkedIn</span>
-    </a>
-  );
-}
+// Icon-only mode: add inline-flex + items-baseline + vertical alignment tweak
+<a href={url} target="_blank" rel="noopener noreferrer" 
+   className={className || "inline-flex items-baseline hover:opacity-70"} title="LinkedIn">
+  <LinkedInIcon className="w-3 h-3 relative top-[0.5px]" />
+</a>
 ```
 
-No template file changes needed — the fix is entirely in the shared `LinkedInBadge.tsx` component.
+**3. Full URL mode: ensure baseline alignment too**
+```tsx
+<a href={url} target="_blank" rel="noopener noreferrer" 
+   className={className || "inline-flex items-baseline gap-1 hover:underline"}>
+  <LinkedInIcon className="w-3 h-3 shrink-0 relative top-[0.5px]" />
+  <span>{profile.linkedin.replace(/^https?:\/\//, '')}</span>
+</a>
+```
+
+Single file change. The `relative top-[0.5px]` nudges the SVG icon down slightly to sit flush with text baselines.
 
