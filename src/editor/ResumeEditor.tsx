@@ -504,16 +504,6 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
                       placeholder="Skill name"
                       className="flex-1"
                     />
-                    <Input
-                      type="number"
-                      min={0}
-                      max={100}
-                      value={skill.level ?? 75}
-                      onChange={(e) => updateSkill(cat.id, i, { level: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })}
-                      className="w-16 text-center"
-                      title="Proficiency %"
-                    />
-                    <span className="text-xs text-muted-foreground">%</span>
                     <button onClick={() => removeSkill(cat.id, i)} className="text-muted-foreground hover:text-destructive transition-colors">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>

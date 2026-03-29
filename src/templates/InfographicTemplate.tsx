@@ -81,11 +81,11 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
             Experience
           </h3>
           <div className="relative pl-5">
-            <div className="absolute left-1.5 top-1 bottom-1 w-0.5 rounded" style={{ backgroundColor: 'hsl(243, 75%, 85%)' }} />
+            <div className="absolute left-[10px] top-0 bottom-0 w-0.5 rounded" style={{ backgroundColor: 'hsl(243, 75%, 85%)' }} />
             <div className="space-y-4">
               {experience.map((exp) => (
                 <div key={exp.id} data-pdf-section className="relative">
-                  <div className="absolute -left-[14px] top-1.5 w-2.5 h-2.5 rounded-full border-2 bg-card" style={{ borderColor: 'hsl(243, 75%, 59%)' }} />
+                  <div className="absolute -left-[14px] top-[5px] w-2.5 h-2.5 rounded-full border-2 bg-card" style={{ borderColor: 'hsl(243, 75%, 59%)' }} />
                   <div className="flex justify-between items-baseline flex-wrap gap-1">
                     <div>
                       <span className="font-semibold">{exp.role}</span>
