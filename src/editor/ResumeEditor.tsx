@@ -466,7 +466,7 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
   const addSkill = (catId: string) => {
     const cat = items.find((c) => c.id === catId);
     if (!cat) return;
-    const normalized = [...cat.skills.map(normalizeSkill), { name: '', level: 75 }];
+    const normalized = [...cat.skills.map(normalizeSkill), { name: '' }];
     updateCategory(catId, { skills: normalized });
   };
 
