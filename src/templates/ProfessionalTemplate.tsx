@@ -100,7 +100,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Skills</h3>
           <div className="space-y-2 font-sans">
             {skills.map((cat) => (
-              <div key={cat.id}>
+              <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-medium text-muted-foreground block mb-1">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
                   {cat.skills.map((skill, i) => (
