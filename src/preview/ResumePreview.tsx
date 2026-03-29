@@ -63,7 +63,7 @@ const ResumePreview = () => {
   const activeMoreLabel = moreTemplates.find((t) => t.id === activeResume.templateId)?.label;
 
   return (
-    <div className="p-6 space-y-4">
+    <div className="p-6 space-y-4 max-w-[1200px] mx-auto">
       <div className="flex items-center gap-2 flex-wrap">
         {primaryTemplates.map((t) => (
           <button
