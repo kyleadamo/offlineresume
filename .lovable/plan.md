@@ -1,51 +1,17 @@
 
 
-## Add Missing References Renderers to 3 Templates
+## Add Delete Buttons to Resumes & Cover Letters on Index Page
 
-### Problem
-The Brutalist, Creative, and Infographic templates destructure `references` from the resume but never define a `references` entry in their `sectionRenderers` map. The section is silently skipped when rendering.
+### Changes — `src/pages/Index.tsx`
 
-### Fix
+1. **Import** `Trash2` from lucide-react and `AlertDialog` components from shadcn/ui for a confirmation prompt.
 
-Add a `references` renderer to each template's `sectionRenderers` object, styled as **contact cards** per the original plan.
+2. **Add delete buttons** to each resume and cover letter row in the "Recent" lists — a small trash icon button on the right side of each row. Use `e.stopPropagation()` to prevent triggering navigation when clicking delete.
 
-**1. `src/templates/BrutalistTemplate.tsx`** — Add after the `skills` renderer (line ~110):
-- Contact card with `border-[2px] border-foreground` styling
-- Optional photo with border
-- Name in bold uppercase, title + company below, email/phone in small text
-- Grid layout for multiple references
+3. **Add confirmation dialog** — clicking the trash icon opens an `AlertDialog` asking "Delete this resume/cover letter? This cannot be undone." with Cancel and Delete actions.
 
-**2. `src/templates/CreativeTemplate.tsx`** — Add references renderer:
-- Cards with rounded corners, gradient or accent border
-- Photo circle, name/title/company, contact details
-- Matches the creative template's playful style
-
-**3. `src/templates/InfographicTemplate.tsx`** — Add references renderer:
-- Cards with left accent border or icon-based layout
-- Photo circle, structured contact info
-- Matches infographic's visual data-presentation style
-
-Each renderer follows the same pattern already used in `ModernTemplate.tsx`:
-```tsx
-references: () => references.length > 0 ? (
-  <div key="references" data-section="references" className={`mb-X ${sectionClass}`}>
-    <h3>References</h3>
-    <div className="grid grid-cols-2 gap-3">
-      {references.map((ref) => (
-        <div key={ref.id} data-pdf-section className="card-styles">
-          {ref.photo && <img ... />}
-          <span>{ref.name}</span>
-          {ref.title && <span>{ref.title}</span>}
-          ...
-        </div>
-      ))}
-    </div>
-  </div>
-) : null,
-```
+4. **Wire up delete handlers** — call `deleteResume(id)` or `deleteLetter(id)` (already exposed by the context hooks) on confirmation. These already remove from state and localStorage.
 
 ### Files
-1. `src/templates/BrutalistTemplate.tsx`
-2. `src/templates/CreativeTemplate.tsx`
-3. `src/templates/InfographicTemplate.tsx`
+1. `src/pages/Index.tsx` — add delete buttons with confirmation to both resume and cover letter lists
 
