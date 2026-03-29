@@ -455,7 +455,7 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
         onReorder={(reordered) => onUpdate({ skills: reordered })}
         className="space-y-4"
         renderItem={(cat, dragHandle) => (
-          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+          <div className={`p-4 bg-secondary/50 rounded-lg space-y-3 ${cat.hidden ? 'opacity-50' : ''}`}>
             <div className="flex gap-2">
               <div className="mt-2">{dragHandle}</div>
               <Input
@@ -464,6 +464,9 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
                 placeholder="Category (e.g., Languages, Frameworks)"
                 className="flex-1"
               />
+              <button onClick={() => updateCategory(cat.id, { hidden: !cat.hidden })} className="text-muted-foreground hover:text-foreground transition-colors" title={cat.hidden ? 'Show in resume' : 'Hide from resume'}>
+                {cat.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
               <button onClick={() => removeCategory(cat.id)} className="text-muted-foreground hover:text-destructive transition-colors">
                 <Trash2 className="w-4 h-4" />
               </button>
