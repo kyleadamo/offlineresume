@@ -10,6 +10,13 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Download, X } from 'lucide-react';
 import { useRef, useCallback, useState, useEffect } from 'react';
 
@@ -22,10 +29,14 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   editorial: ProfessionalTemplate,
 };
 
-// A4 dimensions in mm
-const A4_HEIGHT_MM = 297;
+type PageSize = 'a4' | 'letter';
+
+const PAGE_SIZES: Record<PageSize, { label: string; widthMm: number; heightMm: number; cssSize: string }> = {
+  a4: { label: 'A4', widthMm: 210, heightMm: 297, cssSize: 'A4' },
+  letter: { label: 'US Letter', widthMm: 215.9, heightMm: 279.4, cssSize: 'letter' },
+};
+
 const PAGE_MARGIN_Y_MM = 12;
-const USABLE_PAGE_HEIGHT_MM = A4_HEIGHT_MM - PAGE_MARGIN_Y_MM * 2; // 273mm
 
 interface FullPagePreviewProps {
   resume: Resume;
@@ -37,7 +48,11 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
   const printRef = useRef<HTMLDivElement>(null);
   const [showPageBreaks, setShowPageBreaks] = useState(false);
   const [pageBreakLines, setPageBreakLines] = useState<number[]>([]);
+  const [pageSize, setPageSize] = useState<PageSize>('letter');
   const TemplateComponent = templateMap[resume.templateId] || MinimalTemplate;
+
+  const currentPage = PAGE_SIZES[pageSize];
+  const usableHeightMm = currentPage.heightMm - PAGE_MARGIN_Y_MM * 2;
 
   // Calculate page break positions
   useEffect(() => {
@@ -49,8 +64,7 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
     const calculateBreaks = () => {
       if (!printRef.current) return;
       const containerHeight = printRef.current.scrollHeight;
-      // Convert 273mm to pixels: 1mm ≈ 3.7795px at 96dpi
-      const usableHeightPx = USABLE_PAGE_HEIGHT_MM * 3.7795;
+      const usableHeightPx = usableHeightMm * 3.7795;
       const lines: number[] = [];
       let pos = usableHeightPx;
       while (pos < containerHeight) {
@@ -61,11 +75,10 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
     };
 
     calculateBreaks();
-    // Recalculate on resize
     const observer = new ResizeObserver(calculateBreaks);
     observer.observe(printRef.current);
     return () => observer.disconnect();
-  }, [showPageBreaks, resume]);
+  }, [showPageBreaks, resume, usableHeightMm]);
 
   const handleDownloadPDF = useCallback(() => {
     if (!printRef.current) return;
