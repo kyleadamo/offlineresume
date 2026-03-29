@@ -10,6 +10,8 @@ export interface ResumeProfile {
   phone: string;
   location: string;
   photo: string;
+  linkedin: string;
+  linkedinDisplayFull: boolean;
   links: ResumeLink[];
 }
 
