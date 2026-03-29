@@ -40,7 +40,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
-              <div key={exp.id}>
+              <div key={exp.id} data-pdf-section>
                 <div className="flex justify-between items-baseline">
                   <div>
                     <span className="font-semibold font-sans">{exp.role}</span>
