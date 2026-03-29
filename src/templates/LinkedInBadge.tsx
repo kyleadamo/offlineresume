@@ -19,16 +19,16 @@ export const LinkedInDisplay = ({ profile, className }: Props) => {
   if (profile.linkedinDisplayFull) {
     return (
       <a href={url} target="_blank" rel="noopener noreferrer" 
-         className={className || "inline-flex items-center gap-1 hover:underline"}>
-        <LinkedInIcon className="w-3 h-3 shrink-0" />
+         className={className || "inline-flex items-baseline gap-1 hover:underline"}>
+        <LinkedInIcon className="w-3 h-3 shrink-0 relative top-[0.5px]" />
         <span>{profile.linkedin.replace(/^https?:\/\//, '')}</span>
       </a>
     );
   }
 
   return (
-    <a href={url} target="_blank" rel="noopener noreferrer" className={className || "hover:opacity-70"} title="LinkedIn">
-      <LinkedInIcon />
+    <a href={url} target="_blank" rel="noopener noreferrer" className={className || "inline-flex items-baseline hover:opacity-70"} title="LinkedIn">
+      <LinkedInIcon className="w-3 h-3 relative top-[0.5px]" />
     </a>
   );
 };
