@@ -144,7 +144,8 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
                     <span key={i} className="border-[2px] border-foreground text-foreground text-xs font-bold px-2 py-0.5 uppercase">
                       {skill}
                     </span>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
