@@ -110,12 +110,12 @@ const ExecutiveTemplate = ({ resume }: TemplateProps) => {
       {skills.length > 0 && (
         <div data-section="skills" className={`mb-6 ${sectionClass}`}>
           <h3 className="text-sm font-semibold uppercase tracking-[0.2em] mb-3 pb-1" style={{ borderBottom: '2px solid hsl(215, 29%, 20%)' }}>Skills & Expertise</h3>
-          <div className="space-y-2">
+          <div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
             {skills.map((cat) => (
-              <div key={cat.id} data-pdf-section className="flex gap-2">
-                {cat.category && <span className="text-xs font-semibold text-foreground shrink-0">{cat.category}:</span>}
+              <React.Fragment key={cat.id}>
+                {cat.category ? <span className="text-xs font-semibold text-foreground shrink-0 text-right">{cat.category}:</span> : <span />}
                 <span className="text-xs text-muted-foreground">{cat.skills.join(' · ')}</span>
-              </div>
+              </React.Fragment>
             ))}
           </div>
         </div>
