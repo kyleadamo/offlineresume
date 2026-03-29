@@ -59,27 +59,11 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
               <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-semibold block mb-1.5">{cat.category}</span>}
                 <div className="flex flex-wrap gap-2">
-                  {cat.skills.map((rawSkill, i) => {
+                {cat.skills.map((rawSkill, i) => {
                     const skill = normalizeSkill(rawSkill);
-                    const level = skill.level ?? 75;
-                    const r = 8;
-                    const circ = 2 * Math.PI * r;
-                    const offset = circ - (level / 100) * circ;
                     return (
-                      <span key={i} className="bg-secondary rounded-full px-2.5 py-1 inline-flex items-center gap-1.5 text-xs">
-                        <svg width="20" height="20" className="shrink-0 -rotate-90">
-                          <circle cx="10" cy="10" r={r} fill="transparent" stroke="hsl(var(--muted))" strokeWidth="2.5" />
-                          <circle
-                            cx="10" cy="10" r={r}
-                            fill="transparent"
-                            stroke="hsl(243, 75%, 59%)"
-                            strokeWidth="2.5"
-                            strokeDasharray={circ}
-                            strokeDashoffset={offset}
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        <span>{skill.name}</span>
+                      <span key={i} className="bg-secondary rounded-full px-2.5 py-1 text-xs">
+                        {skill.name}
                       </span>
                     );
                   })}
