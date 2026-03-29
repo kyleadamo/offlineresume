@@ -120,6 +120,7 @@ export interface Resume {
   skills: SkillCategory[];
   certifications: CertificationItem[];
   customSections: CustomSection[];
+  references: ReferenceItem[];
   sectionOrder: SectionConfig[];
 }
 
