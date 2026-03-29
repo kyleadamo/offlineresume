@@ -50,7 +50,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">Experience</h3>
           <div className="space-y-3">
             {experience.map((exp) => (
-              <div key={exp.id} className="border-[2px] border-foreground p-3">
+              <div key={exp.id} data-pdf-section className="border-[2px] border-foreground p-3">
                 <div className="flex justify-between items-baseline flex-wrap gap-2">
                   <div>
                     <span className="font-black uppercase">{exp.role}</span>
