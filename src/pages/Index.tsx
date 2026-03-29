@@ -1,11 +1,15 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
-import { FileText, Upload, ClipboardPaste, Plus } from 'lucide-react';
+import { useCoverLetter } from '@/hooks/CoverLetterContext';
+import { FileText, Upload, ClipboardPaste, Plus, Mail } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const WorkspaceEntry = () => {
   const navigate = useNavigate();
   const { createResume, resumes, setActive } = useResume();
+  const { createLetter, letters, setActive: setActiveLetter } = useCoverLetter();
+  const [tab, setTab] = useState<'resumes' | 'letters'>('resumes');
 
   const handleStartBlank = () => {
     createResume();
@@ -17,7 +21,17 @@ const WorkspaceEntry = () => {
     navigate('/builder');
   };
 
-  const actions = [
+  const handleStartBlankLetter = () => {
+    createLetter();
+    navigate('/cover-letter/builder');
+  };
+
+  const handleOpenExistingLetter = (id: string) => {
+    setActiveLetter(id);
+    navigate('/cover-letter/builder');
+  };
+
+  const resumeActions = [
     {
       icon: Plus,
       title: 'Start from blank',
@@ -38,6 +52,29 @@ const WorkspaceEntry = () => {
     },
   ];
 
+  const letterActions = [
+    {
+      icon: Plus,
+      title: 'New cover letter',
+      description: 'Start a fresh cover letter',
+      onClick: handleStartBlankLetter,
+    },
+    {
+      icon: Upload,
+      title: 'Import JSON',
+      description: 'Upload a structured cover letter file',
+      onClick: () => navigate('/cover-letter/import?mode=json'),
+    },
+    {
+      icon: ClipboardPaste,
+      title: 'Paste markdown',
+      description: 'Paste text or markdown content',
+      onClick: () => navigate('/cover-letter/import?mode=markdown'),
+    },
+  ];
+
+  const actions = tab === 'resumes' ? resumeActions : letterActions;
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
       <motion.div
@@ -51,6 +88,42 @@ const WorkspaceEntry = () => {
           <p className="text-muted-foreground text-lg">
             Start with what you have. We'll shape it from there.
           </p>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 p-1 bg-secondary rounded-lg mb-6">
+          <button
+            onClick={() => setTab('resumes')}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+              tab === 'resumes'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <FileText className="w-4 h-4" />
+            Resumes
+            {resumes.length > 0 && (
+              <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">
+                {resumes.length}
+              </span>
+            )}
+          </button>
+          <button
+            onClick={() => setTab('letters')}
+            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
+              tab === 'letters'
+                ? 'bg-background text-foreground shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <Mail className="w-4 h-4" />
+            Cover Letters
+            {letters.length > 0 && (
+              <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">
+                {letters.length}
+              </span>
+            )}
+          </button>
         </div>
 
         <div className="grid gap-4">
@@ -74,7 +147,8 @@ const WorkspaceEntry = () => {
           ))}
         </div>
 
-        {resumes.length > 0 && (
+        {/* Recent resumes */}
+        {tab === 'resumes' && resumes.length > 0 && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -101,6 +175,41 @@ const WorkspaceEntry = () => {
                   <div className="text-xs text-muted-foreground shrink-0 text-right">
                     <div>{new Date(resume.lastEdited).toLocaleDateString()}</div>
                     <div>{new Date(resume.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Recent cover letters */}
+        {tab === 'letters' && letters.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+            className="mt-12"
+          >
+            <h3 className="text-muted-foreground text-sm font-medium mb-4 uppercase tracking-wider">
+              Recent cover letters
+            </h3>
+            <div className="grid gap-3">
+              {letters.slice(0, 5).map((letter) => (
+                <button
+                  key={letter.id}
+                  onClick={() => handleOpenExistingLetter(letter.id)}
+                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left"
+                >
+                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="font-medium text-foreground truncate">{letter.title}</div>
+                    {letter.companyName && (
+                      <div className="text-sm text-muted-foreground truncate">{letter.companyName}</div>
+                    )}
+                  </div>
+                  <div className="text-xs text-muted-foreground shrink-0 text-right">
+                    <div>{new Date(letter.lastEdited).toLocaleDateString()}</div>
+                    <div>{new Date(letter.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
                 </button>
               ))}
