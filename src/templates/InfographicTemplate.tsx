@@ -15,7 +15,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
         <div data-section="profile" className={`mb-6 ${sectionClass}`}>
           <div className="flex items-center gap-4">
             {profile.photo && (
-              <img src={profile.photo} alt={profile.name} className="w-16 h-16 rounded-full object-cover shrink-0 ring-4" style={{ ringColor: 'hsl(243, 75%, 59%)' }} />
+              <img src={profile.photo} alt={profile.name} className="w-16 h-16 rounded-full object-cover shrink-0 ring-4 ring-accent" />
             )}
             <div>
               <h2 className="text-3xl font-bold tracking-tight">{profile.name}</h2>

@@ -61,7 +61,7 @@ export interface CustomSection {
   content: string;
 }
 
-export type TemplateId = 'minimal' | 'professional' | 'modern' | 'compact' | 'editorial' | 'brutalist';
+export type TemplateId = 'minimal' | 'professional' | 'modern' | 'brutalist' | 'compact' | 'editorial' | 'executive' | 'creative' | 'academic' | 'tech' | 'elegant' | 'infographic' | 'classic';
 
 export interface Resume {
   id: string;
