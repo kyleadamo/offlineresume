@@ -1,3 +1,4 @@
+import React from 'react';
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay } from './LinkedInBadge';
 
