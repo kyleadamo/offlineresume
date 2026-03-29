@@ -120,6 +120,25 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">References</h3>
+        <div className="space-y-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-medium">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground"> · {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground"> at {ref.company}</span>}
+              <div className="text-muted-foreground">
+                {ref.email && <span>{ref.email}</span>}
+                {ref.email && ref.phone && <span> · </span>}
+                {ref.phone && <span>{ref.phone}</span>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
 
   return (

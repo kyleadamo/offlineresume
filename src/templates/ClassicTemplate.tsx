@@ -100,10 +100,22 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-bold uppercase text-center mb-2 border-b border-muted-foreground/30 pb-0.5">References</h3>
+        <div className="space-y-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-bold">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground">, {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground">, {ref.company}</span>}
+              <div className="text-muted-foreground">{[ref.email, ref.phone].filter(Boolean).join(' | ')}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
-
-  return (
-    <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Times New Roman', 'Source Serif 4', Georgia, serif" }}>
       {profile.name && (
         <div data-section="profile" className={`mb-5 text-center ${sectionClass}`}>
           <h2 className="text-2xl font-bold tracking-wide uppercase">{profile.name}</h2>

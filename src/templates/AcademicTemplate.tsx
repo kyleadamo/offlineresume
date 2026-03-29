@@ -103,10 +103,22 @@ const AcademicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
+        <h3 className="text-sm font-semibold mb-3 pb-1 border-b border-border">References</h3>
+        <div className="space-y-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-medium">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground">, {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground">, {ref.company}</span>}
+              <div className="text-muted-foreground">{[ref.email, ref.phone].filter(Boolean).join(' · ')}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
-
-  return (
-    <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>
       {profile.name && (
         <div data-section="profile" className={`mb-6 text-center ${sectionClass}`}>
           <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-2">Curriculum Vitae</p>

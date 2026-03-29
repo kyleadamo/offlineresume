@@ -119,12 +119,22 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">References</h3>
+        <div className="space-y-2 font-sans">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-semibold">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground"> — {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground">, {ref.company}</span>}
+              <div className="text-muted-foreground">{[ref.email, ref.phone].filter(Boolean).join(' | ')}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
-
-  return (
-    <div className="font-serif text-foreground text-sm leading-relaxed">
-      {profile.name && (
-        <div data-section="profile" className={`text-center mb-6 pb-4 border-b-2 border-foreground ${sectionClass}`}>
           {profile.photo && (
             <img src={profile.photo} alt={profile.name} className="w-20 h-20 rounded-full object-cover mx-auto mb-3 border-2 border-foreground" />
           )}

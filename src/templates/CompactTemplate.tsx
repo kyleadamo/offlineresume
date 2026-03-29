@@ -93,9 +93,22 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-3 ${sectionClass}`}>
+        <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-0.5">References</h3>
+        <div className="space-y-1.5">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-[10px]">
+              <span className="font-semibold">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground"> · {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground">, {ref.company}</span>}
+              <div className="text-muted-foreground">{[ref.email, ref.phone].filter(Boolean).join(' · ')}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
-
-  const sidebarSections: Record<string, () => React.ReactNode> = {
     skills: () => skills.length > 0 ? (
       <div key="skills" data-section="skills" className={`mb-3 ${sectionClass}`}>
         <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-0.5">Skills</h3>

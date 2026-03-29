@@ -116,15 +116,27 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">References</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="border border-border rounded-lg p-3 flex items-start gap-3">
+              {ref.photo && <img src={ref.photo} alt={ref.name} className="w-10 h-10 rounded-full object-cover shrink-0" />}
+              <div className="min-w-0">
+                <p className="font-semibold text-xs truncate">{ref.name}</p>
+                {(ref.title || ref.company) && (
+                  <p className="text-[11px] text-muted-foreground truncate">{[ref.title, ref.company].filter(Boolean).join(' @ ')}</p>
+                )}
+                {ref.email && <p className="text-[11px] text-muted-foreground truncate">{ref.email}</p>}
+                {ref.phone && <p className="text-[11px] text-muted-foreground">{ref.phone}</p>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
-
-  return (
-    <div className="font-sans text-foreground text-sm leading-relaxed">
-      {profile.name && (
-        <div data-section="profile" className={`mb-6 ${sectionClass}`}>
-          <div className="flex items-center gap-4">
-            {profile.photo && (
-              <img src={profile.photo} alt={profile.name} className="w-16 h-16 rounded-lg object-cover shrink-0" />
             )}
             <div>
               <div className="w-12 h-1 bg-accent rounded-full mb-3" />

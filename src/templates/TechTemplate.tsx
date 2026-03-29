@@ -113,10 +113,22 @@ const TechTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-0.5 rounded">references</h3>
+        <div className="space-y-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-bold">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground"> | {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground"> | {ref.company}</span>}
+              <div className="text-muted-foreground">{[ref.email, ref.phone].filter(Boolean).join(' | ')}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
-
-  return (
-    <div className="font-mono text-foreground text-sm leading-relaxed">
       {profile.name && (
         <div data-section="profile" className={`mb-6 ${sectionClass}`}>
           <div className="flex items-center gap-4">
