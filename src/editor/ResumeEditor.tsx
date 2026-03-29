@@ -5,7 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Plus, Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
-import { ExperienceItem, EducationItem, SkillCategory, ProjectItem } from '@/schema/resume';
+import { ExperienceItem, EducationItem, SkillCategory, ProjectItem, normalizeSkill, SkillItem } from '@/schema/resume';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect, useCallback } from 'react';
@@ -448,6 +448,28 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
     onUpdate({ skills: items.filter((item) => item.id !== id) });
   };
 
+  const updateSkill = (catId: string, skillIndex: number, changes: Partial<SkillItem>) => {
+    const cat = items.find((c) => c.id === catId);
+    if (!cat) return;
+    const normalized = cat.skills.map(normalizeSkill);
+    normalized[skillIndex] = { ...normalized[skillIndex], ...changes };
+    updateCategory(catId, { skills: normalized });
+  };
+
+  const removeSkill = (catId: string, skillIndex: number) => {
+    const cat = items.find((c) => c.id === catId);
+    if (!cat) return;
+    const normalized = cat.skills.map(normalizeSkill).filter((_, i) => i !== skillIndex);
+    updateCategory(catId, { skills: normalized });
+  };
+
+  const addSkill = (catId: string) => {
+    const cat = items.find((c) => c.id === catId);
+    if (!cat) return;
+    const normalized = [...cat.skills.map(normalizeSkill), { name: '', level: 75 }];
+    updateCategory(catId, { skills: normalized });
+  };
+
   return (
     <div className="space-y-4">
       <SortableList
@@ -471,11 +493,40 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
-            <Input
-              value={cat.skills.join(', ')}
-              onChange={(e) => updateCategory(cat.id, { skills: e.target.value.split(',').map((s) => s.trim()).filter(Boolean) })}
-              placeholder="Skill 1, Skill 2, Skill 3..."
-            />
+            <div className="space-y-2">
+              {cat.skills.map((rawSkill, i) => {
+                const skill = normalizeSkill(rawSkill);
+                return (
+                  <div key={i} className="flex items-center gap-2">
+                    <Input
+                      value={skill.name}
+                      onChange={(e) => updateSkill(cat.id, i, { name: e.target.value })}
+                      placeholder="Skill name"
+                      className="flex-1"
+                    />
+                    <Input
+                      type="number"
+                      min={0}
+                      max={100}
+                      value={skill.level ?? 75}
+                      onChange={(e) => updateSkill(cat.id, i, { level: Math.min(100, Math.max(0, parseInt(e.target.value) || 0)) })}
+                      className="w-16 text-center"
+                      title="Proficiency %"
+                    />
+                    <span className="text-xs text-muted-foreground">%</span>
+                    <button onClick={() => removeSkill(cat.id, i)} className="text-muted-foreground hover:text-destructive transition-colors">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              })}
+              <button
+                onClick={() => addSkill(cat.id)}
+                className="text-xs text-muted-foreground hover:text-accent transition-colors"
+              >
+                + Add skill
+              </button>
+            </div>
           </div>
         )}
       />

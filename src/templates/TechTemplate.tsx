@@ -127,9 +127,9 @@ const TechTemplate = ({ resume }: TemplateProps) => {
               <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-[10px] font-bold uppercase block mb-1">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
-                  {cat.skills.map((skill, i) => (
+                  {cat.skills.map((rawSkill, i) => (
                     <span key={i} className="bg-secondary text-foreground text-[11px] px-2 py-0.5 rounded border border-border font-medium">
-                      {skill}
+                      {typeof rawSkill === 'string' ? rawSkill : rawSkill.name}
                     </span>
                   ))}
                 </div>

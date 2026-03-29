@@ -48,10 +48,20 @@ export interface ProjectItem {
   hidden?: boolean;
 }
 
+export interface SkillItem {
+  name: string;
+  level?: number; // 0-100 percentage
+}
+
+export function normalizeSkill(s: string | SkillItem): SkillItem {
+  if (typeof s === 'string') return { name: s, level: 75 };
+  return s;
+}
+
 export interface SkillCategory {
   id: string;
   category: string;
-  skills: string[];
+  skills: (string | SkillItem)[];
   hidden?: boolean;
 }
 

@@ -139,9 +139,9 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
                   <div key={cat.id} data-pdf-section>
                     {cat.category && <span className="text-[10px] font-semibold block mb-0.5">{cat.category}</span>}
                     <div className="flex flex-wrap gap-1">
-                      {cat.skills.map((skill, i) => (
+                      {cat.skills.map((rawSkill, i) => (
                         <span key={i} className="bg-secondary text-foreground text-[10px] px-1.5 py-0.5 rounded">
-                          {skill}
+                          {typeof rawSkill === 'string' ? rawSkill : rawSkill.name}
                         </span>
                       ))}
                     </div>

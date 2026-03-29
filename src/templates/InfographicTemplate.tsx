@@ -1,4 +1,4 @@
-import { Resume } from '@/schema/resume';
+import { Resume, normalizeSkill } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
@@ -58,21 +58,31 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
             {skills.map((cat) => (
               <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-semibold block mb-1.5">{cat.category}</span>}
-                <div className="space-y-1.5">
-                  {cat.skills.map((skill, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="text-xs w-20 shrink-0 truncate">{skill}</span>
-                      <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                        <div
-                          className="h-full rounded-full"
-                          style={{
-                            width: `${Math.max(40, 90 - i * 8)}%`,
-                            backgroundColor: 'hsl(243, 75%, 59%)',
-                          }}
-                        />
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex flex-wrap gap-2">
+                  {cat.skills.map((rawSkill, i) => {
+                    const skill = normalizeSkill(rawSkill);
+                    const level = skill.level ?? 75;
+                    const r = 8;
+                    const circ = 2 * Math.PI * r;
+                    const offset = circ - (level / 100) * circ;
+                    return (
+                      <span key={i} className="bg-secondary rounded-full px-2.5 py-1 inline-flex items-center gap-1.5 text-xs">
+                        <svg width="20" height="20" className="shrink-0 -rotate-90">
+                          <circle cx="10" cy="10" r={r} fill="transparent" stroke="hsl(var(--muted))" strokeWidth="2.5" />
+                          <circle
+                            cx="10" cy="10" r={r}
+                            fill="transparent"
+                            stroke="hsl(243, 75%, 59%)"
+                            strokeWidth="2.5"
+                            strokeDasharray={circ}
+                            strokeDashoffset={offset}
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <span>{skill.name}</span>
+                      </span>
+                    );
+                  })}
                 </div>
               </div>
             ))}

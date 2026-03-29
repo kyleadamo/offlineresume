@@ -120,7 +120,7 @@ const ExecutiveTemplate = ({ resume }: TemplateProps) => {
             {skills.map((cat) => (
               <React.Fragment key={cat.id}>
                 {cat.category ? <span className="text-xs font-semibold text-foreground shrink-0 text-right">{cat.category}:</span> : <span />}
-                <span className="text-xs text-muted-foreground">{cat.skills.join(' · ')}</span>
+                <span className="text-xs text-muted-foreground">{cat.skills.map(s => typeof s === 'string' ? s : s.name).join(' · ')}</span>
               </React.Fragment>
             ))}
           </div>

@@ -138,11 +138,14 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
               <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-black uppercase block mb-1.5">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
-                  {cat.skills.map((skill, i) => (
+                  {cat.skills.map((rawSkill, i) => {
+                    const skill = typeof rawSkill === 'string' ? rawSkill : rawSkill.name;
+                    return (
                     <span key={i} className="border-[2px] border-foreground text-foreground text-xs font-bold px-2 py-0.5 uppercase">
                       {skill}
                     </span>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             ))}
