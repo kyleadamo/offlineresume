@@ -36,17 +36,17 @@ const ResumeEditor = () => {
   const update = (changes: Partial<Resume>) => updateResume(activeResume.id, changes);
 
   return (
-    <div className="p-6 space-y-2 animate-fade-in">
+    <div className="p-6 space-y-1 animate-fade-in">
       <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
-        <AccordionItem value="profile" id="editor-section-profile">
-          <AccordionTrigger className="text-sm font-medium">Contact</AccordionTrigger>
+        <AccordionItem value="profile" id="editor-section-profile" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
+          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Contact</AccordionTrigger>
           <AccordionContent>
             <ProfileEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="summary" id="editor-section-summary">
-          <AccordionTrigger className="text-sm font-medium">Summary</AccordionTrigger>
+        <AccordionItem value="summary" id="editor-section-summary" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
+          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Summary</AccordionTrigger>
           <AccordionContent>
             <Textarea
               value={activeResume.summary}
@@ -58,29 +58,29 @@ const ResumeEditor = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="experience" id="editor-section-experience">
-          <AccordionTrigger className="text-sm font-medium">Experience</AccordionTrigger>
+        <AccordionItem value="experience" id="editor-section-experience" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
+          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Experience</AccordionTrigger>
           <AccordionContent>
             <ExperienceEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="education" id="editor-section-education">
-          <AccordionTrigger className="text-sm font-medium">Education</AccordionTrigger>
+        <AccordionItem value="education" id="editor-section-education" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
+          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Education</AccordionTrigger>
           <AccordionContent>
             <EducationEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="projects" id="editor-section-projects">
-          <AccordionTrigger className="text-sm font-medium">Projects</AccordionTrigger>
+        <AccordionItem value="projects" id="editor-section-projects" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
+          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Projects</AccordionTrigger>
           <AccordionContent>
             <ProjectsEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="skills" id="editor-section-skills">
-          <AccordionTrigger className="text-sm font-medium">Skills</AccordionTrigger>
+        <AccordionItem value="skills" id="editor-section-skills" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
+          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Skills</AccordionTrigger>
           <AccordionContent>
             <SkillsEditor resume={activeResume} onUpdate={update} />
           </AccordionContent>
