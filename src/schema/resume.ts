@@ -25,6 +25,7 @@ export interface ExperienceItem {
   startDate: string;
   endDate: string;
   bullets: string[];
+  hidden?: boolean;
 }
 
 export interface EducationItem {
