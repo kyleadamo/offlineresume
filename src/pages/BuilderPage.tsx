@@ -27,8 +27,10 @@ const BuilderPage = () => {
       <ResizablePanelGroup direction="horizontal" className="flex-1 overflow-hidden">
         {!editorCollapsed && (
           <>
-            <ResizablePanel defaultSize={40} minSize={25} maxSize={60} className="overflow-y-auto border-r border-border">
-              <ResumeEditor />
+            <ResizablePanel defaultSize={40} minSize={25} maxSize={60} className="border-r border-border overflow-hidden">
+              <div className="h-full overflow-y-auto">
+                <ResumeEditor />
+              </div>
             </ResizablePanel>
             <ResizableHandle withHandle />
           </>
