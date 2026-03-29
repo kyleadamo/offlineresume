@@ -95,8 +95,8 @@ const CoverLetterPreview = () => {
           {/* Sender info */}
           {(activeLetter.senderName || activeLetter.senderContact) && (
             <div style={{ textAlign: 'right', marginBottom: '2em', fontSize: '10pt' }}>
-              {activeLetter.senderName && <div style={{ fontWeight: 600 }}>{activeLetter.senderName}</div>}
-              {activeLetter.senderContact && <div style={{ color: '#555' }}>{activeLetter.senderContact}</div>}
+              {activeLetter.senderName && <div style={{ fontWeight: 600 }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.senderName) }} />}
+              {activeLetter.senderContact && <div style={{ color: '#555' }} dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.senderContact) }} />}
             </div>
           )}
 
