@@ -118,7 +118,7 @@ const ElegantTemplate = ({ resume }: TemplateProps) => {
             {skills.map((cat) => (
               <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-medium text-foreground">{cat.category}: </span>}
-                <span className="text-xs text-muted-foreground">{cat.skills.join(' · ')}</span>
+                <span className="text-xs text-muted-foreground">{cat.skills.map(s => typeof s === 'string' ? s : s.name).join(' · ')}</span>
               </div>
             ))}
           </div>

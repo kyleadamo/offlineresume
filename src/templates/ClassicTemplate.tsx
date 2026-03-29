@@ -110,7 +110,7 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
             {skills.map((cat) => (
               <div key={cat.id} data-pdf-section className="text-xs">
                 {cat.category && <span className="font-bold">{cat.category}: </span>}
-                <span className="text-muted-foreground">{cat.skills.join(', ')}</span>
+                <span className="text-muted-foreground">{cat.skills.map(s => typeof s === 'string' ? s : s.name).join(', ')}</span>
               </div>
             ))}
           </div>
