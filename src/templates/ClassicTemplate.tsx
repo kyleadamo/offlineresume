@@ -1,5 +1,5 @@
 import { Resume } from '@/schema/resume';
-import { LinkedInDisplay } from './LinkedInBadge';
+import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
   resume: Resume;
@@ -23,7 +23,9 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
             {profile.location && <span>{profile.location}</span>}
             {profile.linkedin && <span>|</span>}
             <LinkedInDisplay profile={profile} />
-            {profile.links?.filter(link => !(profile.linkedin && link.label?.toLowerCase() === 'linkedin')).map((link) => (
+            {profile.website && <span>|</span>}
+            <WebsiteDisplay profile={profile} />
+            {profile.links?.filter(link => !(profile.linkedin && link.label?.toLowerCase() === 'linkedin') && !(profile.website && ['website', 'personal site', 'portfolio'].includes(link.label?.toLowerCase()))).map((link) => (
               <><span key={`sep-${link.id}`}>|</span><a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline">{link.label}</a></>
             ))}
           </div>

@@ -1,5 +1,5 @@
 import { Resume } from '@/schema/resume';
-import { LinkedInDisplay } from './LinkedInBadge';
+import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
   resume: Resume;
@@ -25,6 +25,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                 {profile.phone && <span>{profile.phone}</span>}
                 {profile.location && <span>{profile.location}</span>}
                 <LinkedInDisplay profile={profile} />
+                <WebsiteDisplay profile={profile} />
               </div>
             </div>
           </div>
