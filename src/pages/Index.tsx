@@ -98,7 +98,7 @@ const WorkspaceEntry = () => {
         <div className="text-center mb-12">
           <h1 className="text-foreground mb-3">OfflineResume</h1>
           <p className="text-muted-foreground text-lg">
-            Start with what you have. We'll shape it from there.
+            Your resume, stored locally. No accounts. No cloud storage.
           </p>
         </div>
 
