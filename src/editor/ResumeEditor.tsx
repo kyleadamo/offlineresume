@@ -71,6 +71,13 @@ const ResumeEditor = () => {
           </AccordionContent>
         </AccordionItem>
 
+        <AccordionItem value="projects" id="editor-section-projects">
+          <AccordionTrigger className="text-sm font-medium">Projects</AccordionTrigger>
+          <AccordionContent>
+            <ProjectsEditor resume={activeResume} onUpdate={update} />
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="skills" id="editor-section-skills">
           <AccordionTrigger className="text-sm font-medium">Skills</AccordionTrigger>
           <AccordionContent>
