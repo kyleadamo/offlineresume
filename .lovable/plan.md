@@ -1,30 +1,26 @@
 
 
-## Fix LinkedIn Display: Remove Extra Text & Fix Icon Alignment
+## Fix Skills Alignment in Executive Template
 
-### Changes — `src/templates/LinkedInBadge.tsx`
+### Problem
+The skills section uses `flex gap-2` which doesn't align the category labels and skill lists into consistent columns. When category names vary in length, the skills text starts at different horizontal positions, creating a ragged layout (visible in the screenshot).
 
-**1. Full URL mode** — Currently shows icon + URL text. No "LinkedIn" label exists in code, so this should be correct. Will verify the rendered output matches. If the user is seeing stale content, the rebuild will fix it.
+### Change — `src/templates/ExecutiveTemplate.tsx` (lines 114-118)
 
-**2. Icon-only mode — fix vertical alignment**
-The icon-only `<a>` tag currently has no flex alignment. It needs `inline-flex items-baseline` so the icon sits on the text baseline of sibling elements in the contact row.
+Switch from `flex gap-2` to a CSS grid with a fixed left column for category labels, so all skill lists align at the same horizontal position.
 
 ```tsx
-// Icon-only mode: add inline-flex + items-baseline + vertical alignment tweak
-<a href={url} target="_blank" rel="noopener noreferrer" 
-   className={className || "inline-flex items-baseline hover:opacity-70"} title="LinkedIn">
-  <LinkedInIcon className="w-3 h-3 relative top-[0.5px]" />
-</a>
+// Change the container from space-y-2 to grid layout
+<div className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+  {skills.map((cat) => (
+    <React.Fragment key={cat.id}>
+      {cat.category && <span className="text-xs font-semibold text-foreground shrink-0 text-right">{cat.category}:</span>}
+      {!cat.category && <span />}
+      <span className="text-xs text-muted-foreground">{cat.skills.join(' · ')}</span>
+    </React.Fragment>
+  ))}
+</div>
 ```
 
-**3. Full URL mode: ensure baseline alignment too**
-```tsx
-<a href={url} target="_blank" rel="noopener noreferrer" 
-   className={className || "inline-flex items-baseline gap-1 hover:underline"}>
-  <LinkedInIcon className="w-3 h-3 shrink-0 relative top-[0.5px]" />
-  <span>{profile.linkedin.replace(/^https?:\/\//, '')}</span>
-</a>
-```
-
-Single file change. The `relative top-[0.5px]` nudges the SVG icon down slightly to sit flush with text baselines.
+The `grid-cols-[auto_1fr]` makes the left column auto-size to the widest category label, and all skill lists start at the same position. Category labels are right-aligned for a clean executive look matching the screenshot.
 
