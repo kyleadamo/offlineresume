@@ -1,19 +1,19 @@
 
 
-## Add Visual Contrast to Editor Sections
+## Fix Section Spacing in Minimal Template
 
 ### Problem
-The accordion sections (Contact, Summary, Experience, etc.) blend together with minimal visual separation — just thin borders from the default `AccordionItem`.
+The projects and skills sections lack the `mb-5` bottom margin that other sections (summary, experience, education) have, causing inconsistent vertical spacing.
 
-### Fix — `src/editor/ResumeEditor.tsx`
+### Fix — `src/templates/MinimalTemplate.tsx`
 
-1. **Style each `AccordionItem`** with a background, border, rounded corners, and padding to create card-like sections:
-   - Add `className="bg-secondary/30 border border-border rounded-lg mb-3 px-4"` to each `AccordionItem`
+Add `mb-5` to the projects and skills section wrappers:
 
-2. **Boost the trigger text** — make section headers larger and bolder:
-   - Change `className="text-sm font-medium"` → `className="text-sm font-semibold uppercase tracking-wide text-foreground"`
+- Line 108: `className={sectionClass}` → `className={\`mb-5 ${sectionClass}\`}`
+- Line 128: `className={sectionClass}` → `className={\`mb-5 ${sectionClass}\`}`
 
-3. **Increase outer spacing** — change `space-y-2` → `space-y-1` on the wrapper (the `mb-3` on items handles spacing)
+This matches the pattern already used by the summary (`mb-5`), experience (`mb-5`), and education (`mb-5`) sections.
 
-Single file change: `src/templates/` files are untouched.
+### Files
+1. `src/templates/MinimalTemplate.tsx` — add `mb-5` to projects and skills sections
 
