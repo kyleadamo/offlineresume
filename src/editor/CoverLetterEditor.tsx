@@ -27,10 +27,12 @@ const CoverLetterEditor = () => {
           </div>
           <div>
             <Label className="text-xs text-muted-foreground">Contact Info</Label>
-            <Input
+            <Textarea
               value={activeLetter.senderContact}
               onChange={(e) => update({ senderContact: e.target.value })}
-              placeholder="jane@example.com · (555) 123-4567"
+              placeholder={"jane@example.com\n(555) 123-4567\n123 Main St, City"}
+              rows={3}
+              className="resize-none text-sm"
             />
           </div>
         </div>
