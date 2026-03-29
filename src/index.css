@@ -142,7 +142,7 @@
   }
 
   @page {
-    size: A4;
+    size: letter;
     margin: 12mm 16mm;
   }
 
