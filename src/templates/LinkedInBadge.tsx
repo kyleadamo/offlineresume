@@ -18,8 +18,10 @@ export const LinkedInDisplay = ({ profile, className }: Props) => {
 
   if (profile.linkedinDisplayFull) {
     return (
-      <a href={url} target="_blank" rel="noopener noreferrer" className={className || "hover:underline"}>
-        {profile.linkedin.replace(/^https?:\/\//, '')}
+      <a href={url} target="_blank" rel="noopener noreferrer" 
+         className={className || "inline-flex items-center gap-1 hover:underline"}>
+        <LinkedInIcon className="w-3 h-3 shrink-0" />
+        <span>{profile.linkedin.replace(/^https?:\/\//, '')}</span>
       </a>
     );
   }
