@@ -79,6 +79,20 @@ export interface CustomSection {
   content: string;
 }
 
+export interface SectionConfig {
+  id: string;
+  label: string;
+  visible: boolean;
+}
+
+export const DEFAULT_SECTION_ORDER: SectionConfig[] = [
+  { id: 'summary', label: 'Summary', visible: true },
+  { id: 'experience', label: 'Experience', visible: true },
+  { id: 'education', label: 'Education', visible: true },
+  { id: 'projects', label: 'Projects', visible: true },
+  { id: 'skills', label: 'Skills', visible: true },
+];
+
 export type TemplateId = 'minimal' | 'professional' | 'modern' | 'brutalist' | 'compact' | 'editorial' | 'executive' | 'creative' | 'academic' | 'tech' | 'elegant' | 'infographic' | 'classic';
 
 export interface Resume {
