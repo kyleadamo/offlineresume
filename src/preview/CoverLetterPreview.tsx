@@ -108,7 +108,7 @@ const CoverLetterPreview = () => {
           )}
 
           {/* Recipient block */}
-          {(activeLetter.recipientName || activeLetter.companyName) && (
+          {(activeLetter.recipientName || activeLetter.recipientTitle || activeLetter.companyName || activeLetter.companyAddress) && (
             <div style={{ marginBottom: '1.5em' }}>
               {activeLetter.recipientName && <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.recipientName) }} />}
               {activeLetter.recipientTitle && <div dangerouslySetInnerHTML={{ __html: renderInlineMarkdown(activeLetter.recipientTitle) }} />}
