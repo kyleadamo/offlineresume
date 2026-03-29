@@ -9,7 +9,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const ModernTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects } = resume;
+  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects, references = [] } = resume;
   const experience = allExperience.filter(e => !e.hidden);
   const education = allEducation.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
