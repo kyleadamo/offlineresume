@@ -96,12 +96,12 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
       <!DOCTYPE html>
       <html>
         <head>
-          <title>${resume.title || 'Resume'}</title>
+          <title></title>
           ${styles}
           <style>
             @page {
               size: ${currentPage.cssSize};
-              margin: 12mm 16mm;
+              margin: 12mm 16mm 16mm 16mm;
             }
             html, body {
               margin: 0;
@@ -129,10 +129,20 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
             [data-pdf-section] {
               break-inside: avoid;
             }
+            .print-footer {
+              position: fixed;
+              bottom: 0;
+              left: 0;
+              right: 0;
+              font-size: 8pt;
+              color: #666;
+              padding: 0;
+            }
           </style>
         </head>
         <body>
           <div class="resume-print-content">${content}</div>
+          <div class="print-footer">${resume.profile.email || ''}</div>
         </body>
       </html>
     `);
