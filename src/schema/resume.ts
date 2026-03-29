@@ -79,6 +79,16 @@ export interface CustomSection {
   content: string;
 }
 
+export interface ReferenceItem {
+  id: string;
+  name: string;
+  photo: string;
+  company: string;
+  title: string;
+  phone: string;
+  email: string;
+}
+
 export interface SectionConfig {
   id: string;
   label: string;
