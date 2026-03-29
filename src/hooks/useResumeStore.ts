@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Resume, createBlankResume } from '@/schema/resume';
+import { Resume, createBlankResume, DEFAULT_SECTION_ORDER } from '@/schema/resume';
 
 const STORAGE_KEY = 'resume-studio-resumes';
 const ACTIVE_KEY = 'resume-studio-active';
@@ -10,7 +10,10 @@ function loadResumes(): Resume[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed;
+    return parsed.map((r: Resume) => ({
+      ...r,
+      sectionOrder: r.sectionOrder ?? DEFAULT_SECTION_ORDER.map(s => ({ ...s })),
+    }));
   } catch {
     return [];
   }

@@ -1,5 +1,5 @@
 import { useResume } from '@/hooks/ResumeContext';
-import { Resume } from '@/schema/resume';
+import { Resume, SectionConfig, DEFAULT_SECTION_ORDER } from '@/schema/resume';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,37 @@ import { useState, useEffect, useCallback } from 'react';
 import { SortableList, toStringItems, fromStringItems, type StringItem } from '@/components/SortableList';
 
 const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills'];
+
+const sectionEditorMap: Record<string, { label: string; component: (resume: Resume, update: (c: Partial<Resume>) => void) => React.ReactNode }> = {
+  summary: {
+    label: 'Summary',
+    component: (resume, update) => (
+      <Textarea
+        value={resume.summary}
+        onChange={(e) => update({ summary: e.target.value })}
+        placeholder="Write a brief professional summary..."
+        rows={4}
+        className="resize-none"
+      />
+    ),
+  },
+  experience: {
+    label: 'Experience',
+    component: (resume, update) => <ExperienceEditor resume={resume} onUpdate={update} />,
+  },
+  education: {
+    label: 'Education',
+    component: (resume, update) => <EducationEditor resume={resume} onUpdate={update} />,
+  },
+  projects: {
+    label: 'Projects',
+    component: (resume, update) => <ProjectsEditor resume={resume} onUpdate={update} />,
+  },
+  skills: {
+    label: 'Skills',
+    component: (resume, update) => <SkillsEditor resume={resume} onUpdate={update} />,
+  },
+};
 
 const ResumeEditor = () => {
   const { activeResume, updateResume } = useResume();
@@ -34,9 +65,45 @@ const ResumeEditor = () => {
   if (!activeResume) return null;
 
   const update = (changes: Partial<Resume>) => updateResume(activeResume.id, changes);
+  const sectionOrder = activeResume.sectionOrder ?? DEFAULT_SECTION_ORDER;
+
+  const handleSectionReorder = (reordered: SectionConfig[]) => {
+    update({ sectionOrder: reordered });
+  };
+
+  const toggleSectionVisibility = (sectionId: string) => {
+    update({
+      sectionOrder: sectionOrder.map((s) =>
+        s.id === sectionId ? { ...s, visible: !s.visible } : s
+      ),
+    });
+  };
 
   return (
-    <div className="p-6 space-y-1 animate-fade-in">
+    <div className="p-6 space-y-4 animate-fade-in">
+      {/* Section order & visibility panel */}
+      <div className="bg-secondary/30 border border-border rounded-lg px-4 py-3">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Section Order</p>
+        <SortableList
+          items={sectionOrder}
+          onReorder={handleSectionReorder}
+          className="space-y-1"
+          renderItem={(section, dragHandle) => (
+            <div className="flex items-center gap-2 py-1">
+              {dragHandle}
+              <span className={`text-sm flex-1 ${section.visible ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
+                {section.label}
+              </span>
+              <Switch
+                checked={section.visible}
+                onCheckedChange={() => toggleSectionVisibility(section.id)}
+                className="scale-75"
+              />
+            </div>
+          )}
+        />
+      </div>
+
       <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
         <AccordionItem value="profile" id="editor-section-profile" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
           <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Contact</AccordionTrigger>
@@ -45,46 +112,26 @@ const ResumeEditor = () => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="summary" id="editor-section-summary" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
-          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Summary</AccordionTrigger>
-          <AccordionContent>
-            <Textarea
-              value={activeResume.summary}
-              onChange={(e) => update({ summary: e.target.value })}
-              placeholder="Write a brief professional summary..."
-              rows={4}
-              className="resize-none"
-            />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="experience" id="editor-section-experience" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
-          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Experience</AccordionTrigger>
-          <AccordionContent>
-            <ExperienceEditor resume={activeResume} onUpdate={update} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="education" id="editor-section-education" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
-          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Education</AccordionTrigger>
-          <AccordionContent>
-            <EducationEditor resume={activeResume} onUpdate={update} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="projects" id="editor-section-projects" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
-          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Projects</AccordionTrigger>
-          <AccordionContent>
-            <ProjectsEditor resume={activeResume} onUpdate={update} />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="skills" id="editor-section-skills" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
-          <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Skills</AccordionTrigger>
-          <AccordionContent>
-            <SkillsEditor resume={activeResume} onUpdate={update} />
-          </AccordionContent>
-        </AccordionItem>
+        {sectionOrder.map((section) => {
+          const editor = sectionEditorMap[section.id];
+          if (!editor) return null;
+          return (
+            <AccordionItem
+              key={section.id}
+              value={section.id}
+              id={`editor-section-${section.id}`}
+              className={`bg-secondary/30 border border-border rounded-lg mb-3 px-4 ${!section.visible ? 'opacity-40' : ''}`}
+            >
+              <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">
+                {editor.label}
+                {!section.visible && <span className="text-xs font-normal normal-case tracking-normal text-muted-foreground ml-2">(hidden)</span>}
+              </AccordionTrigger>
+              <AccordionContent>
+                {editor.component(activeResume, update)}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
     </div>
   );
