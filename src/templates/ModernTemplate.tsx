@@ -1,4 +1,5 @@
 import { Resume } from '@/schema/resume';
+import { LinkedInDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
   resume: Resume;
@@ -27,6 +28,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
                 {profile.email && <span className="bg-secondary px-2 py-0.5 rounded">{profile.email}</span>}
                 {profile.phone && <span className="bg-secondary px-2 py-0.5 rounded">{profile.phone}</span>}
                 {profile.location && <span className="bg-secondary px-2 py-0.5 rounded">{profile.location}</span>}
+                <LinkedInDisplay profile={profile} className="bg-secondary px-2 py-0.5 rounded hover:underline" />
               </div>
             </div>
           </div>
