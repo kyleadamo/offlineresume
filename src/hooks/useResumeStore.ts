@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Resume, createBlankResume } from '@/schema/resume';
+import { Resume, createBlankResume, DEFAULT_SECTION_ORDER } from '@/schema/resume';
 
 const STORAGE_KEY = 'resume-studio-resumes';
 const ACTIVE_KEY = 'resume-studio-active';
