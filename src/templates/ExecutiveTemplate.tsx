@@ -1,6 +1,6 @@
 import React from 'react';
 import { Resume } from '@/schema/resume';
-import { LinkedInDisplay } from './LinkedInBadge';
+import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
   resume: Resume;
