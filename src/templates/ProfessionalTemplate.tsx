@@ -40,7 +40,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
-              <div key={exp.id}>
+              <div key={exp.id} data-pdf-section>
                 <div className="flex justify-between items-baseline">
                   <div>
                     <span className="font-semibold font-sans">{exp.role}</span>
@@ -77,7 +77,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
-              <div key={edu.id} className="flex justify-between items-baseline">
+              <div key={edu.id} data-pdf-section className="flex justify-between items-baseline">
                 <div className="font-sans">
                   <span className="font-semibold">{edu.institution}</span>
                   {(edu.degree || edu.field) && (
@@ -100,7 +100,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-sm font-semibold uppercase tracking-wider mb-3 font-sans border-b border-border pb-1">Skills</h3>
           <div className="space-y-2 font-sans">
             {skills.map((cat) => (
-              <div key={cat.id}>
+              <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-medium text-muted-foreground block mb-1">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
                   {cat.skills.map((skill, i) => (

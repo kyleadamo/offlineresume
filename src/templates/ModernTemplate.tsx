@@ -46,7 +46,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Experience</h3>
           <div className="space-y-4">
             {experience.map((exp) => (
-              <div key={exp.id} className="pl-4 border-l border-border">
+              <div key={exp.id} data-pdf-section className="pl-4 border-l border-border">
                 <div>
                   <span className="font-semibold">{exp.role}</span>
                   {exp.company && (exp.companyUrl ? (
@@ -81,7 +81,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
-              <div key={edu.id} className="pl-4 border-l border-border">
+              <div key={edu.id} data-pdf-section className="pl-4 border-l border-border">
                 <span className="font-semibold">{edu.institution}</span>
                 {(edu.degree || edu.field) && (
                   <span className="text-muted-foreground"> · {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>
@@ -102,7 +102,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">Skills</h3>
           <div className="space-y-2">
             {skills.map((cat) => (
-              <div key={cat.id}>
+              <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-medium text-muted-foreground block mb-1">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
                   {cat.skills.map((skill, i) => (

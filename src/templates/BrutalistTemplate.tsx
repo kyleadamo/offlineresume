@@ -50,7 +50,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">Experience</h3>
           <div className="space-y-3">
             {experience.map((exp) => (
-              <div key={exp.id} className="border-[2px] border-foreground p-3">
+              <div key={exp.id} data-pdf-section className="border-[2px] border-foreground p-3">
                 <div className="flex justify-between items-baseline flex-wrap gap-2">
                   <div>
                     <span className="font-black uppercase">{exp.role}</span>
@@ -87,7 +87,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">Education</h3>
           <div className="space-y-3">
             {education.map((edu) => (
-              <div key={edu.id} className="border-[2px] border-foreground p-3">
+              <div key={edu.id} data-pdf-section className="border-[2px] border-foreground p-3">
                 <span className="font-black uppercase">{edu.institution}</span>
                 {(edu.degree || edu.field) && (
                   <span className="text-muted-foreground"> // {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>
@@ -108,7 +108,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
           <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">Skills</h3>
           <div className="space-y-3">
             {skills.map((cat) => (
-              <div key={cat.id}>
+              <div key={cat.id} data-pdf-section>
                 {cat.category && <span className="text-xs font-black uppercase block mb-1.5">{cat.category}</span>}
                 <div className="flex flex-wrap gap-1.5">
                   {cat.skills.map((skill, i) => (
