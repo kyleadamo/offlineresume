@@ -578,4 +578,89 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
   );
 }
 
+function ReferencesEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Partial<Resume>) => void }) {
+  const items = resume.references ?? [];
+
+  const addItem = () => {
+    const newItem: ReferenceItem = {
+      id: crypto.randomUUID(),
+      name: '',
+      photo: '',
+      company: '',
+      title: '',
+      phone: '',
+      email: '',
+    };
+    onUpdate({ references: [...items, newItem] });
+  };
+
+  const updateItem = (id: string, changes: Partial<ReferenceItem>) => {
+    onUpdate({ references: items.map((item) => (item.id === id ? { ...item, ...changes } : item)) });
+  };
+
+  const removeItem = (id: string) => {
+    onUpdate({ references: items.filter((item) => item.id !== id) });
+  };
+
+  const handlePhotoUpload = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) return;
+    const reader = new FileReader();
+    reader.onload = () => updateItem(id, { photo: reader.result as string });
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="space-y-4">
+      <SortableList
+        items={items}
+        onReorder={(reordered) => onUpdate({ references: reordered })}
+        className="space-y-4"
+        renderItem={(item, dragHandle) => (
+          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+            <div className="flex items-start gap-2">
+              <div className="mt-2.5">{dragHandle}</div>
+              <div className="flex-1 space-y-3">
+                <div className="flex items-center gap-3">
+                  <label className="cursor-pointer block shrink-0">
+                    {item.photo ? (
+                      <img src={item.photo} alt={item.name} className="w-10 h-10 rounded-full object-cover border border-border" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-secondary border border-dashed border-border flex items-center justify-center text-muted-foreground text-[9px] text-center leading-tight">
+                        Photo
+                      </div>
+                    )}
+                    <input type="file" accept="image/*" onChange={(e) => handlePhotoUpload(item.id, e)} className="hidden" />
+                  </label>
+                  <Input value={item.name} onChange={(e) => updateItem(item.id, { name: e.target.value })} placeholder="Full name" className="flex-1" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input value={item.title} onChange={(e) => updateItem(item.id, { title: e.target.value })} placeholder="Job title" />
+                  <Input value={item.company} onChange={(e) => updateItem(item.id, { company: e.target.value })} placeholder="Company" />
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input value={item.email} onChange={(e) => updateItem(item.id, { email: e.target.value })} placeholder="Email" />
+                  <Input value={item.phone} onChange={(e) => updateItem(item.id, { phone: e.target.value })} placeholder="Phone" />
+                </div>
+                <Input
+                  value={item.photo?.startsWith('data:') ? '' : item.photo}
+                  onChange={(e) => updateItem(item.id, { photo: e.target.value })}
+                  placeholder="Or paste photo URL..."
+                />
+              </div>
+              <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors mt-2">
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        )}
+      />
+      <Button variant="outline" size="sm" onClick={addItem} className="w-full">
+        <Plus className="w-4 h-4 mr-2" /> Add reference
+      </Button>
+    </div>
+  );
+}
+
 export default ResumeEditor;
