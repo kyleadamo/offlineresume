@@ -45,7 +45,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                   <div>
                     <span className="font-medium">{exp.role}</span>
                     {exp.company && (exp.companyUrl ? (
-                      <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground underline"> · {exp.company}</a>
+                      <><span className="text-muted-foreground"> · </span><a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground underline">{exp.company}</a></>
                     ) : (
                       <span className="text-muted-foreground"> · {exp.company}</span>
                     ))}

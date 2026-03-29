@@ -45,7 +45,7 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
                   <div>
                     <span className="font-semibold font-sans">{exp.role}</span>
                     {exp.company && (exp.companyUrl ? (
-                      <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground font-sans hover:text-foreground underline"> | {exp.company}</a>
+                      <><span className="text-muted-foreground font-sans"> | </span><a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-muted-foreground font-sans hover:text-foreground underline">{exp.company}</a></>
                     ) : (
                       <span className="text-muted-foreground font-sans"> | {exp.company}</span>
                     ))}
