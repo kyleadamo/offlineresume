@@ -12,6 +12,8 @@ export interface ResumeProfile {
   photo: string;
   linkedin: string;
   linkedinDisplayFull: boolean;
+  website: string;
+  websiteDisplayFull: boolean;
   links: ResumeLink[];
 }
 
