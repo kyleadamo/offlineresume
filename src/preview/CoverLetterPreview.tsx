@@ -151,22 +151,31 @@ function DownloadPdfButton({
 }) {
   const handleDownloadPDF = useCallback(() => {
     if (!printRef.current) return;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
 
     const content = printRef.current.innerHTML;
     const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
       .map((el) => el.outerHTML)
       .join('\n');
 
-    printWindow.document.write(`
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.left = '-9999px';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!doc) { document.body.removeChild(iframe); return; }
+
+    doc.open();
+    doc.write(`
       <!DOCTYPE html>
       <html>
         <head>
           <title></title>
+          <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
           ${styles}
           <style>
-            @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap');
             @page {
               size: ${currentPage.cssSize};
               margin: 16mm 20mm;
@@ -178,7 +187,7 @@ function DownloadPdfButton({
             }
             body {
               width: ${currentPage.widthMm}mm;
-              font-family: 'Source Serif 4', Georgia, serif;
+              font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
               font-size: 11pt;
               line-height: 1.6;
               color: #1a1a1a;
@@ -191,9 +200,20 @@ function DownloadPdfButton({
         </body>
       </html>
     `);
+    doc.close();
 
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    const tryPrint = () => {
+      const win = iframe.contentWindow;
+      if (!win) return;
+      const fontsReady = win.document.fonts?.ready || Promise.resolve();
+      fontsReady.then(() => {
+        win.focus();
+        win.print();
+        setTimeout(() => document.body.removeChild(iframe), 1000);
+      });
+    };
+
+    iframe.onload = tryPrint;
   }, [printRef, letter, currentPage]);
 
   return (
