@@ -118,6 +118,7 @@ const AcademicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+  };
 
   return (
     <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>

@@ -115,6 +115,7 @@ const ClassicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+  };
 
   return (
     <div className="text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Times New Roman', 'Source Serif 4', Georgia, serif" }}>

@@ -118,6 +118,7 @@ const ElegantTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+  };
 
   return (
     <div className="font-sans text-foreground text-sm leading-relaxed" style={{ letterSpacing: '0.01em' }}>
