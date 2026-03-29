@@ -100,7 +100,7 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
           ${styles}
           <style>
             @page {
-              size: A4;
+              size: ${currentPage.cssSize};
               margin: 12mm 16mm;
             }
             html, body {
@@ -111,7 +111,7 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
               print-color-adjust: exact !important;
             }
             body {
-              width: 210mm;
+              width: ${currentPage.widthMm}mm;
             }
             .resume-print-content {
               width: 100%;
@@ -146,7 +146,7 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
       printWindow.print();
       printWindow.close();
     }, 500);
-  }, [resume.title]);
+  }, [resume.title, currentPage]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -154,6 +154,15 @@ const FullPagePreview = ({ resume, open, onOpenChange }: FullPagePreviewProps) =
         <div className="flex items-center justify-between px-4 py-2 border-b border-border bg-card shrink-0">
           <span className="text-sm font-medium text-foreground">Full Page Preview</span>
           <div className="flex items-center gap-4">
+            <Select value={pageSize} onValueChange={(v) => setPageSize(v as PageSize)}>
+              <SelectTrigger className="w-[130px] h-8 text-xs">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="letter">US Letter</SelectItem>
+                <SelectItem value="a4">A4</SelectItem>
+              </SelectContent>
+            </Select>
             <div className="flex items-center gap-2">
               <Checkbox
                 id="page-breaks"
