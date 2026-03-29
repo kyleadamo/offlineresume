@@ -1,14 +1,16 @@
 import { useResume } from '@/hooks/ResumeContext';
 import { useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
-import { Download } from 'lucide-react';
+import { Download, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 
 const BuilderPage = () => {
   const { activeResume } = useResume();
   const navigate = useNavigate();
+  const [editorCollapsed, setEditorCollapsed] = useState(false);
 
   useEffect(() => {
     if (!activeResume) navigate('/');
@@ -18,20 +20,28 @@ const BuilderPage = () => {
 
   return (
     <div className="h-screen flex flex-col">
-      <BuilderHeader />
-      <div className="flex-1 flex overflow-hidden">
-        <div className="w-1/2 border-r border-border overflow-y-auto">
-          <ResumeEditor />
-        </div>
-        <div className="w-1/2 bg-secondary/50 overflow-y-auto">
+      <BuilderHeader
+        editorCollapsed={editorCollapsed}
+        onToggleEditor={() => setEditorCollapsed((c) => !c)}
+      />
+      <ResizablePanelGroup direction="horizontal" className="flex-1">
+        {!editorCollapsed && (
+          <>
+            <ResizablePanel defaultSize={40} minSize={25} maxSize={60} className="overflow-y-auto border-r border-border">
+              <ResumeEditor />
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+          </>
+        )}
+        <ResizablePanel defaultSize={editorCollapsed ? 100 : 60} className="bg-secondary/50 overflow-y-auto">
           <ResumePreview />
-        </div>
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 };
 
-function BuilderHeader() {
+function BuilderHeader({ editorCollapsed, onToggleEditor }: { editorCollapsed: boolean; onToggleEditor: () => void }) {
   const { activeResume, updateResume } = useResume();
   const navigate = useNavigate();
 
@@ -39,6 +49,9 @@ function BuilderHeader() {
 
   return (
     <header className="h-14 border-b border-border bg-card flex items-center px-4 gap-4 shrink-0">
+      <Button variant="ghost" size="icon" onClick={onToggleEditor} title={editorCollapsed ? 'Show editor' : 'Hide editor'}>
+        {editorCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+      </Button>
       <button
         onClick={() => navigate('/')}
         className="text-sm text-muted-foreground hover:text-foreground transition-colors"
