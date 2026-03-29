@@ -10,10 +10,20 @@ function loadResumes(): Resume[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed.map((r: Resume) => ({
-      ...r,
-      sectionOrder: r.sectionOrder ?? DEFAULT_SECTION_ORDER.map(s => ({ ...s })),
-    }));
+    return parsed.map((r: Resume) => {
+      let sectionOrder = r.sectionOrder ?? DEFAULT_SECTION_ORDER.map(s => ({ ...s }));
+      // Backfill any missing section ids (e.g. 'references')
+      for (const def of DEFAULT_SECTION_ORDER) {
+        if (!sectionOrder.find(s => s.id === def.id)) {
+          sectionOrder = [...sectionOrder, { ...def }];
+        }
+      }
+      return {
+        ...r,
+        references: r.references ?? [],
+        sectionOrder,
+      };
+    });
   } catch {
     return [];
   }

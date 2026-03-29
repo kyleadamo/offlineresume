@@ -9,7 +9,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const ModernTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects } = resume;
+  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects, references = [] } = resume;
   const experience = allExperience.filter(e => !e.hidden);
   const education = allEducation.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
@@ -39,17 +39,12 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
                 ))}
               </div>
               {(exp.startDate || exp.endDate) && (
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {exp.startDate}{exp.endDate ? ` → ${exp.endDate}` : ''}
-                </div>
+                <div className="text-xs text-muted-foreground mt-0.5">{exp.startDate}{exp.endDate ? ` → ${exp.endDate}` : ''}</div>
               )}
               {exp.bullets.filter(Boolean).length > 0 && (
                 <ul className="mt-1.5 space-y-0.5 text-muted-foreground">
                   {exp.bullets.filter(Boolean).map((b, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="text-accent shrink-0">–</span>
-                      <span>{b}</span>
-                    </li>
+                    <li key={i} className="flex gap-2"><span className="text-accent shrink-0">–</span><span>{b}</span></li>
                   ))}
                 </ul>
               )}
@@ -65,14 +60,8 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
           {education.map((edu) => (
             <div key={edu.id} data-pdf-section className="pl-4 border-l border-border">
               <span className="font-semibold">{edu.institution}</span>
-              {(edu.degree || edu.field) && (
-                <span className="text-muted-foreground"> · {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>
-              )}
-              {(edu.startDate || edu.endDate) && (
-                <div className="text-xs text-muted-foreground mt-0.5">
-                  {edu.startDate}{edu.endDate ? ` → ${edu.endDate}` : ''}
-                </div>
-              )}
+              {(edu.degree || edu.field) && <span className="text-muted-foreground"> · {[edu.degree, edu.field].filter(Boolean).join(', ')}</span>}
+              {(edu.startDate || edu.endDate) && <div className="text-xs text-muted-foreground mt-0.5">{edu.startDate}{edu.endDate ? ` → ${edu.endDate}` : ''}</div>}
             </div>
           ))}
         </div>
@@ -110,6 +99,26 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
                     {typeof rawSkill === 'string' ? rawSkill : rawSkill.name}
                   </span>
                 ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">References</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="border border-border rounded-lg p-3 flex items-start gap-3">
+              {ref.photo && <img src={ref.photo} alt={ref.name} className="w-10 h-10 rounded-full object-cover shrink-0" />}
+              <div className="min-w-0">
+                <p className="font-semibold text-xs truncate">{ref.name}</p>
+                {(ref.title || ref.company) && (
+                  <p className="text-[11px] text-muted-foreground truncate">{[ref.title, ref.company].filter(Boolean).join(' @ ')}</p>
+                )}
+                {ref.email && <p className="text-[11px] text-muted-foreground truncate">{ref.email}</p>}
+                {ref.phone && <p className="text-[11px] text-muted-foreground">{ref.phone}</p>}
               </div>
             </div>
           ))}

@@ -10,7 +10,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const ExecutiveTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience: allExp, education: allEdu, skills: allSkills, certifications, projects: allProj } = resume;
+  const { profile, summary, experience: allExp, education: allEdu, skills: allSkills, certifications, projects: allProj, references = [] } = resume;
   const experience = allExp.filter(e => !e.hidden);
   const education = allEdu.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
@@ -106,7 +106,21 @@ const ExecutiveTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
-  };
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
+        <h3 className="text-sm font-semibold uppercase tracking-[0.2em] mb-3 pb-1" style={{ borderBottom: '2px solid hsl(215, 29%, 20%)' }}>References</h3>
+        <div className="space-y-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-semibold">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground"> — {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground">, {ref.company}</span>}
+              <div className="text-muted-foreground">{[ref.email, ref.phone].filter(Boolean).join(' · ')}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
 
   return (
     <div className="font-serif text-foreground text-sm leading-relaxed" style={{ fontFamily: "'Source Serif 4', Georgia, serif" }}>

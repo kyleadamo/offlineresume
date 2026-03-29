@@ -9,7 +9,7 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const MinimalTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects } = resume;
+  const { profile, summary, experience: allExperience, education: allEducation, skills: allSkills, projects: allProjects, references = [] } = resume;
   const experience = allExperience.filter(e => !e.hidden);
   const education = allEducation.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
@@ -114,6 +114,25 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                     {typeof rawSkill === 'string' ? rawSkill : rawSkill.name}
                   </span>
                 ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
+        <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">References</h3>
+        <div className="space-y-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="text-xs">
+              <span className="font-medium">{ref.name}</span>
+              {ref.title && <span className="text-muted-foreground"> · {ref.title}</span>}
+              {ref.company && <span className="text-muted-foreground"> at {ref.company}</span>}
+              <div className="text-muted-foreground">
+                {ref.email && <span>{ref.email}</span>}
+                {ref.email && ref.phone && <span> · </span>}
+                {ref.phone && <span>{ref.phone}</span>}
               </div>
             </div>
           ))}
