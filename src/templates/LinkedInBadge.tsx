@@ -1,4 +1,5 @@
 import { ResumeProfile } from '@/schema/resume';
+import { Globe } from 'lucide-react';
 
 interface Props {
   profile: ResumeProfile;
@@ -29,6 +30,28 @@ export const LinkedInDisplay = ({ profile, className }: Props) => {
   return (
     <a href={url} target="_blank" rel="noopener noreferrer" className={className || "inline-flex items-baseline hover:opacity-70"} title="LinkedIn">
       <LinkedInIcon className="w-3 h-3 relative top-[0.5px]" />
+    </a>
+  );
+};
+
+export const WebsiteDisplay = ({ profile, className }: Props) => {
+  if (!profile.website) return null;
+
+  const url = profile.website.startsWith('http') ? profile.website : `https://${profile.website}`;
+
+  if (profile.websiteDisplayFull) {
+    return (
+      <a href={url} target="_blank" rel="noopener noreferrer"
+         className={className || "inline-flex items-baseline gap-1 hover:underline"}>
+        <Globe className="w-3 h-3 shrink-0 relative top-[0.5px]" />
+        <span>{profile.website.replace(/^https?:\/\//, '')}</span>
+      </a>
+    );
+  }
+
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer" className={className || "inline-flex items-baseline hover:opacity-70"} title="Website">
+      <Globe className="w-3 h-3 relative top-[0.5px]" />
     </a>
   );
 };

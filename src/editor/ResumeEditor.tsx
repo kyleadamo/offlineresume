@@ -157,6 +157,27 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
           </div>
         )}
       </div>
+      <div className="space-y-2">
+        <Input
+          value={p.website || ''}
+          onChange={(e) => set('website', e.target.value)}
+          placeholder="Personal website URL (e.g., johndoe.com)"
+        />
+        {p.website && (
+          <div className="flex items-center gap-2">
+            <Switch
+              id="website-display"
+              checked={p.websiteDisplayFull ?? false}
+              onCheckedChange={(checked) =>
+                onUpdate({ profile: { ...p, websiteDisplayFull: checked } })
+              }
+            />
+            <Label htmlFor="website-display" className="text-xs text-muted-foreground cursor-pointer">
+              Show full URL (otherwise icon only)
+            </Label>
+          </div>
+        )}
+      </div>
       <Input value={resume.targetRole} onChange={(e) => onUpdate({ targetRole: e.target.value })} placeholder="Target role (e.g., Senior Software Engineer)" />
     </div>
   );
