@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useState, useEffect, useCallback } from 'react';
 
-const SECTIONS = ['profile', 'summary', 'experience', 'education', 'skills'];
+const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills'];
 
 const ResumeEditor = () => {
   const { activeResume, updateResume } = useResume();
