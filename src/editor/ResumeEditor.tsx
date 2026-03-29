@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
 import { ExperienceItem, EducationItem, SkillCategory, ProjectItem } from '@/schema/resume';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -270,7 +270,7 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
         onReorder={(reordered) => onUpdate({ experience: reordered })}
         className="space-y-4"
         renderItem={(item, dragHandle) => (
-          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+          <div className={`p-4 bg-secondary/50 rounded-lg space-y-3 ${item.hidden ? 'opacity-50' : ''}`}>
             <div className="flex items-start gap-2">
               <div className="mt-2.5">{dragHandle}</div>
               <div className="flex-1 space-y-3">
@@ -288,6 +288,9 @@ function ExperienceEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: 
                   onChange={(bullets) => updateItem(item.id, { bullets })}
                 />
               </div>
+              <button onClick={() => updateItem(item.id, { hidden: !item.hidden })} className="text-muted-foreground hover:text-foreground transition-colors mt-2" title={item.hidden ? 'Show in resume' : 'Hide from resume'}>
+                {item.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
               <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors mt-2">
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -333,7 +336,7 @@ function EducationEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: P
         onReorder={(reordered) => onUpdate({ education: reordered })}
         className="space-y-4"
         renderItem={(item, dragHandle) => (
-          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+          <div className={`p-4 bg-secondary/50 rounded-lg space-y-3 ${item.hidden ? 'opacity-50' : ''}`}>
             <div className="flex items-start gap-2">
               <div className="mt-2.5">{dragHandle}</div>
               <div className="flex-1 space-y-3">
@@ -347,6 +350,9 @@ function EducationEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: P
                   <Input value={item.endDate} onChange={(e) => updateItem(item.id, { endDate: e.target.value })} placeholder="End date" />
                 </div>
               </div>
+              <button onClick={() => updateItem(item.id, { hidden: !item.hidden })} className="text-muted-foreground hover:text-foreground transition-colors mt-2" title={item.hidden ? 'Show in resume' : 'Hide from resume'}>
+                {item.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
               <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors mt-2">
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -390,7 +396,7 @@ function ProjectsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Pa
         onReorder={(reordered) => onUpdate({ projects: reordered })}
         className="space-y-4"
         renderItem={(item, dragHandle) => (
-          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+          <div className={`p-4 bg-secondary/50 rounded-lg space-y-3 ${item.hidden ? 'opacity-50' : ''}`}>
             <div className="flex items-start gap-2">
               <div className="mt-2.5">{dragHandle}</div>
               <div className="flex-1 space-y-3">
@@ -409,6 +415,9 @@ function ProjectsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Pa
                   placeholder="Key highlight..."
                 />
               </div>
+              <button onClick={() => updateItem(item.id, { hidden: !item.hidden })} className="text-muted-foreground hover:text-foreground transition-colors mt-2" title={item.hidden ? 'Show in resume' : 'Hide from resume'}>
+                {item.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
               <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors mt-2">
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -446,7 +455,7 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
         onReorder={(reordered) => onUpdate({ skills: reordered })}
         className="space-y-4"
         renderItem={(cat, dragHandle) => (
-          <div className="p-4 bg-secondary/50 rounded-lg space-y-3">
+          <div className={`p-4 bg-secondary/50 rounded-lg space-y-3 ${cat.hidden ? 'opacity-50' : ''}`}>
             <div className="flex gap-2">
               <div className="mt-2">{dragHandle}</div>
               <Input
@@ -455,6 +464,9 @@ function SkillsEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Part
                 placeholder="Category (e.g., Languages, Frameworks)"
                 className="flex-1"
               />
+              <button onClick={() => updateCategory(cat.id, { hidden: !cat.hidden })} className="text-muted-foreground hover:text-foreground transition-colors" title={cat.hidden ? 'Show in resume' : 'Hide from resume'}>
+                {cat.hidden ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
               <button onClick={() => removeCategory(cat.id)} className="text-muted-foreground hover:text-destructive transition-colors">
                 <Trash2 className="w-4 h-4" />
               </button>
