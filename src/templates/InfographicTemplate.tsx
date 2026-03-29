@@ -124,6 +124,31 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
+        <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
+          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>👤</span>
+          References
+        </h3>
+        <div className="grid grid-cols-2 gap-3">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="rounded-lg border border-border p-3 flex items-start gap-3">
+              {ref.photo && <img src={ref.photo} alt={ref.name} className="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-accent" />}
+              <div className="min-w-0">
+                <div className="font-semibold text-sm">{ref.name}</div>
+                {(ref.title || ref.company) && (
+                  <div className="text-xs text-muted-foreground mt-0.5">
+                    {[ref.title, ref.company].filter(Boolean).join(' · ')}
+                  </div>
+                )}
+                {ref.email && <div className="text-xs mt-1" style={{ color: 'hsl(243, 75%, 59%)' }}>{ref.email}</div>}
+                {ref.phone && <div className="text-xs text-muted-foreground">{ref.phone}</div>}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
 
   return (

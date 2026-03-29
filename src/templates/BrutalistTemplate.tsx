@@ -108,6 +108,30 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
+        <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">References</h3>
+        <div className="grid grid-cols-2 gap-3">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="border-[2px] border-foreground p-3">
+              <div className="flex items-start gap-3">
+                {ref.photo && <img src={ref.photo} alt={ref.name} className="w-12 h-12 object-cover shrink-0 border-[2px] border-foreground" />}
+                <div className="min-w-0">
+                  <div className="font-black uppercase text-sm">{ref.name}</div>
+                  {(ref.title || ref.company) && (
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {[ref.title, ref.company].filter(Boolean).join(' // ')}
+                    </div>
+                  )}
+                  {ref.email && <div className="text-xs text-muted-foreground mt-1">{ref.email}</div>}
+                  {ref.phone && <div className="text-xs text-muted-foreground">{ref.phone}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
 
   return (
