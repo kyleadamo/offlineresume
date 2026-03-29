@@ -36,6 +36,7 @@ export interface EducationItem {
   startDate: string;
   endDate: string;
   description: string;
+  hidden?: boolean;
 }
 
 export interface ProjectItem {
