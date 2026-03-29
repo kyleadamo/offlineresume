@@ -4,8 +4,10 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Linkedin } from 'lucide-react';
 import { ExperienceItem, EducationItem, SkillCategory } from '@/schema/resume';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { useState, useEffect, useCallback } from 'react';
 
 const SECTIONS = ['profile', 'summary', 'experience', 'education', 'skills'];
