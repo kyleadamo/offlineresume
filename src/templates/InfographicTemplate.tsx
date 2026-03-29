@@ -1,4 +1,4 @@
-import { Resume } from '@/schema/resume';
+import { Resume, normalizeSkill } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
