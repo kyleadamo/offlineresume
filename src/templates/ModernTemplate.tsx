@@ -50,7 +50,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
                 <div>
                   <span className="font-semibold">{exp.role}</span>
                   {exp.company && (exp.companyUrl ? (
-                    <a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-accent font-medium hover:underline"> @ {exp.company}</a>
+                    <><span className="text-accent font-medium"> @ </span><a href={exp.companyUrl} target="_blank" rel="noopener noreferrer" className="text-accent font-medium hover:underline">{exp.company}</a></>
                   ) : (
                     <span className="text-accent font-medium"> @ {exp.company}</span>
                   ))}
