@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label';
 import { useState, useEffect, useCallback } from 'react';
 import { SortableList, toStringItems, fromStringItems, type StringItem } from '@/components/SortableList';
 
-const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills'];
+const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills', 'references'];
 
 const sectionEditorMap: Record<string, { label: string; component: (resume: Resume, update: (c: Partial<Resume>) => void) => React.ReactNode }> = {
   summary: {
