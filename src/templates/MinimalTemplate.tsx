@@ -105,7 +105,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
       )}
 
       {projects && projects.length > 0 && (
-        <div data-section="projects" className={sectionClass}>
+        <div data-section="projects" className={`mb-5 ${sectionClass}`}>
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">Projects</h3>
           <div className="space-y-3">
             {projects.map((proj) => (
