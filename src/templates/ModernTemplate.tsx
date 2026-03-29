@@ -32,8 +32,8 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
                 {profile.email && <span className="bg-secondary px-2 py-0.5 rounded">{profile.email}</span>}
                 {profile.phone && <span className="bg-secondary px-2 py-0.5 rounded">{profile.phone}</span>}
                 {profile.location && <span className="bg-secondary px-2 py-0.5 rounded">{profile.location}</span>}
-                <LinkedInDisplay profile={profile} className="bg-secondary px-2 py-0.5 rounded hover:underline" />
-                <WebsiteDisplay profile={profile} className="bg-secondary px-2 py-0.5 rounded hover:underline" />
+                <LinkedInDisplay profile={profile} className="inline-flex items-center gap-1 bg-secondary px-2 py-0.5 rounded hover:underline" />
+                <WebsiteDisplay profile={profile} className="inline-flex items-center gap-1 bg-secondary px-2 py-0.5 rounded hover:underline" />
               </div>
             </div>
           </div>
