@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
 import { ExperienceItem, EducationItem, SkillCategory, ProjectItem } from '@/schema/resume';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
