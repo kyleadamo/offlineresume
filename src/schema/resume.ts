@@ -101,6 +101,7 @@ export const DEFAULT_SECTION_ORDER: SectionConfig[] = [
   { id: 'education', label: 'Education', visible: true },
   { id: 'projects', label: 'Projects', visible: true },
   { id: 'skills', label: 'Skills', visible: true },
+  { id: 'references', label: 'References', visible: true },
 ];
 
 export type TemplateId = 'minimal' | 'professional' | 'modern' | 'brutalist' | 'compact' | 'editorial' | 'executive' | 'creative' | 'academic' | 'tech' | 'elegant' | 'infographic' | 'classic';
