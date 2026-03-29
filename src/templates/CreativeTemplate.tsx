@@ -110,6 +110,30 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    references: () => references.length > 0 ? (
+      <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>References</h3>
+        <div className="grid grid-cols-2 gap-3 mt-2">
+          {references.map((ref) => (
+            <div key={ref.id} data-pdf-section className="border rounded-lg p-3" style={{ borderColor: 'hsl(243, 75%, 80%)' }}>
+              <div className="flex items-start gap-3">
+                {ref.photo && <img src={ref.photo} alt={ref.name} className="w-10 h-10 rounded-full object-cover shrink-0" />}
+                <div className="min-w-0">
+                  <div className="font-semibold text-sm">{ref.name}</div>
+                  {(ref.title || ref.company) && (
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      {[ref.title, ref.company].filter(Boolean).join(' @ ')}
+                    </div>
+                  )}
+                  {ref.email && <div className="text-xs mt-1" style={{ color: 'hsl(243, 75%, 59%)' }}>{ref.email}</div>}
+                  {ref.phone && <div className="text-xs text-muted-foreground">{ref.phone}</div>}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ) : null,
   };
 
   return (
