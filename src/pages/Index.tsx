@@ -98,8 +98,9 @@ const WorkspaceEntry = () => {
                       <div className="text-sm text-muted-foreground truncate">{resume.targetRole}</div>
                     )}
                   </div>
-                  <div className="text-xs text-muted-foreground shrink-0">
-                    {new Date(resume.lastEdited).toLocaleDateString()}
+                  <div className="text-xs text-muted-foreground shrink-0 text-right">
+                    <div>{new Date(resume.lastEdited).toLocaleDateString()}</div>
+                    <div>{new Date(resume.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                   </div>
                 </button>
               ))}
