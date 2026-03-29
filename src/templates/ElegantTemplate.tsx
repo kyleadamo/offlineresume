@@ -1,4 +1,5 @@
 import { Resume } from '@/schema/resume';
+import { LinkedInDisplay } from './LinkedInBadge';
 
 interface TemplateProps {
   resume: Resume;
