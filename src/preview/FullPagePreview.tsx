@@ -3,6 +3,14 @@ import MinimalTemplate from '@/templates/MinimalTemplate';
 import ProfessionalTemplate from '@/templates/ProfessionalTemplate';
 import ModernTemplate from '@/templates/ModernTemplate';
 import BrutalistTemplate from '@/templates/BrutalistTemplate';
+import ExecutiveTemplate from '@/templates/ExecutiveTemplate';
+import CreativeTemplate from '@/templates/CreativeTemplate';
+import CompactTemplate from '@/templates/CompactTemplate';
+import AcademicTemplate from '@/templates/AcademicTemplate';
+import TechTemplate from '@/templates/TechTemplate';
+import ElegantTemplate from '@/templates/ElegantTemplate';
+import InfographicTemplate from '@/templates/InfographicTemplate';
+import ClassicTemplate from '@/templates/ClassicTemplate';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +33,14 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   professional: ProfessionalTemplate,
   modern: ModernTemplate,
   brutalist: BrutalistTemplate,
-  compact: MinimalTemplate,
+  executive: ExecutiveTemplate,
+  creative: CreativeTemplate,
+  compact: CompactTemplate,
+  academic: AcademicTemplate,
+  tech: TechTemplate,
+  elegant: ElegantTemplate,
+  infographic: InfographicTemplate,
+  classic: ClassicTemplate,
   editorial: ProfessionalTemplate,
 };
 
