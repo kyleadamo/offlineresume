@@ -128,6 +128,7 @@ const TechTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+  };
 
   return (
     <div className="font-mono text-foreground text-sm leading-relaxed">
