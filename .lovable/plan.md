@@ -1,24 +1,87 @@
-
-
-## Add Visibility Toggle to Resume Entries
+## Add Cover Letter Support
 
 ### Overview
-Add a `hidden` boolean field to experience, education, project, and skill category items. Hidden entries remain in the data but are filtered out in templates and PDF output. The editor shows an eye/eye-off toggle for each entry.
 
-### Changes
+Add a full cover letter workflow: schema, persistence, editor page, PDF preview/print, import (JSON/markdown paste), and export (JSON/markdown/PDF). Cover letters are a separate entity from resumes, stored independently in localStorage.
 
-**1. `src/schema/resume.ts`**
-- Add `hidden?: boolean` to `ExperienceItem`, `EducationItem`, `ProjectItem`, and `SkillCategory` interfaces
+### Data Model — `src/schema/coverLetter.ts` (new)
 
-**2. `src/editor/ResumeEditor.tsx`**
-- Import `Eye`, `EyeOff` from lucide-react
-- In each section editor (Experience, Education, Projects, Skills), add a toggle button next to the delete button
-- When hidden, apply reduced opacity to the card (`opacity-50`) so the user can see it's inactive
-- Toggle sets `hidden: !item.hidden` via the existing `updateItem` call
+```ts
+interface CoverLetter {
+  id: string;
+  title: string;
+  lastEdited: string;
+  recipientName: string;
+  recipientTitle: string;
+  companyName: string;
+  companyAddress: string;
+  date: string;
+  greeting: string;       // e.g. "Dear Hiring Manager,"
+  body: string;           // markdown content
+  closing: string;        // e.g. "Sincerely,"
+  senderName: string;
+  senderContact: string;  // email/phone line
+}
+```
 
-**3. All 12 templates**
-- Filter out hidden items before rendering: `experience.filter(e => !e.hidden)`, same for education, projects, skills
-- This automatically excludes them from PDF print since templates are what gets printed
+### Persistence — `src/hooks/useCoverLetterStore.ts` (new)
 
-No changes needed to localStorage persistence, JSON export, or the SortableList — hidden items stay in the arrays and maintain their order.
+- Mirror `useResumeStore` pattern with separate localStorage keys (`localcv-cover-letters`, `localcv-cover-letter-active`)
+- CRUD operations: create, update, duplicate, delete, setActive
 
+### Context — `src/hooks/CoverLetterContext.tsx` (new)
+
+- Same provider pattern as `ResumeContext`
+- Wrap in `App.tsx` alongside `ResumeProvider`
+
+### Home Page — `src/pages/Index.tsx`
+
+- Add a "Cover Letters" section below the resume actions
+- The cover letters and resume sections can be in tabs. Each tab can be badged with how many of each are persisted in each section
+- Actions: "New cover letter", "Import JSON", "Paste markdown"
+- Recent cover letters list (same card style as resumes, with `Mail` icon)
+
+### Import — `src/pages/ImportCoverLetterPage.tsx` (new)
+
+- Two modes: `json` (paste/file upload) and `markdown` (paste textarea)
+- JSON import: parse and merge with blank cover letter defaults
+- Markdown import: store the pasted content as the `body` field, set defaults for other fields
+
+### Editor — `src/pages/CoverLetterBuilderPage.tsx` (new)
+
+- Same resizable split-panel layout as `BuilderPage`
+- Left panel (`src/editor/CoverLetterEditor.tsx`): form fields for all schema properties; body field is a large textarea supporting markdown
+- Right panel (`src/preview/CoverLetterPreview.tsx`): renders a clean letter layout with print CSS
+- Header: title input, save indicator, export dropdown (JSON, Markdown, PDF)
+
+### Preview/Print — `src/preview/CoverLetterPreview.tsx` (new)
+
+- Clean letter template: sender info top-right, date, recipient block, greeting, body (render markdown as HTML), closing, signature
+- PDF button using `window.print()` with print-specific CSS (same approach as resume)
+- Page size toggle (Letter/A4) matching existing resume preview
+
+### Export
+
+- **JSON**: strip `id`/`lastEdited`, download as `.json`
+- **Markdown**: convert structured fields into a formatted markdown document
+- **PDF**: browser print dialog (existing pattern)
+
+### Routes — `src/App.tsx`
+
+- `/cover-letter/builder` → `CoverLetterBuilderPage`
+- `/cover-letter/import` → `ImportCoverLetterPage`
+
+### Files to create (6)
+
+1. `src/schema/coverLetter.ts`
+2. `src/hooks/useCoverLetterStore.ts`
+3. `src/hooks/CoverLetterContext.tsx`
+4. `src/pages/CoverLetterBuilderPage.tsx` (includes editor + preview inline or split)
+5. `src/editor/CoverLetterEditor.tsx`
+6. `src/preview/CoverLetterPreview.tsx`
+7. `src/pages/ImportCoverLetterPage.tsx`
+
+### Files to modify (2)
+
+1. `src/App.tsx` — add provider + routes
+2. `src/pages/Index.tsx` — add cover letter section + recent list
