@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
 import { Resume, createBlankResume } from '@/schema/resume';
+import { createSampleResume } from '@/schema/sampleResume';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Upload, ClipboardPaste } from 'lucide-react';
