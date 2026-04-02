@@ -1,9 +1,5 @@
 import { Resume, createBlankResume } from './resume';
 
-/**
- * Generates a sample resume that always matches the current schema.
- * Built on top of createBlankResume() so any new fields are automatically included.
- */
 export function createSampleResume(): Omit<Resume, 'id' | 'lastEdited'> {
   const base = createBlankResume();
 
@@ -47,11 +43,32 @@ export function createSampleResume(): Omit<Resume, 'id' | 'lastEdited'> {
     references: [
       { id: "1", name: "Jane Smith", photo: "", company: "Acme Corp", title: "Engineering Manager", phone: "(555) 987-6543", email: "jane.smith@acme.com" },
     ],
-    certifications: [],
+    certifications: [
+      { id: "1", name: "AWS Certified Developer", issuer: "Amazon Web Services", date: "2023", url: "", issueDate: "2023-03", expirationDate: "2026-03", credentialId: "ABC123", credentialUrl: "https://aws.amazon.com/verify", description: "Associate-level cloud development certification", skills: ["AWS", "Cloud Architecture"] },
+    ],
+    languages: [
+      { id: "1", language: "English", proficiency: "Native" },
+      { id: "2", language: "Spanish", proficiency: "Professional" },
+    ],
+    awards: [
+      { id: "1", title: "Hackathon Winner", issuer: "TechCrunch Disrupt", date: "2022", description: "First place for building an accessibility tool" },
+    ],
+    volunteer: [
+      { id: "1", organization: "Code for America", role: "Volunteer Developer", startDate: "2020-01", endDate: "Present", description: "Building civic tech tools for local communities" },
+    ],
+    publications: [
+      { id: "1", title: "Modern CSS Techniques for Scalable Design Systems", publisher: "CSS-Tricks", date: "2023-05", url: "https://css-tricks.com/example", description: "" },
+    ],
+    affiliations: [
+      { id: "1", organization: "ACM", role: "Member", startDate: "2019" },
+    ],
+    patents: [
+      { id: "1", title: "Method for Optimizing Web Component Rendering", patentNumber: "US-2023-0001234", date: "2023", url: "" },
+    ],
+    interests: ["Open Source", "Accessibility", "Design Systems", "Rock Climbing"],
     customSections: [],
   };
 
-  // Strip internal fields so the sample shows only importable data
   const { id, lastEdited, ...rest } = sample;
   return rest;
 }

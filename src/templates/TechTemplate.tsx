@@ -1,6 +1,7 @@
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
+import { createNewSectionRenderers } from './newSectionRenderers';
 
 interface TemplateProps {
   resume: Resume;
@@ -9,12 +10,22 @@ interface TemplateProps {
 const sectionClass = "cursor-pointer rounded transition-colors duration-150 hover:bg-muted/30 -mx-2 px-2 py-0.5";
 
 const TechTemplate = ({ resume }: TemplateProps) => {
-  const { profile, summary, experience: allExp, education: allEdu, skills: allSkills, certifications, projects: allProj, references = [] } = resume;
+  const { profile, summary, experience: allExp, education: allEdu, skills: allSkills, projects: allProj, references = [] } = resume;
   const experience = allExp.filter(e => !e.hidden);
   const education = allEdu.filter(e => !e.hidden);
   const skills = allSkills.filter(e => !e.hidden);
   const projects = allProj.filter(e => !e.hidden);
   const visibleSections = getVisibleSections(resume);
+
+  const newRenderers = createNewSectionRenderers(resume, {
+    sectionClass,
+    headingClass: '',
+    renderHeading: (label) => <h3 className="text-xs font-bold uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-0.5 rounded">{label.toLowerCase()}</h3>,
+    tagClass: "bg-secondary text-foreground text-[11px] px-2 py-0.5 rounded border border-border font-medium",
+    textClass: "text-foreground font-bold",
+    subTextClass: "text-muted-foreground",
+    linkClass: "text-muted-foreground hover:text-foreground underline",
+  });
 
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     summary: () => summary ? (
@@ -128,6 +139,7 @@ const TechTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    ...newRenderers,
   };
 
   return (
@@ -155,21 +167,6 @@ const TechTemplate = ({ resume }: TemplateProps) => {
       )}
 
       {visibleSections.map((id) => sectionRenderers[id]?.())}
-
-      {certifications && certifications.length > 0 && (
-        <div data-section="certifications" className={`mb-6 ${sectionClass}`}>
-          <h3 className="text-xs font-bold uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-0.5 rounded">certifications</h3>
-          <div className="space-y-1">
-            {certifications.map((cert) => (
-              <div key={cert.id} data-pdf-section className="text-xs text-muted-foreground">
-                <span className="font-bold text-foreground">{cert.name}</span>
-                {cert.issuer && <span> | {cert.issuer}</span>}
-                {cert.date && <span> ({cert.date})</span>}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {!profile.name && !summary && experience.length === 0 && (
         <div className="text-center text-muted-foreground py-20">

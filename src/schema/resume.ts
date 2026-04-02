@@ -50,7 +50,7 @@ export interface ProjectItem {
 
 export interface SkillItem {
   name: string;
-  level?: number; // 0-100 percentage
+  level?: number;
 }
 
 export function normalizeSkill(s: string | SkillItem): SkillItem {
@@ -69,6 +69,60 @@ export interface CertificationItem {
   id: string;
   name: string;
   issuer: string;
+  date: string;
+  url: string;
+  issueDate: string;
+  expirationDate: string;
+  credentialId: string;
+  credentialUrl: string;
+  description: string;
+  skills: string[];
+}
+
+export interface LanguageItem {
+  id: string;
+  language: string;
+  proficiency: string;
+}
+
+export interface AwardItem {
+  id: string;
+  title: string;
+  issuer: string;
+  date: string;
+  description: string;
+}
+
+export interface VolunteerItem {
+  id: string;
+  organization: string;
+  role: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+  hidden?: boolean;
+}
+
+export interface PublicationItem {
+  id: string;
+  title: string;
+  publisher: string;
+  date: string;
+  url: string;
+  description: string;
+}
+
+export interface AffiliationItem {
+  id: string;
+  organization: string;
+  role: string;
+  startDate: string;
+}
+
+export interface PatentItem {
+  id: string;
+  title: string;
+  patentNumber: string;
   date: string;
   url: string;
 }
@@ -102,6 +156,14 @@ export const DEFAULT_SECTION_ORDER: SectionConfig[] = [
   { id: 'projects', label: 'Projects', visible: true },
   { id: 'skills', label: 'Skills', visible: true },
   { id: 'references', label: 'References', visible: true },
+  { id: 'certifications', label: 'Certifications', visible: false },
+  { id: 'languages', label: 'Languages', visible: false },
+  { id: 'awards', label: 'Awards', visible: false },
+  { id: 'volunteer', label: 'Volunteer', visible: false },
+  { id: 'publications', label: 'Publications', visible: false },
+  { id: 'affiliations', label: 'Affiliations', visible: false },
+  { id: 'patents', label: 'Patents', visible: false },
+  { id: 'interests', label: 'Interests', visible: false },
 ];
 
 export type TemplateId = 'minimal' | 'professional' | 'modern' | 'brutalist' | 'compact' | 'editorial' | 'executive' | 'creative' | 'academic' | 'tech' | 'elegant' | 'infographic' | 'classic';
@@ -122,6 +184,13 @@ export interface Resume {
   customSections: CustomSection[];
   references: ReferenceItem[];
   sectionOrder: SectionConfig[];
+  languages: LanguageItem[];
+  awards: AwardItem[];
+  volunteer: VolunteerItem[];
+  publications: PublicationItem[];
+  affiliations: AffiliationItem[];
+  patents: PatentItem[];
+  interests: string[];
 }
 
 export const createBlankResume = (): Resume => ({
@@ -151,4 +220,11 @@ export const createBlankResume = (): Resume => ({
   customSections: [],
   references: [],
   sectionOrder: DEFAULT_SECTION_ORDER.map(s => ({ ...s })),
+  languages: [],
+  awards: [],
+  volunteer: [],
+  publications: [],
+  affiliations: [],
+  patents: [],
+  interests: [],
 });
