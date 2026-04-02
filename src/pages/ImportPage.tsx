@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
 import { Resume, createBlankResume } from '@/schema/resume';
+import { createSampleResume } from '@/schema/sampleResume';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Upload, ClipboardPaste } from 'lucide-react';
@@ -108,32 +109,7 @@ const ImportPage = () => {
                 <button
                   type="button"
                   onClick={() => {
-                    const sample = JSON.stringify({
-                      title: "Sample Resume",
-                      targetRole: "Frontend Engineer",
-                      profile: {
-                        name: "Alex Johnson",
-                        email: "alex@example.com",
-                        phone: "(555) 123-4567",
-                        location: "San Francisco, CA",
-                        links: [{ id: "1", label: "LinkedIn", url: "https://linkedin.com/in/alexjohnson" }]
-                      },
-                      summary: "Detail-oriented frontend engineer with 5 years of experience building performant web applications using React, TypeScript, and modern CSS.",
-                      experience: [{
-                        id: "1", role: "Senior Frontend Engineer", company: "Acme Corp",
-                        startDate: "2021-06", endDate: "Present",
-                        bullets: ["Led migration from legacy jQuery codebase to React, improving page load times by 40%", "Mentored 3 junior developers through code reviews and pair programming"]
-                      }, {
-                        id: "2", role: "Frontend Developer", company: "StartupXYZ",
-                        startDate: "2019-01", endDate: "2021-05",
-                        bullets: ["Built component library used across 4 product teams", "Implemented accessibility improvements achieving WCAG 2.1 AA compliance"]
-                      }],
-                      education: [{ id: "1", institution: "University of California", degree: "B.S.", field: "Computer Science", startDate: "2015", endDate: "2019", description: "" }],
-                      skills: [{ id: "1", category: "Languages", skills: ["TypeScript", "JavaScript", "HTML", "CSS"] }, { id: "2", category: "Frameworks", skills: ["React", "Next.js", "Tailwind CSS"] }],
-                      projects: [],
-                      certifications: [],
-                      customSections: []
-                    }, null, 2);
+                    const sample = JSON.stringify(createSampleResume(), null, 2);
                     const blob = new Blob([sample], { type: 'application/json' });
                     const url = URL.createObjectURL(blob);
                     const a = document.createElement('a');
