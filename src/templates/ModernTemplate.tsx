@@ -1,6 +1,7 @@
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
+import { createNewSectionRenderers } from './newSectionRenderers';
 
 interface TemplateProps {
   resume: Resume;
@@ -15,6 +16,16 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
   const skills = allSkills.filter(e => !e.hidden);
   const projects = allProjects.filter(e => !e.hidden);
   const visibleSections = getVisibleSections(resume);
+
+  const newRenderers = createNewSectionRenderers(resume, {
+    sectionClass,
+    headingClass: '',
+    renderHeading: (label) => <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">{label}</h3>,
+    tagClass: "bg-secondary text-foreground text-xs px-2 py-0.5 rounded",
+    textClass: "text-foreground",
+    subTextClass: "text-muted-foreground",
+    linkClass: "text-muted-foreground hover:text-foreground underline",
+  });
 
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     summary: () => summary ? (
@@ -125,6 +136,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    ...newRenderers,
   };
 
   return (

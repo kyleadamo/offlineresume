@@ -1,6 +1,7 @@
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
+import { createNewSectionRenderers } from './newSectionRenderers';
 
 interface TemplateProps {
   resume: Resume;
@@ -16,7 +17,16 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
   const projects = allProj.filter(e => !e.hidden);
   const visibleSections = getVisibleSections(resume);
 
-  // Compact uses a two-column layout: main (summary/experience/education/projects) left, skills right
+  const newRenderers = createNewSectionRenderers(resume, {
+    sectionClass,
+    headingClass: '',
+    renderHeading: (label) => <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-0.5">{label}</h3>,
+    tagClass: "bg-secondary text-foreground text-[10px] px-1.5 py-0.5 rounded",
+    textClass: "text-foreground",
+    subTextClass: "text-muted-foreground",
+    linkClass: "text-muted-foreground hover:text-foreground underline",
+  });
+
   const mainSections: Record<string, () => React.ReactNode> = {
     summary: () => summary ? (
       <div key="summary" data-section="summary" className={`mb-3 ${sectionClass}`}>
@@ -108,6 +118,7 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    ...newRenderers,
   };
 
   const sidebarSections: Record<string, () => React.ReactNode> = {
@@ -132,7 +143,6 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
     ) : null,
   };
 
-  // Split visible sections into main vs sidebar
   const mainVisible = visibleSections.filter(id => id !== 'skills');
   const showSkills = visibleSections.includes('skills');
 
@@ -165,20 +175,6 @@ const CompactTemplate = ({ resume }: TemplateProps) => {
         </div>
         <div>
           {showSkills && sidebarSections.skills?.()}
-          {certifications && certifications.length > 0 && (
-            <div data-section="certifications" className={`mb-3 ${sectionClass}`}>
-              <h3 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-2 border-b border-border pb-0.5">Certifications</h3>
-              <div className="space-y-1">
-                {certifications.map((cert) => (
-                  <div key={cert.id} data-pdf-section className="text-[10px] text-muted-foreground">
-                    <span className="font-medium text-foreground block">{cert.name}</span>
-                    {cert.issuer && <span>{cert.issuer}</span>}
-                    {cert.date && <span> · {cert.date}</span>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

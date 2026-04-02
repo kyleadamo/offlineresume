@@ -1,6 +1,7 @@
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
+import { createNewSectionRenderers } from './newSectionRenderers';
 
 interface TemplateProps {
   resume: Resume;
@@ -15,6 +16,16 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
   const skills = allSkills.filter(e => !e.hidden);
   const projects = allProjects.filter(e => !e.hidden);
   const visibleSections = getVisibleSections(resume);
+
+  const newRenderers = createNewSectionRenderers(resume, {
+    sectionClass,
+    headingClass: '',
+    renderHeading: (label) => <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3 border-b border-border pb-1">{label}</h3>,
+    tagClass: "bg-secondary text-foreground text-xs px-2 py-0.5 rounded",
+    textClass: "text-foreground",
+    subTextClass: "text-muted-foreground",
+    linkClass: "text-muted-foreground hover:text-foreground underline",
+  });
 
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     summary: () => summary ? (
@@ -38,18 +49,13 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                   ))}
                 </div>
                 {(exp.startDate || exp.endDate) && (
-                  <span className="text-xs text-muted-foreground shrink-0 ml-4">
-                    {exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ''}
-                  </span>
+                  <span className="text-xs text-muted-foreground shrink-0 ml-4">{exp.startDate}{exp.endDate ? ` – ${exp.endDate}` : ''}</span>
                 )}
               </div>
               {exp.bullets.filter(Boolean).length > 0 && (
                 <ul className="mt-1.5 space-y-0.5 text-muted-foreground">
                   {exp.bullets.filter(Boolean).map((b, i) => (
-                    <li key={i} className="flex gap-2">
-                      <span className="shrink-0 mt-0.5">•</span>
-                      <span>{b}</span>
-                    </li>
+                    <li key={i} className="flex gap-2"><span className="shrink-0 mt-0.5">•</span><span>{b}</span></li>
                   ))}
                 </ul>
               )}
@@ -72,9 +78,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
                   )}
                 </div>
                 {(edu.startDate || edu.endDate) && (
-                  <span className="text-xs text-muted-foreground shrink-0 ml-4">
-                    {edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ''}
-                  </span>
+                  <span className="text-xs text-muted-foreground shrink-0 ml-4">{edu.startDate}{edu.endDate ? ` – ${edu.endDate}` : ''}</span>
                 )}
               </div>
             </div>
@@ -139,6 +143,7 @@ const MinimalTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    ...newRenderers,
   };
 
   return (

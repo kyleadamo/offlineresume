@@ -1,6 +1,7 @@
 import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
+import { createNewSectionRenderers } from './newSectionRenderers';
 
 interface TemplateProps {
   resume: Resume;
@@ -15,6 +16,16 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
   const skills = allSkills.filter(e => !e.hidden);
   const projects = allProjects.filter(e => !e.hidden);
   const visibleSections = getVisibleSections(resume);
+
+  const newRenderers = createNewSectionRenderers(resume, {
+    sectionClass,
+    headingClass: '',
+    renderHeading: (label) => <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">{label}</h3>,
+    tagClass: "border-[2px] border-foreground text-foreground text-xs font-bold px-2 py-0.5 uppercase",
+    textClass: "text-foreground font-black uppercase",
+    subTextClass: "text-muted-foreground",
+    linkClass: "text-muted-foreground hover:text-foreground underline",
+  });
 
   const sectionRenderers: Record<string, () => React.ReactNode> = {
     summary: () => summary ? (
@@ -119,9 +130,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
                 <div className="min-w-0">
                   <div className="font-black uppercase text-sm">{ref.name}</div>
                   {(ref.title || ref.company) && (
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      {[ref.title, ref.company].filter(Boolean).join(' // ')}
-                    </div>
+                    <div className="text-xs text-muted-foreground mt-0.5">{[ref.title, ref.company].filter(Boolean).join(' // ')}</div>
                   )}
                   {ref.email && <div className="text-xs text-muted-foreground mt-1">{ref.email}</div>}
                   {ref.phone && <div className="text-xs text-muted-foreground">{ref.phone}</div>}
@@ -132,6 +141,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
         </div>
       </div>
     ) : null,
+    ...newRenderers,
   };
 
   return (
