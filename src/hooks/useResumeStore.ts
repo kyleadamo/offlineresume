@@ -12,7 +12,6 @@ function loadResumes(): Resume[] {
     if (!Array.isArray(parsed)) return [];
     return parsed.map((r: Resume) => {
       let sectionOrder = r.sectionOrder ?? DEFAULT_SECTION_ORDER.map(s => ({ ...s }));
-      // Backfill any missing section ids (e.g. 'references')
       for (const def of DEFAULT_SECTION_ORDER) {
         if (!sectionOrder.find(s => s.id === def.id)) {
           sectionOrder = [...sectionOrder, { ...def }];
@@ -22,6 +21,13 @@ function loadResumes(): Resume[] {
         ...r,
         references: r.references ?? [],
         sectionOrder,
+        languages: r.languages ?? [],
+        awards: r.awards ?? [],
+        volunteer: r.volunteer ?? [],
+        publications: r.publications ?? [],
+        affiliations: r.affiliations ?? [],
+        patents: r.patents ?? [],
+        interests: r.interests ?? [],
       };
     });
   } catch {
