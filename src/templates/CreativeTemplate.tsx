@@ -37,7 +37,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
   const newRenderers = createNewSectionRenderers(resume, {
     sectionClass,
     headingClass: '',
-    renderHeading: (label) => <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{label}</h3>,
+    renderHeading: (label) => <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons[label] ?? <Sparkles className="w-3 h-3" />}<span>{label}</span></h3>,
     tagClass: "text-xs px-2 py-0.5 rounded-full border" + " " + "border-[hsl(243,75%,80%)] text-[hsl(243,75%,45%)]",
     textClass: "text-foreground",
     subTextClass: "text-muted-foreground",
