@@ -122,7 +122,7 @@ const BrutalistTemplate = ({ resume }: TemplateProps) => {
     references: () => references.length > 0 ? (
       <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-black uppercase tracking-widest mb-3 bg-foreground text-background inline-block px-2 py-1">References</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           {references.map((ref) => (
             <div key={ref.id} data-pdf-section className="border-[2px] border-foreground p-3">
               <div className="flex items-start gap-3">
