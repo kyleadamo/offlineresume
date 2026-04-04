@@ -216,7 +216,7 @@ const ImportPage = () => {
               className="space-y-4"
             >
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <CheckCircle2 className="w-4 h-4 text-green-500" />
+                <CheckCircle2 className="w-4 h-4 text-primary" />
                 Resume parsed successfully
               </div>
 
