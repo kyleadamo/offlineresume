@@ -1,1 +1,4 @@
 project_id = "ctkgvbndbizbzqjgdsir"
+
+[functions.parse-resume]
+verify_jwt = false
