@@ -2,6 +2,23 @@ import { Resume } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
 import { createNewSectionRenderers } from './newSectionRenderers';
+import { Zap, Briefcase, GraduationCap, Rocket, Users, Award, Globe, Trophy, Heart, BookOpen, Handshake, FileCheck, Sparkles } from 'lucide-react';
+
+const sectionIcons: Record<string, React.ReactNode> = {
+  Skills: <Zap className="w-3 h-3" />,
+  Experience: <Briefcase className="w-3 h-3" />,
+  Education: <GraduationCap className="w-3 h-3" />,
+  Projects: <Rocket className="w-3 h-3" />,
+  References: <Users className="w-3 h-3" />,
+  Certifications: <Award className="w-3 h-3" />,
+  Languages: <Globe className="w-3 h-3" />,
+  Awards: <Trophy className="w-3 h-3" />,
+  Volunteer: <Heart className="w-3 h-3" />,
+  Publications: <BookOpen className="w-3 h-3" />,
+  Affiliations: <Handshake className="w-3 h-3" />,
+  Patents: <FileCheck className="w-3 h-3" />,
+  Interests: <Sparkles className="w-3 h-3" />,
+};
 
 interface TemplateProps {
   resume: Resume;
@@ -20,7 +37,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
   const newRenderers = createNewSectionRenderers(resume, {
     sectionClass,
     headingClass: '',
-    renderHeading: (label) => <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{label}</h3>,
+    renderHeading: (label) => <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons[label] ?? <Sparkles className="w-3 h-3" />}<span>{label}</span></h3>,
     tagClass: "text-xs px-2 py-0.5 rounded-full border" + " " + "border-[hsl(243,75%,80%)] text-[hsl(243,75%,45%)]",
     textClass: "text-foreground",
     subTextClass: "text-muted-foreground",
@@ -38,7 +55,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     experience: () => experience.length > 0 ? (
       <div key="experience" data-section="experience" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>Experience</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['Experience']}<span>Experience</span></h3>
         <div className="space-y-4 mt-2">
           {experience.map((exp) => (
             <div key={exp.id} data-pdf-section className="border-l-2 pl-3" style={{ borderColor: 'hsl(243, 75%, 85%)' }}>
@@ -67,7 +84,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     education: () => education.length > 0 ? (
       <div key="education" data-section="education" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>Education</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['Education']}<span>Education</span></h3>
         <div className="space-y-3 mt-2">
           {education.map((edu) => (
             <div key={edu.id} data-pdf-section className="border-l-2 pl-3" style={{ borderColor: 'hsl(243, 75%, 85%)' }}>
@@ -85,7 +102,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     skills: () => skills.length > 0 ? (
       <div key="skills" data-section="skills" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>Skills</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['Skills']}<span>Skills</span></h3>
         <div className="space-y-2 mt-2">
           {skills.map((cat) => (
             <div key={cat.id} data-pdf-section>
@@ -104,7 +121,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     projects: () => projects.length > 0 ? (
       <div key="projects" data-section="projects" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>Projects</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['Projects']}<span>Projects</span></h3>
         <div className="space-y-3 mt-2">
           {projects.map((proj) => (
             <div key={proj.id} data-pdf-section className="border-l-2 pl-3" style={{ borderColor: 'hsl(243, 75%, 85%)' }}>
@@ -123,7 +140,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     references: () => references.length > 0 ? (
       <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>References</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['References']}<span>References</span></h3>
         <div className="grid grid-cols-2 gap-3 mt-2">
           {references.map((ref) => (
             <div key={ref.id} data-pdf-section className="border rounded-lg p-3" style={{ borderColor: 'hsl(243, 75%, 80%)' }}>
