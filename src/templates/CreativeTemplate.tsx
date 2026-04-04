@@ -55,7 +55,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     experience: () => experience.length > 0 ? (
       <div key="experience" data-section="experience" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>Experience</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['Experience']}<span>Experience</span></h3>
         <div className="space-y-4 mt-2">
           {experience.map((exp) => (
             <div key={exp.id} data-pdf-section className="border-l-2 pl-3" style={{ borderColor: 'hsl(243, 75%, 85%)' }}>
