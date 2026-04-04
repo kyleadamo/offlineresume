@@ -193,13 +193,13 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
             </div>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-3">
-            {profile.email && <span>✉ {profile.email}</span>}
-            {profile.phone && <span>☎ {profile.phone}</span>}
-            {profile.location && <span>📍 {profile.location}</span>}
+            {profile.email && <span className="inline-flex items-center gap-1"><Mail className="w-3 h-3" /> {profile.email}</span>}
+            {profile.phone && <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3" /> {profile.phone}</span>}
+            {profile.location && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" /> {profile.location}</span>}
             <LinkedInDisplay profile={profile} />
             <WebsiteDisplay profile={profile} />
             {profile.links?.filter(link => !(profile.linkedin && link.label?.toLowerCase() === 'linkedin') && !(profile.website && ['website', 'personal site', 'portfolio'].includes(link.label?.toLowerCase()))).map((link) => (
-              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline">🔗 {link.label}</a>
+              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline inline-flex items-center gap-1"><Link className="w-3 h-3" /> {link.label}</a>
             ))}
           </div>
         </div>
