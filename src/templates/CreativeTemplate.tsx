@@ -121,7 +121,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     ) : null,
     projects: () => projects.length > 0 ? (
       <div key="projects" data-section="projects" className={`mb-6 ${sectionClass}`}>
-        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-block text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>Projects</h3>
+        <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['Projects']}<span>Projects</span></h3>
         <div className="space-y-3 mt-2">
           {projects.map((proj) => (
             <div key={proj.id} data-pdf-section className="border-l-2 pl-3" style={{ borderColor: 'hsl(243, 75%, 85%)' }}>
