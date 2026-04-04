@@ -95,8 +95,8 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
               {proj.url && <a href={proj.url} target="_blank" rel="noopener noreferrer" className="text-xs text-muted-foreground hover:text-foreground underline ml-2">{proj.url.replace(/^https?:\/\//, '')}</a>}
               {proj.description && <p className="text-muted-foreground text-xs mt-0.5">{proj.description}</p>}
               {proj.highlights && proj.highlights.filter(Boolean).length > 0 && (
-                <ul className="mt-1 text-xs text-muted-foreground list-disc list-inside space-y-0.5">
-                  {proj.highlights.filter(Boolean).map((h, i) => <li key={i}>{h}</li>)}
+                <ul className="mt-1 text-xs text-muted-foreground space-y-0.5">
+                  {proj.highlights.filter(Boolean).map((h, i) => <li key={i} className="flex gap-2"><span className="shrink-0 mt-0.5">•</span><span>{h}</span></li>)}
                 </ul>
               )}
             </div>
