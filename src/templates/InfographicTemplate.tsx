@@ -2,6 +2,23 @@ import { Resume, normalizeSkill } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
 import { createNewSectionRenderers } from './newSectionRenderers';
+import { Zap, Briefcase, GraduationCap, Rocket, Users, Mail, Phone, MapPin, Link, Award, Globe, Trophy, Heart, BookOpen, Handshake, FileCheck, Sparkles } from 'lucide-react';
+
+const sectionIcons: Record<string, React.ReactNode> = {
+  Skills: <Zap className="w-3 h-3" />,
+  Experience: <Briefcase className="w-3 h-3" />,
+  Education: <GraduationCap className="w-3 h-3" />,
+  Projects: <Rocket className="w-3 h-3" />,
+  References: <Users className="w-3 h-3" />,
+  Certifications: <Award className="w-3 h-3" />,
+  Languages: <Globe className="w-3 h-3" />,
+  Awards: <Trophy className="w-3 h-3" />,
+  Volunteer: <Heart className="w-3 h-3" />,
+  Publications: <BookOpen className="w-3 h-3" />,
+  Affiliations: <Handshake className="w-3 h-3" />,
+  Patents: <FileCheck className="w-3 h-3" />,
+  Interests: <Sparkles className="w-3 h-3" />,
+};
 
 interface TemplateProps {
   resume: Resume;
