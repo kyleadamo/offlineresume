@@ -89,9 +89,11 @@ const ImportPage = () => {
   /* ── Confirm preview → create resume ────────────────── */
   const handleConfirmPreview = useCallback(() => {
     if (!preview) return;
+    const blank = createBlankResume();
     const resume: Resume = {
-      ...createBlankResume(),
+      ...blank,
       ...preview,
+      profile: { ...blank.profile, ...preview.profile, links: preview.profile?.links?.map(l => ({ id: l.id || crypto.randomUUID(), label: l.label || '', url: l.url || '' })) || [] },
       id: crypto.randomUUID(),
       title: preview.profile?.name
         ? `${preview.profile.name}'s Resume`
