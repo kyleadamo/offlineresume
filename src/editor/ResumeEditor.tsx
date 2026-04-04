@@ -4,7 +4,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Plus, Trash2, GripVertical, Eye, EyeOff } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Eye, EyeOff, Settings2, ChevronDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ExperienceItem, EducationItem, SkillCategory, ProjectItem, ReferenceItem, normalizeSkill, SkillItem, CertificationItem, LanguageItem, AwardItem, VolunteerItem, PublicationItem, AffiliationItem, PatentItem } from '@/schema/resume';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -79,27 +80,32 @@ const ResumeEditor = () => {
 
   return (
     <div className="p-6 space-y-4 animate-fade-in">
-      <div className="bg-secondary/30 border border-border rounded-lg px-4 py-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">Section Order</p>
-        <SortableList
-          items={sectionOrder}
-          onReorder={handleSectionReorder}
-          className="space-y-1"
-          renderItem={(section, dragHandle) => (
-            <div className="flex items-center gap-2 py-1">
-              {dragHandle}
-              <span className={`text-sm flex-1 ${section.visible ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
-                {section.label}
-              </span>
-              <Switch
-                checked={section.visible}
-                onCheckedChange={() => toggleSectionVisibility(section.id)}
-                className="scale-75"
-              />
-            </div>
-          )}
-        />
-      </div>
+      <Collapsible className="bg-secondary/30 border border-border rounded-lg px-4 py-3">
+        <CollapsibleTrigger className="flex items-center justify-between w-full cursor-pointer group">
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Section Order</p>
+          <Settings2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2">
+          <SortableList
+            items={sectionOrder}
+            onReorder={handleSectionReorder}
+            className="space-y-1"
+            renderItem={(section, dragHandle) => (
+              <div className="flex items-center gap-2 py-1">
+                {dragHandle}
+                <span className={`text-sm flex-1 ${section.visible ? 'text-foreground' : 'text-muted-foreground line-through'}`}>
+                  {section.label}
+                </span>
+                <Switch
+                  checked={section.visible}
+                  onCheckedChange={() => toggleSectionVisibility(section.id)}
+                  className="scale-75"
+                />
+              </div>
+            )}
+          />
+        </CollapsibleContent>
+      </Collapsible>
 
       <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
         <AccordionItem value="profile" id="editor-section-profile" className="bg-secondary/30 border border-border rounded-lg mb-3 px-4">
