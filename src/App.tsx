@@ -10,6 +10,7 @@ import BuilderPage from "./pages/BuilderPage.tsx";
 import ImportPage from "./pages/ImportPage.tsx";
 import CoverLetterBuilderPage from "./pages/CoverLetterBuilderPage.tsx";
 import ImportCoverLetterPage from "./pages/ImportCoverLetterPage.tsx";
+import WorkspacePage from "./pages/WorkspacePage.tsx";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
               <Route path="/import" element={<ImportPage />} />
               <Route path="/cover-letter/builder" element={<CoverLetterBuilderPage />} />
               <Route path="/cover-letter/import" element={<ImportCoverLetterPage />} />
+              <Route path="/workspace" element={<WorkspacePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>

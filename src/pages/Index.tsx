@@ -1,266 +1,201 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
-import { useCoverLetter } from '@/hooks/CoverLetterContext';
-import { FileText, Upload, ClipboardPaste, Plus, Mail, Trash2 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import {
-  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
-  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { MoreHorizontal } from 'lucide-react';
+import { TemplateId, Resume } from '@/schema/resume';
+import CreateResumeModal from '@/components/CreateResumeModal';
 
-const WorkspaceEntry = () => {
+import MinimalTemplate from '@/templates/MinimalTemplate';
+import ProfessionalTemplate from '@/templates/ProfessionalTemplate';
+import ModernTemplate from '@/templates/ModernTemplate';
+import BrutalistTemplate from '@/templates/BrutalistTemplate';
+import ExecutiveTemplate from '@/templates/ExecutiveTemplate';
+import CreativeTemplate from '@/templates/CreativeTemplate';
+import CompactTemplate from '@/templates/CompactTemplate';
+import AcademicTemplate from '@/templates/AcademicTemplate';
+import TechTemplate from '@/templates/TechTemplate';
+import ElegantTemplate from '@/templates/ElegantTemplate';
+import InfographicTemplate from '@/templates/InfographicTemplate';
+import ClassicTemplate from '@/templates/ClassicTemplate';
+
+import demoResumeData from '@/data/demoResume.json';
+
+const templateMap: Record<TemplateId, React.ComponentType<any>> = {
+  minimal: MinimalTemplate,
+  professional: ProfessionalTemplate,
+  modern: ModernTemplate,
+  brutalist: BrutalistTemplate,
+  executive: ExecutiveTemplate,
+  creative: CreativeTemplate,
+  compact: CompactTemplate,
+  academic: AcademicTemplate,
+  tech: TechTemplate,
+  elegant: ElegantTemplate,
+  infographic: InfographicTemplate,
+  classic: ClassicTemplate,
+  editorial: ProfessionalTemplate,
+};
+
+const primaryTemplates: { id: TemplateId; label: string }[] = [
+  { id: 'creative', label: 'Creative' },
+  { id: 'modern', label: 'Modern' },
+  { id: 'professional', label: 'Professional' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'classic', label: 'Classic' },
+];
+
+const overflowTemplates: { id: TemplateId; label: string }[] = [
+  { id: 'brutalist', label: 'Brutalist' },
+  { id: 'executive', label: 'Executive' },
+  { id: 'compact', label: 'Compact' },
+  { id: 'academic', label: 'Academic' },
+  { id: 'tech', label: 'Tech' },
+  { id: 'elegant', label: 'Elegant' },
+  { id: 'infographic', label: 'Infographic' },
+];
+
+const LandingPage = () => {
   const navigate = useNavigate();
-  const { createResume, resumes, setActive, deleteResume } = useResume();
-  const { createLetter, letters, setActive: setActiveLetter, deleteLetter } = useCoverLetter();
-  const [tab, setTab] = useState<'resumes' | 'letters'>('resumes');
-  const [deleteTarget, setDeleteTarget] = useState<{ type: 'resume' | 'letter'; id: string; name: string } | null>(null);
+  const { resumes, setActive } = useResume();
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId>('creative');
+  const [modalOpen, setModalOpen] = useState(false);
 
-  const handleConfirmDelete = () => {
-    if (!deleteTarget) return;
-    if (deleteTarget.type === 'resume') deleteResume(deleteTarget.id);
-    else deleteLetter(deleteTarget.id);
-    setDeleteTarget(null);
+  const hasSavedResumes = resumes.length > 0;
+
+  // Use most recent saved resume or demo fallback
+  const previewResume: Resume = hasSavedResumes
+    ? { ...resumes[0], templateId: selectedTemplate }
+    : { ...demoResumeData as unknown as Resume, templateId: selectedTemplate };
+
+  const TemplateComponent = templateMap[selectedTemplate] || CreativeTemplate;
+
+  const handleEditResume = () => {
+    if (hasSavedResumes) {
+      setActive(resumes[0].id);
+      navigate('/builder');
+    } else {
+      setModalOpen(true);
+    }
   };
-
-  const handleStartBlank = () => {
-    createResume();
-    navigate('/builder');
-  };
-
-  const handleOpenExisting = (id: string) => {
-    setActive(id);
-    navigate('/builder');
-  };
-
-  const handleStartBlankLetter = () => {
-    createLetter();
-    navigate('/cover-letter/builder');
-  };
-
-  const handleOpenExistingLetter = (id: string) => {
-    setActiveLetter(id);
-    navigate('/cover-letter/builder');
-  };
-
-  const resumeActions = [
-    {
-      icon: Plus,
-      title: 'Start from blank',
-      description: 'Begin with a clean canvas',
-      onClick: handleStartBlank,
-    },
-    {
-      icon: Upload,
-      title: 'Import JSON',
-      description: 'Upload a structured resume file',
-      onClick: () => navigate('/import?mode=json'),
-    },
-    {
-      icon: ClipboardPaste,
-      title: 'Paste resume',
-      description: "Paste text and we'll structure it",
-      onClick: () => navigate('/import?mode=paste'),
-    },
-  ];
-
-  const letterActions = [
-    {
-      icon: Plus,
-      title: 'New cover letter',
-      description: 'Start a fresh cover letter',
-      onClick: handleStartBlankLetter,
-    },
-    {
-      icon: Upload,
-      title: 'Import JSON',
-      description: 'Upload a structured cover letter file',
-      onClick: () => navigate('/cover-letter/import?mode=json'),
-    },
-    {
-      icon: ClipboardPaste,
-      title: 'Paste markdown',
-      description: 'Paste text or markdown content',
-      onClick: () => navigate('/cover-letter/import?mode=markdown'),
-    },
-  ];
-
-  const actions = tab === 'resumes' ? resumeActions : letterActions;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6">
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, ease: 'easeOut' }}
-        className="w-full max-w-2xl"
-      >
-        <div className="text-center mb-12">
-          <h1 className="text-foreground mb-3">OfflineResume</h1>
-          <p className="text-muted-foreground text-lg">
-            Your resume, stored locally. No accounts. No cloud storage.
-          </p>
-        </div>
+    <div className="dark bg-background text-foreground min-h-screen">
+      {/* Header */}
+      <header className="flex items-center justify-between px-6 py-4 max-w-7xl mx-auto">
+        <span className="text-lg font-semibold tracking-tight text-foreground">
+          Offline Resume
+        </span>
+        {hasSavedResumes ? (
+          <Button variant="outline" size="sm" onClick={() => navigate('/workspace')}>
+            My resumes
+          </Button>
+        ) : (
+          <Button size="sm" onClick={() => setModalOpen(true)}>
+            Create my resume
+          </Button>
+        )}
+      </header>
 
-        {/* Tabs */}
-        <div className="flex gap-2 p-1 bg-secondary rounded-lg mb-6">
+      {/* Hero */}
+      <section className="px-6 pt-12 pb-6 text-center max-w-3xl mx-auto">
+        <motion.h1
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-4xl sm:text-5xl font-bold tracking-tight mb-4"
+        >
+          Your resume, stored locally
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="text-muted-foreground text-lg max-w-xl mx-auto"
+        >
+          No accounts. No cloud. Build a beautiful resume that stays on your device.
+        </motion.p>
+      </section>
+
+      {/* Template Switcher */}
+      <div className="flex items-center justify-center gap-1 px-6 mb-6">
+        {primaryTemplates.map((t) => (
           <button
-            onClick={() => setTab('resumes')}
-            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-              tab === 'resumes'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
+            key={t.id}
+            onClick={() => setSelectedTemplate(t.id)}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              selectedTemplate === t.id
+                ? 'bg-accent text-accent-foreground'
+                : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
             }`}
           >
-            <FileText className="w-4 h-4" />
-            Resumes
-            {resumes.length > 0 && (
-              <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">
-                {resumes.length}
-              </span>
-            )}
+            {t.label}
           </button>
-          <button
-            onClick={() => setTab('letters')}
-            className={`flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-md text-sm font-medium transition-colors ${
-              tab === 'letters'
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <Mail className="w-4 h-4" />
-            Cover Letters
-            {letters.length > 0 && (
-              <span className="text-xs bg-muted text-muted-foreground px-1.5 py-0.5 rounded-full">
-                {letters.length}
-              </span>
-            )}
-          </button>
-        </div>
-
-        <div className="grid gap-4">
-          {actions.map((action, i) => (
-            <motion.button
-              key={action.title}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 + i * 0.06, duration: 0.3 }}
-              onClick={action.onClick}
-              className="flex items-center gap-5 p-6 bg-card rounded-lg border border-border hover:border-accent/40 hover:shadow-sm transition-all duration-200 text-left group"
+        ))}
+        <Popover>
+          <PopoverTrigger asChild>
+            <button
+              className={`px-2 py-1.5 rounded-md text-sm font-medium transition-colors ${
+                overflowTemplates.some((t) => t.id === selectedTemplate)
+                  ? 'bg-accent text-accent-foreground'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-accent/10'
+              }`}
             >
-              <div className="w-10 h-10 rounded-md bg-secondary flex items-center justify-center shrink-0 group-hover:bg-accent/10 transition-colors">
-                <action.icon className="w-5 h-5 text-foreground/70" />
-              </div>
-              <div>
-                <div className="font-medium text-foreground">{action.title}</div>
-                <div className="text-sm text-muted-foreground mt-0.5">{action.description}</div>
-              </div>
-            </motion.button>
-          ))}
+              <MoreHorizontal className="w-4 h-4" />
+            </button>
+          </PopoverTrigger>
+          <PopoverContent className="w-40 p-1" align="center">
+            {overflowTemplates.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setSelectedTemplate(t.id)}
+                className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+                  selectedTemplate === t.id
+                    ? 'bg-accent text-accent-foreground'
+                    : 'text-foreground hover:bg-accent/10'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </PopoverContent>
+        </Popover>
+      </div>
+
+      {/* Resume Preview */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="px-6 pb-16 flex justify-center"
+      >
+        <div className="relative group w-full max-w-3xl">
+          <div
+            className="bg-white rounded-lg shadow-2xl overflow-hidden mx-auto"
+            style={{ maxHeight: '75vh' }}
+          >
+            <div className="overflow-y-auto" style={{ maxHeight: '75vh' }}>
+              <TemplateComponent resume={previewResume} />
+            </div>
+          </div>
+
+          {/* Hover overlay */}
+          <div
+            onClick={handleEditResume}
+            className="absolute inset-0 rounded-lg bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer"
+          >
+            <Button size="lg" className="shadow-lg">
+              {hasSavedResumes ? 'Edit this resume' : 'Create my resume'}
+            </Button>
+          </div>
         </div>
-
-        {/* Recent resumes */}
-        {tab === 'resumes' && resumes.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-12"
-          >
-            <h3 className="text-muted-foreground text-sm font-medium mb-4 uppercase tracking-wider">
-              Recent resumes
-            </h3>
-            <div className="grid gap-3">
-              {resumes.slice(0, 5).map((resume) => (
-                <div
-                  key={resume.id}
-                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left cursor-pointer"
-                  onClick={() => handleOpenExisting(resume.id)}
-                >
-                  <FileText className="w-4 h-4 text-muted-foreground shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-foreground truncate">{resume.title}</div>
-                    {resume.targetRole && (
-                      <div className="text-sm text-muted-foreground truncate">{resume.targetRole}</div>
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground shrink-0 text-right">
-                    <div>{new Date(resume.lastEdited).toLocaleDateString()}</div>
-                    <div>{new Date(resume.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ type: 'resume', id: resume.id, name: resume.title }); }}
-                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Recent cover letters */}
-        {tab === 'letters' && letters.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-12"
-          >
-            <h3 className="text-muted-foreground text-sm font-medium mb-4 uppercase tracking-wider">
-              Recent cover letters
-            </h3>
-            <div className="grid gap-3">
-              {letters.slice(0, 5).map((letter) => (
-                <div
-                  key={letter.id}
-                  className="flex items-center gap-4 p-4 bg-card rounded-lg border border-border hover:border-accent/40 transition-all duration-200 text-left cursor-pointer"
-                  onClick={() => handleOpenExistingLetter(letter.id)}
-                >
-                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
-                  <div className="min-w-0 flex-1">
-                    <div className="font-medium text-foreground truncate">{letter.title}</div>
-                    {letter.companyName && (
-                      <div className="text-sm text-muted-foreground truncate">{letter.companyName}</div>
-                    )}
-                  </div>
-                  <div className="text-xs text-muted-foreground shrink-0 text-right">
-                    <div>{new Date(letter.lastEdited).toLocaleDateString()}</div>
-                    <div>{new Date(letter.lastEdited).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                  </div>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setDeleteTarget({ type: 'letter', id: letter.id, name: letter.title }); }}
-                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        {/* Delete confirmation dialog */}
-        <AlertDialog open={!!deleteTarget} onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete {deleteTarget?.type === 'resume' ? 'resume' : 'cover letter'}?</AlertDialogTitle>
-              <AlertDialogDescription>
-                "{deleteTarget?.name}" will be permanently deleted. This cannot be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                Delete
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
       </motion.div>
+
+      <CreateResumeModal open={modalOpen} onOpenChange={setModalOpen} />
     </div>
   );
 };
 
-export default WorkspaceEntry;
+export default LandingPage;
