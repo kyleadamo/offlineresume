@@ -29,6 +29,7 @@ const App = () => (
               <Route path="/import" element={<ImportPage />} />
               <Route path="/cover-letter/builder" element={<CoverLetterBuilderPage />} />
               <Route path="/cover-letter/import" element={<ImportCoverLetterPage />} />
+              <Route path="/workspace" element={<WorkspacePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
