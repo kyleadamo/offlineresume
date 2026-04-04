@@ -90,10 +90,11 @@ const ImportPage = () => {
   const handleConfirmPreview = useCallback(() => {
     if (!preview) return;
     const blank = createBlankResume();
+    // Deep merge parsed data over blank defaults to ensure all required fields exist
     const resume: Resume = {
       ...blank,
-      ...preview,
-      profile: { ...blank.profile, ...preview.profile, links: preview.profile?.links?.map(l => ({ id: l.id || crypto.randomUUID(), label: l.label || '', url: l.url || '' })) || [] },
+      ...(preview as any),
+      profile: { ...blank.profile, ...(preview.profile || {}) },
       id: crypto.randomUUID(),
       title: preview.profile?.name
         ? `${preview.profile.name}'s Resume`
