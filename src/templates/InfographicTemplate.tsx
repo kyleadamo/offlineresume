@@ -2,6 +2,23 @@ import { Resume, normalizeSkill } from '@/schema/resume';
 import { LinkedInDisplay, WebsiteDisplay } from './LinkedInBadge';
 import { getVisibleSections } from './useSectionOrder';
 import { createNewSectionRenderers } from './newSectionRenderers';
+import { Zap, Briefcase, GraduationCap, Rocket, Users, Mail, Phone, MapPin, Link, Award, Globe, Trophy, Heart, BookOpen, Handshake, FileCheck, Sparkles } from 'lucide-react';
+
+const sectionIcons: Record<string, React.ReactNode> = {
+  Skills: <Zap className="w-3 h-3" />,
+  Experience: <Briefcase className="w-3 h-3" />,
+  Education: <GraduationCap className="w-3 h-3" />,
+  Projects: <Rocket className="w-3 h-3" />,
+  References: <Users className="w-3 h-3" />,
+  Certifications: <Award className="w-3 h-3" />,
+  Languages: <Globe className="w-3 h-3" />,
+  Awards: <Trophy className="w-3 h-3" />,
+  Volunteer: <Heart className="w-3 h-3" />,
+  Publications: <BookOpen className="w-3 h-3" />,
+  Affiliations: <Handshake className="w-3 h-3" />,
+  Patents: <FileCheck className="w-3 h-3" />,
+  Interests: <Sparkles className="w-3 h-3" />,
+};
 
 interface TemplateProps {
   resume: Resume;
@@ -22,7 +39,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     headingClass: '',
     renderHeading: (label) => (
       <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-        <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>✦</span>
+        <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons[label] ?? <Sparkles className="w-3 h-3" />}</span>
         {label}
       </h3>
     ),
@@ -41,7 +58,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     skills: () => skills.length > 0 ? (
       <div key="skills" data-section="skills" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>⚡</span>
+          <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}><Zap className="w-3 h-3" /></span>
           Skills
         </h3>
         <div className="space-y-3">
@@ -62,7 +79,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     experience: () => experience.length > 0 ? (
       <div key="experience" data-section="experience" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(142, 72%, 29%)' }}>💼</span>
+          <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(142, 72%, 29%)' }}><Briefcase className="w-3 h-3" /></span>
           Experience
         </h3>
         <div className="relative pl-5">
@@ -98,7 +115,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     education: () => education.length > 0 ? (
       <div key="education" data-section="education" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(32, 91%, 37%)' }}>🎓</span>
+          <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(32, 91%, 37%)' }}><GraduationCap className="w-3 h-3" /></span>
           Education
         </h3>
         <div className="space-y-3">
@@ -119,7 +136,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     projects: () => projects.length > 0 ? (
       <div key="projects" data-section="projects" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>🚀</span>
+          <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}><Rocket className="w-3 h-3" /></span>
           Projects
         </h3>
         <div className="space-y-3">
@@ -141,7 +158,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     references: () => references.length > 0 ? (
       <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>👤</span>
+          <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}><Users className="w-3 h-3" /></span>
           References
         </h3>
         <div className="grid grid-cols-2 gap-3">
@@ -176,13 +193,13 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
             </div>
           </div>
           <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground mt-3">
-            {profile.email && <span>✉ {profile.email}</span>}
-            {profile.phone && <span>☎ {profile.phone}</span>}
-            {profile.location && <span>📍 {profile.location}</span>}
+            {profile.email && <span className="inline-flex items-center gap-1"><Mail className="w-3 h-3" /> {profile.email}</span>}
+            {profile.phone && <span className="inline-flex items-center gap-1"><Phone className="w-3 h-3" /> {profile.phone}</span>}
+            {profile.location && <span className="inline-flex items-center gap-1"><MapPin className="w-3 h-3" /> {profile.location}</span>}
             <LinkedInDisplay profile={profile} />
             <WebsiteDisplay profile={profile} />
             {profile.links?.filter(link => !(profile.linkedin && link.label?.toLowerCase() === 'linkedin') && !(profile.website && ['website', 'personal site', 'portfolio'].includes(link.label?.toLowerCase()))).map((link) => (
-              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline">🔗 {link.label}</a>
+              <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="hover:text-foreground underline inline-flex items-center gap-1"><Link className="w-3 h-3" /> {link.label}</a>
             ))}
           </div>
         </div>
