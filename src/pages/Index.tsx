@@ -171,12 +171,12 @@ const LandingPage = () => {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="px-6 pb-16 flex justify-center"
       >
-        <div className="relative group w-full max-w-4xl">
+        <div className="relative group w-full max-w-3xl">
           <div
-            className="bg-white rounded-lg shadow-2xl overflow-y-auto mx-auto"
-            style={{ maxHeight: '80vh', aspectRatio: '8.5/11' }}
+            className="bg-white rounded-lg shadow-2xl overflow-hidden mx-auto"
+            style={{ maxHeight: '75vh' }}
           >
-            <div className="origin-top-left" style={{ width: '794px', transform: 'scale(var(--preview-scale, 1))' }}>
+            <div className="overflow-y-auto" style={{ maxHeight: '75vh' }}>
               <TemplateComponent resume={previewResume} />
             </div>
           </div>
