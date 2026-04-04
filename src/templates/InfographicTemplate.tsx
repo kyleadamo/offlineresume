@@ -79,7 +79,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
     experience: () => experience.length > 0 ? (
       <div key="experience" data-section="experience" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-3 flex items-center gap-2">
-          <span className="w-5 h-5 rounded flex items-center justify-center text-[10px] text-accent-foreground" style={{ backgroundColor: 'hsl(142, 72%, 29%)' }}>💼</span>
+          <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(142, 72%, 29%)' }}><Briefcase className="w-3 h-3" /></span>
           Experience
         </h3>
         <div className="relative pl-5">
