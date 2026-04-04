@@ -82,7 +82,7 @@ const ResumeEditor = () => {
     <div className="p-6 space-y-4 animate-fade-in">
       <Collapsible className="bg-secondary/30 border border-border rounded-lg px-4 py-3">
         <CollapsibleTrigger className="flex items-center justify-between w-full cursor-pointer group">
-          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Section Order</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Sections</p>
           <Settings2 className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2">
