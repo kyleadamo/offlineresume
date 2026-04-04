@@ -161,7 +161,7 @@ const InfographicTemplate = ({ resume }: TemplateProps) => {
           <span className="w-5 h-5 rounded flex items-center justify-center text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}><Users className="w-3 h-3" /></span>
           References
         </h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           {references.map((ref) => (
             <div key={ref.id} data-pdf-section className="rounded-lg border border-border p-3 flex items-start gap-3">
               {ref.photo && <img src={ref.photo} alt={ref.name} className="w-10 h-10 rounded-full object-cover shrink-0 ring-2 ring-accent" />}

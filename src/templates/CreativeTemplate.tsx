@@ -141,7 +141,7 @@ const CreativeTemplate = ({ resume }: TemplateProps) => {
     references: () => references.length > 0 ? (
       <div key="references" data-section="references" className={`mb-6 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest mb-3 px-2 py-1 rounded inline-flex items-center gap-1.5 text-accent-foreground" style={{ backgroundColor: 'hsl(243, 75%, 59%)' }}>{sectionIcons['References']}<span>References</span></h3>
-        <div className="grid grid-cols-2 gap-3 mt-2">
+        <div className="space-y-3 mt-2">
           {references.map((ref) => (
             <div key={ref.id} data-pdf-section className="border rounded-lg p-3" style={{ borderColor: 'hsl(243, 75%, 80%)' }}>
               <div className="flex items-start gap-3">

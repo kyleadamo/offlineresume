@@ -119,7 +119,7 @@ const ModernTemplate = ({ resume }: TemplateProps) => {
     references: () => references.length > 0 ? (
       <div key="references" data-section="references" className={`mb-5 ${sectionClass}`}>
         <h3 className="text-xs font-bold uppercase tracking-widest text-accent mb-3">References</h3>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="space-y-3">
           {references.map((ref) => (
             <div key={ref.id} data-pdf-section className="border border-border rounded-lg p-3 flex items-start gap-3">
               {ref.photo && <img src={ref.photo} alt={ref.name} className="w-10 h-10 rounded-full object-cover shrink-0" />}
