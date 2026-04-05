@@ -239,6 +239,7 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
         <div
           ref={printRef}
           className="bg-white shadow-lg relative"
+          data-resume-print
           style={{ width: `${currentPage.widthMm}mm`, padding: '12mm 16mm' }}
           onClick={(e) => {
             let el = e.target as HTMLElement | null;
