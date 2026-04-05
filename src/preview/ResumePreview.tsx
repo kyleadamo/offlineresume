@@ -104,69 +104,76 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
 
   return (
     <div className="py-8 px-6 space-y-4 max-w-[1200px] mx-auto">
-      <div className="flex items-center gap-2 flex-wrap">
-        {primaryTemplates.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => handleTemplateChange(t.id)}
-            className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 ${
-              displayResume.templateId === t.id
-                ? 'bg-foreground text-background font-medium'
-                : 'bg-card border border-border text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-
-        <Popover open={moreOpen} onOpenChange={setMoreOpen}>
-          <PopoverTrigger asChild>
-            <button
-            className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
-                isMoreActive
-                  ? 'bg-foreground text-background font-medium'
-                  : 'bg-card border border-border text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {isMoreActive ? activeMoreLabel : 'More'}
-              <ChevronDown className="w-3 h-3" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-44 p-1" align="start">
-            {moreTemplates.map((t) => (
+      <div className="flex justify-center">
+        <div style={{ width: `${currentPage.widthMm}mm` }}>
+          <div className="flex items-center gap-2 flex-wrap">
+            {primaryTemplates.map((t) => (
               <button
                 key={t.id}
-                onClick={() => {
-                  handleTemplateChange(t.id);
-                  setMoreOpen(false);
-                }}
-                className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
+                onClick={() => handleTemplateChange(t.id)}
+                className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 ${
                   displayResume.templateId === t.id
-                    ? 'bg-foreground text-background font-medium'
-                    : 'text-foreground hover:bg-muted'
+                    ? 'font-medium text-white'
+                    : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                 }`}
+                style={displayResume.templateId === t.id ? { backgroundColor: '#FF4500' } : undefined}
               >
                 {t.label}
               </button>
             ))}
-          </PopoverContent>
-        </Popover>
 
-        {!hideControls && (
-          <div className="ml-auto flex items-center gap-1.5">
-            <DownloadPdfButton
-              printRef={printRef}
-              resume={displayResume}
-              currentPage={currentPage}
-            />
-            <OptionsMenu
-              pageSize={pageSize}
-              onPageSizeChange={setPageSize}
-              showPageBreaks={showPageBreaks}
-              onShowPageBreaksChange={setShowPageBreaks}
-            />
+            <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+              <PopoverTrigger asChild>
+                <button
+                className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
+                    isMoreActive
+                      ? 'font-medium text-white'
+                      : 'bg-card border border-border text-muted-foreground hover:text-foreground'
+                  }`}
+                  style={isMoreActive ? { backgroundColor: '#FF4500' } : undefined}
+                >
+                  {isMoreActive ? activeMoreLabel : 'More'}
+                  <ChevronDown className="w-3 h-3" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-44 p-1" align="start">
+                {moreTemplates.map((t) => (
+                  <button
+                    key={t.id}
+                    onClick={() => {
+                      handleTemplateChange(t.id);
+                      setMoreOpen(false);
+                    }}
+                    className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
+                      displayResume.templateId === t.id
+                        ? 'font-medium text-white'
+                        : 'text-foreground hover:bg-muted'
+                    }`}
+                    style={displayResume.templateId === t.id ? { backgroundColor: '#FF4500' } : undefined}
+                  >
+                    {t.label}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+
+            {!hideControls && (
+              <div className="ml-auto flex items-center gap-1.5">
+                <DownloadPdfButton
+                  printRef={printRef}
+                  resume={displayResume}
+                  currentPage={currentPage}
+                />
+                <OptionsMenu
+                  pageSize={pageSize}
+                  onPageSizeChange={setPageSize}
+                  showPageBreaks={showPageBreaks}
+                  onShowPageBreaksChange={setShowPageBreaks}
+                />
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
 
       <div className="flex justify-center">
