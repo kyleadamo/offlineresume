@@ -22,7 +22,7 @@ const HeroSection = ({ resume, onTemplateChange, onEditClick }: HeroSectionProps
 
       <button
         onClick={onEditClick}
-        className="inline-flex items-center gap-1.5 text-sm text-accent hover:text-accent/80 transition-colors mb-4"
+        className="inline-flex items-center gap-1.5 text-sm transition-colors mb-4 text-[#ff4400]"
       >
         <Pencil className="w-3.5 h-3.5" />
         Edit this resume
