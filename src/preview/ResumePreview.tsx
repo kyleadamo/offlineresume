@@ -11,7 +11,7 @@ import TechTemplate from '@/templates/TechTemplate';
 import ElegantTemplate from '@/templates/ElegantTemplate';
 import InfographicTemplate from '@/templates/InfographicTemplate';
 import ClassicTemplate from '@/templates/ClassicTemplate';
-import { TemplateId } from '@/schema/resume';
+import { Resume, TemplateId } from '@/schema/resume';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -74,19 +74,31 @@ const PAGE_SIZES: Record<PageSize, { label: string; widthMm: number; heightMm: n
 
 const PAGE_MARGIN_Y_MM = 12;
 
-const ResumePreview = () => {
-  const { activeResume, updateResume } = useResume();
+interface ResumePreviewProps {
+  resume?: Resume;
+  onTemplateChange?: (id: TemplateId) => void;
+  hideControls?: boolean;
+}
+
+const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: ResumePreviewProps = {}) => {
+  const { activeResume: contextResume, updateResume } = useResume();
+  const displayResume = resumeProp ?? contextResume;
   const [moreOpen, setMoreOpen] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>('letter');
   const [showPageBreaks, setShowPageBreaks] = useState(false);
   const [pageBreakLines, setPageBreakLines] = useState<number[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
 
-  if (!activeResume) return null;
+  if (!displayResume) return null;
 
-  const TemplateComponent = templateMap[activeResume.templateId] || MinimalTemplate;
-  const isMoreActive = moreTemplates.some((t) => t.id === activeResume.templateId);
-  const activeMoreLabel = moreTemplates.find((t) => t.id === activeResume.templateId)?.label;
+  const handleTemplateChange = (id: TemplateId) => {
+    if (onTemplateChange) onTemplateChange(id);
+    else if (displayResume) updateResume(displayResume.id, { templateId: id });
+  };
+
+  const TemplateComponent = templateMap[displayResume.templateId] || MinimalTemplate;
+  const isMoreActive = moreTemplates.some((t) => t.id === displayResume.templateId);
+  const activeMoreLabel = moreTemplates.find((t) => t.id === displayResume.templateId)?.label;
   const currentPage = PAGE_SIZES[pageSize];
   const usableHeightMm = currentPage.heightMm - PAGE_MARGIN_Y_MM * 2;
 
@@ -96,9 +108,9 @@ const ResumePreview = () => {
         {primaryTemplates.map((t) => (
           <button
             key={t.id}
-            onClick={() => updateResume(activeResume.id, { templateId: t.id })}
+            onClick={() => handleTemplateChange(t.id)}
             className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 ${
-              activeResume.templateId === t.id
+              displayResume.templateId === t.id
                 ? 'bg-foreground text-background font-medium'
                 : 'bg-card border border-border text-muted-foreground hover:text-foreground'
             }`}
@@ -110,7 +122,7 @@ const ResumePreview = () => {
         <Popover open={moreOpen} onOpenChange={setMoreOpen}>
           <PopoverTrigger asChild>
             <button
-              className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
+            className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
                 isMoreActive
                   ? 'bg-foreground text-background font-medium'
                   : 'bg-card border border-border text-muted-foreground hover:text-foreground'
@@ -129,7 +141,7 @@ const ResumePreview = () => {
                   setMoreOpen(false);
                 }}
                 className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
-                  activeResume.templateId === t.id
+                  displayResume.templateId === t.id
                     ? 'bg-foreground text-background font-medium'
                     : 'text-foreground hover:bg-muted'
                 }`}
