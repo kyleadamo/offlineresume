@@ -11,6 +11,7 @@ import TechTemplate from '@/templates/TechTemplate';
 import ElegantTemplate from '@/templates/ElegantTemplate';
 import InfographicTemplate from '@/templates/InfographicTemplate';
 import ClassicTemplate from '@/templates/ClassicTemplate';
+import KeynoteTemplate from '@/templates/KeynoteTemplate';
 import { Resume, TemplateId } from '@/schema/resume';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -45,6 +46,7 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   infographic: InfographicTemplate,
   classic: ClassicTemplate,
   editorial: ProfessionalTemplate,
+  keynote: KeynoteTemplate,
 };
 
 const allTemplates: { id: TemplateId; label: string }[] = [
@@ -60,6 +62,7 @@ const allTemplates: { id: TemplateId; label: string }[] = [
   { id: 'elegant', label: 'Elegant' },
   { id: 'infographic', label: 'Infographic' },
   { id: 'classic', label: 'Classic' },
+  { id: 'keynote', label: 'Keynote' },
 ];
 
 function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
