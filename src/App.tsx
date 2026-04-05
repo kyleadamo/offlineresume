@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ResumeProvider } from "@/hooks/ResumeContext";
 import { CoverLetterProvider } from "@/hooks/CoverLetterContext";
+import LandingPage from "./pages/LandingPage.tsx";
 import Index from "./pages/Index.tsx";
 import BuilderPage from "./pages/BuilderPage.tsx";
 import ImportPage from "./pages/ImportPage.tsx";
@@ -23,7 +24,8 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/workspace" element={<Index />} />
               <Route path="/builder" element={<BuilderPage />} />
               <Route path="/import" element={<ImportPage />} />
               <Route path="/cover-letter/builder" element={<CoverLetterBuilderPage />} />
