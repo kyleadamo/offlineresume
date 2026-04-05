@@ -137,7 +137,7 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
               <button
                 key={t.id}
                 onClick={() => {
-                  updateResume(activeResume.id, { templateId: t.id });
+                  handleTemplateChange(t.id);
                   setMoreOpen(false);
                 }}
                 className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
@@ -152,19 +152,21 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
           </PopoverContent>
         </Popover>
 
-        <div className="ml-auto flex items-center gap-1.5">
-          <DownloadPdfButton
-            printRef={printRef}
-            resume={activeResume}
-            currentPage={currentPage}
-          />
-          <OptionsMenu
-            pageSize={pageSize}
-            onPageSizeChange={setPageSize}
-            showPageBreaks={showPageBreaks}
-            onShowPageBreaksChange={setShowPageBreaks}
-          />
-        </div>
+        {!hideControls && (
+          <div className="ml-auto flex items-center gap-1.5">
+            <DownloadPdfButton
+              printRef={printRef}
+              resume={displayResume}
+              currentPage={currentPage}
+            />
+            <OptionsMenu
+              pageSize={pageSize}
+              onPageSizeChange={setPageSize}
+              showPageBreaks={showPageBreaks}
+              onShowPageBreaksChange={setShowPageBreaks}
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex justify-center">
@@ -184,12 +186,12 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
             }
           }}
         >
-          <TemplateComponent resume={activeResume} />
+          <TemplateComponent resume={displayResume} />
           <PageBreakOverlay
             printRef={printRef}
             showPageBreaks={showPageBreaks}
             usableHeightMm={usableHeightMm}
-            resume={activeResume}
+            resume={displayResume}
           />
         </div>
       </div>
