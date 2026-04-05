@@ -12,7 +12,7 @@ const HeroSection = ({ resume, onTemplateChange, onEditClick }: HeroSectionProps
   return (
     <section className="flex flex-col items-center pt-24 pb-16 px-6">
       <div className="text-center mb-10 max-w-2xl">
-        <h1 className="text-foreground text-4xl md:text-5xl font-semibold tracking-tight mb-4">
+        <h1 className="text-foreground text-4xl md:text-5xl font-semibold tracking-tight mb-4" style={{ fontFamily: "'Merriweather', serif" }}>
           Offline Resume
         </h1>
         <p className="text-muted-foreground text-lg md:text-xl">
