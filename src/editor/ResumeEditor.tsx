@@ -10,7 +10,7 @@ import { ExperienceItem, EducationItem, SkillCategory, ProjectItem, ReferenceIte
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SortableList, toStringItems, fromStringItems, type StringItem } from '@/components/SortableList';
 
 const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills', 'references', 'certifications', 'languages', 'awards', 'volunteer', 'publications', 'affiliations', 'patents', 'interests'];
@@ -218,19 +218,18 @@ function BulletList({ items, onChange, placeholder = 'Describe what you did...' 
         onReorder={(reordered) => onChange(fromStringItems(reordered))}
         className="space-y-2"
         renderItem={(si, dragHandle) => (
-          <div className="flex gap-2 items-center">
-            {dragHandle}
-            <span className="text-muted-foreground text-xs">•</span>
-            <Input
+          <div className="flex gap-2 items-start">
+            <div className="mt-2.5">{dragHandle}</div>
+            <span className="text-muted-foreground text-xs mt-2.5">•</span>
+            <ExpandableBulletInput
               value={si.value}
-              onChange={(e) => {
+              onChange={(val) => {
                 const newItems = [...items];
                 const idx = stringItems.findIndex((s) => s.id === si.id);
-                newItems[idx] = e.target.value;
+                newItems[idx] = val;
                 onChange(newItems);
               }}
               placeholder={placeholder}
-              className="flex-1"
             />
             {items.length > 1 && (
               <button
