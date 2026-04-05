@@ -63,24 +63,53 @@ const allTemplates: { id: TemplateId; label: string }[] = [
 ];
 
 function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
-  const [count, setCount] = useState(4);
+  const [count, setCount] = useState(allTemplates.length);
+
   useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const update = () => {
-      const w = el.clientWidth;
-      // ~80px per button + 70px for More button + gap
-      if (w >= 900) setCount(12);
-      else if (w >= 780) setCount(9);
-      else if (w >= 620) setCount(7);
-      else if (w >= 480) setCount(5);
-      else setCount(4);
+    const container = containerRef.current;
+    if (!container) return;
+
+    const GAP = 8; // gap-2
+    const MORE_BTN_WIDTH = 72; // approximate "More ▾" button width
+
+    const measure = () => {
+      // Temporarily render all buttons off-screen to measure their widths
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;display:flex;gap:8px;white-space:nowrap;';
+      allTemplates.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.className = 'text-xs px-3 py-1.5 rounded-md';
+        btn.textContent = t.label;
+        probe.appendChild(btn);
+      });
+      container.appendChild(probe);
+
+      const buttons = Array.from(probe.children) as HTMLElement[];
+      const btnWidths = buttons.map((b) => b.offsetWidth);
+      probe.remove();
+
+      const containerWidth = container.clientWidth;
+      let usedWidth = 0;
+      let fit = 0;
+
+      for (let i = 0; i < btnWidths.length; i++) {
+        const needed = usedWidth + btnWidths[i] + (i > 0 ? GAP : 0);
+        // If not the last button, reserve space for "More" button
+        const remaining = i < btnWidths.length - 1 ? MORE_BTN_WIDTH + GAP : 0;
+        if (needed + remaining > containerWidth) break;
+        usedWidth = needed;
+        fit++;
+      }
+
+      setCount(Math.max(2, fit));
     };
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(container);
     return () => ro.disconnect();
   }, [containerRef]);
+
   return count;
 }
 
