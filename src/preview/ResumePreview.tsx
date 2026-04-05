@@ -105,7 +105,7 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
   const [moreOpen, setMoreOpen] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>('letter');
   const [showPageBreaks, setShowPageBreaks] = useState(false);
-  const [pageBreakLines, setPageBreakLines] = useState<number[]>([]);
+  const printRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const visibleCount = useVisibleTemplateCount(stripRef);
 
@@ -117,7 +117,6 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
   };
 
   const TemplateComponent = templateMap[displayResume.templateId] || MinimalTemplate;
-  const visibleTemplates = allTemplates.slice(0, visibleCount);
   const visibleTemplates = allTemplates.slice(0, visibleCount);
   const overflowTemplates = allTemplates.slice(visibleCount);
   const isMoreActive = overflowTemplates.some((t) => t.id === displayResume.templateId);
