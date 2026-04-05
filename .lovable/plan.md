@@ -1,31 +1,31 @@
 
 
-## Fix: Resume Preview Inheriting Dark Mode on Landing Page
+## Expandable Bullet Text Editing
 
 ### Problem
-The landing page wraps everything in `<div className="dark">`, which changes CSS variables (e.g., `--foreground` becomes light, `--background` becomes dark). The resume templates use Tailwind classes like `text-foreground` and `bg-background`, so they inherit the dark theme — causing white text on dark backgrounds inside the preview.
+Bullet items in the resume editor use single-line `<Input>` fields. Long bullets get truncated and are hard to edit.
 
-### Fix
-Wrap the `ResumePreview` in the `HeroSection` with a light-mode reset div so templates render with their intended light-mode colors.
+### Solution
+Replace the `<Input>` in `BulletList` with a component that toggles between:
+- **Collapsed**: single-line input with text overflow ellipsis (current behavior)
+- **Expanded**: multi-line `<Textarea>` that auto-sizes, triggered on focus
 
-### Change — `src/components/landing/HeroSection.tsx`
+When the user focuses/clicks a bullet, it switches to a `<Textarea>`. On blur, it collapses back to the single-line view. The textarea will auto-resize to fit content.
 
-Add a `<div className="light">` wrapper (which resets to the `:root` CSS variables) around the resume preview container. Since Tailwind's dark mode uses the `dark` class, we need to explicitly scope a non-dark context. The simplest approach: add a wrapper div with an inline style or a class that resets to the light CSS variable values.
+### Changes
 
-Specifically, wrap the preview `<div>` in a container that removes the `dark` class scope:
+**File: `src/editor/ResumeEditor.tsx`**
 
-```tsx
-{/* Reset to light mode for resume preview */}
-<div className="not-dark" style={{ colorScheme: 'light' }}>
-  <div className="relative w-full max-w-[900px] rounded-xl border border-border bg-card/50 overflow-hidden">
-    ...ResumePreview...
-  </div>
-</div>
-```
+1. Create an inline `ExpandableBulletInput` component (or add state logic directly in the render):
+   - State: `editing: boolean` (default false)
+   - When `editing` is false: render an `<Input>` with `truncate` class (single-line, ellipsis on overflow)
+   - When `editing` is true: render a `<Textarea>` that auto-sizes to content, with `onBlur` to collapse back
+   - On focus of the Input, set `editing = true` and auto-focus the Textarea
+   - The Textarea uses a ref to auto-resize on mount and on change (set `height = scrollHeight`)
 
-And add a small `.not-dark` rule in `src/index.css` that re-applies the `:root` (light) CSS variable values, ensuring all resume template styles render correctly.
+2. Replace the `<Input>` inside `BulletList`'s `renderItem` with this new component
 
-### Files
-1. **`src/index.css`** — Add a `.not-dark` class that re-declares the light-mode CSS variables (copy from `:root`)
-2. **`src/components/landing/HeroSection.tsx`** — Wrap the preview container in `<div className="not-dark">`
+### Scope
+- Single file change: `src/editor/ResumeEditor.tsx`
+- No schema, template, or preview changes
 
