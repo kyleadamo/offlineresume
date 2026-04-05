@@ -83,7 +83,7 @@ export function useResumeStore() {
     const dup: Resume = {
       ...source,
       id: crypto.randomUUID(),
-      title: `${source.title} (Copy)`,
+      title: `Copy of ${source.title}`,
       lastEdited: new Date().toISOString(),
     };
     setResumes((prev) => [...prev, dup]);
