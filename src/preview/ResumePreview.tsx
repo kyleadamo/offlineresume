@@ -47,14 +47,11 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   editorial: ProfessionalTemplate,
 };
 
-const primaryTemplates: { id: TemplateId; label: string }[] = [
+const allTemplates: { id: TemplateId; label: string }[] = [
   { id: 'minimal', label: 'Minimal' },
   { id: 'professional', label: 'Professional' },
   { id: 'modern', label: 'Modern' },
   { id: 'brutalist', label: 'Brutalist' },
-];
-
-const moreTemplates: { id: TemplateId; label: string }[] = [
   { id: 'executive', label: 'Executive' },
   { id: 'creative', label: 'Creative' },
   { id: 'compact', label: 'Compact' },
@@ -64,6 +61,28 @@ const moreTemplates: { id: TemplateId; label: string }[] = [
   { id: 'infographic', label: 'Infographic' },
   { id: 'classic', label: 'Classic' },
 ];
+
+function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
+  const [count, setCount] = useState(4);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      // ~80px per button + 70px for More button + gap
+      if (w >= 900) setCount(12);
+      else if (w >= 780) setCount(9);
+      else if (w >= 620) setCount(7);
+      else if (w >= 480) setCount(5);
+      else setCount(4);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [containerRef]);
+  return count;
+}
 
 type PageSize = 'a4' | 'letter';
 
@@ -86,8 +105,9 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
   const [moreOpen, setMoreOpen] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>('letter');
   const [showPageBreaks, setShowPageBreaks] = useState(false);
-  const [pageBreakLines, setPageBreakLines] = useState<number[]>([]);
   const printRef = useRef<HTMLDivElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const visibleCount = useVisibleTemplateCount(stripRef);
 
   if (!displayResume) return null;
 
@@ -97,17 +117,19 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
   };
 
   const TemplateComponent = templateMap[displayResume.templateId] || MinimalTemplate;
-  const isMoreActive = moreTemplates.some((t) => t.id === displayResume.templateId);
-  const activeMoreLabel = moreTemplates.find((t) => t.id === displayResume.templateId)?.label;
+  const visibleTemplates = allTemplates.slice(0, visibleCount);
+  const overflowTemplates = allTemplates.slice(visibleCount);
+  const isMoreActive = overflowTemplates.some((t) => t.id === displayResume.templateId);
+  const activeMoreLabel = overflowTemplates.find((t) => t.id === displayResume.templateId)?.label;
   const currentPage = PAGE_SIZES[pageSize];
   const usableHeightMm = currentPage.heightMm - PAGE_MARGIN_Y_MM * 2;
 
   return (
     <div className="py-8 px-6 space-y-4 max-w-[1200px] mx-auto">
       <div className="flex justify-center">
-        <div style={{ width: `${currentPage.widthMm}mm` }}>
+        <div ref={stripRef} style={{ width: `${currentPage.widthMm}mm` }}>
           <div className="flex items-center gap-2 flex-wrap">
-            {primaryTemplates.map((t) => (
+            {visibleTemplates.map((t) => (
               <button
                 key={t.id}
                 onClick={() => handleTemplateChange(t.id)}
@@ -122,40 +144,42 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
               </button>
             ))}
 
-            <Popover open={moreOpen} onOpenChange={setMoreOpen}>
-              <PopoverTrigger asChild>
-                <button
-                className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
-                    isMoreActive
-                      ? 'font-medium text-white'
-                      : 'bg-card border border-border text-muted-foreground hover:text-foreground'
-                  }`}
-                  style={isMoreActive ? { backgroundColor: '#FF4500' } : undefined}
-                >
-                  {isMoreActive ? activeMoreLabel : 'More'}
-                  <ChevronDown className="w-3 h-3" />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-44 p-1" align="start">
-                {moreTemplates.map((t) => (
+            {overflowTemplates.length > 0 && (
+              <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+                <PopoverTrigger asChild>
                   <button
-                    key={t.id}
-                    onClick={() => {
-                      handleTemplateChange(t.id);
-                      setMoreOpen(false);
-                    }}
-                    className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
-                      displayResume.templateId === t.id
+                  className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
+                      isMoreActive
                         ? 'font-medium text-white'
-                        : 'text-foreground hover:bg-muted'
+                        : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                     }`}
-                    style={displayResume.templateId === t.id ? { backgroundColor: '#FF4500' } : undefined}
+                    style={isMoreActive ? { backgroundColor: '#FF4500' } : undefined}
                   >
-                    {t.label}
+                    {isMoreActive ? activeMoreLabel : 'More'}
+                    <ChevronDown className="w-3 h-3" />
                   </button>
-                ))}
-              </PopoverContent>
-            </Popover>
+                </PopoverTrigger>
+                <PopoverContent className="w-44 p-1" align="start">
+                  {overflowTemplates.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        handleTemplateChange(t.id);
+                        setMoreOpen(false);
+                      }}
+                      className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
+                        displayResume.templateId === t.id
+                          ? 'font-medium text-white'
+                          : 'text-foreground hover:bg-muted'
+                      }`}
+                      style={displayResume.templateId === t.id ? { backgroundColor: '#FF4500' } : undefined}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            )}
 
             {!hideControls && (
               <div className="ml-auto flex items-center gap-1.5">
