@@ -188,10 +188,10 @@ const KeynoteTemplate = ({ resume }: TemplateProps) => {
             <span key={i}>{item}</span>
           ))}
           {profile.linkedin && (
-            <span><LinkedInDisplay url={profile.linkedin} displayFull={profile.linkedinDisplayFull} className="text-slate-400 hover:text-slate-600" /></span>
+            <span><LinkedInDisplay profile={profile} className="text-slate-400 hover:text-slate-600" /></span>
           )}
           {profile.website && (
-            <span><WebsiteDisplay url={profile.website} displayFull={profile.websiteDisplayFull} className="text-slate-400 hover:text-slate-600" /></span>
+            <span><WebsiteDisplay profile={profile} className="text-slate-400 hover:text-slate-600" /></span>
           )}
           {profile.links?.map((link) => (
             <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-slate-600">{link.label || link.url}</a>
