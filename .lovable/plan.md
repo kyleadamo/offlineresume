@@ -1,31 +1,38 @@
 
 
-## Expandable Bullet Text Editing
+## New "Keynote" Resume Template
 
-### Problem
-Bullet items in the resume editor use single-line `<Input>` fields. Long bullets get truncated and are hard to edit.
+### Concept
+A resume template inspired by Apple Keynote presentation slides: huge typography, massive whitespace, very short lines, and thin San Francisco-style fonts. The layout uses dramatic scale contrast -- the name and section headings are oversized while body text remains clean and minimal. Each section breathes with generous padding, creating a presentation-like feel.
 
-### Solution
-Replace the `<Input>` in `BulletList` with a component that toggles between:
-- **Collapsed**: single-line input with text overflow ellipsis (current behavior)
-- **Expanded**: multi-line `<Textarea>` that auto-sizes, triggered on focus
-
-When the user focuses/clicks a bullet, it switches to a `<Textarea>`. On blur, it collapses back to the single-line view. The textarea will auto-resize to fit content.
+### Design Traits
+- **Huge name** at the top (48-60px, font-weight 200/300, uppercase tracking)
+- **Target role** as a thin subtitle beneath
+- **Section headings** large (24-28px), thin weight, uppercase with wide letter-spacing
+- **Body text** small and restrained (13-14px), short lines (max-width constrained)
+- **Massive vertical spacing** between sections (40-60px gaps)
+- **Contact info** displayed as a minimal horizontal row of thin text with subtle separators
+- **No borders or rules** -- whitespace alone creates hierarchy
+- **Photo** displayed large in the header area (similar to the reference image), circular or slightly rounded
+- **Two-column lower section** for contact/education (left) and experience (right), echoing the reference layout
+- **Color palette**: Near-black text on white, with a single dark accent bar behind the name (like the reference)
+- **Font**: Uses the existing `font-sans` (Inter), styled thin (font-light/font-extralight) to approximate SF Pro
 
 ### Changes
 
-**File: `src/editor/ResumeEditor.tsx`**
+**1. `src/templates/KeynoteTemplate.tsx`** (new file)
+- Full template component following the existing `TemplateProps` pattern
+- Uses `getVisibleSections` and `createNewSectionRenderers` like other templates
+- Header: large photo (if available) alongside summary, dark accent band with name, role beneath
+- Two-column body layout for contact+education (left) and experience+skills (right)
+- All sections use `data-section` attributes and `sectionClass` for click-to-scroll
+- Massive whitespace, thin fonts, short constrained lines
 
-1. Create an inline `ExpandableBulletInput` component (or add state logic directly in the render):
-   - State: `editing: boolean` (default false)
-   - When `editing` is false: render an `<Input>` with `truncate` class (single-line, ellipsis on overflow)
-   - When `editing` is true: render a `<Textarea>` that auto-sizes to content, with `onBlur` to collapse back
-   - On focus of the Input, set `editing = true` and auto-focus the Textarea
-   - The Textarea uses a ref to auto-resize on mount and on change (set `height = scrollHeight`)
+**2. `src/schema/resume.ts`**
+- Add `'keynote'` to the `TemplateId` union type
 
-2. Replace the `<Input>` inside `BulletList`'s `renderItem` with this new component
-
-### Scope
-- Single file change: `src/editor/ResumeEditor.tsx`
-- No schema, template, or preview changes
+**3. `src/preview/ResumePreview.tsx`**
+- Import `KeynoteTemplate`
+- Add to `templateMap`: `keynote: KeynoteTemplate`
+- Add to `allTemplates` array: `{ id: 'keynote', label: 'Keynote' }`
 
