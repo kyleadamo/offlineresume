@@ -209,6 +209,50 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
   );
 }
 
+function ExpandableBulletInput({ value, onChange, placeholder }: { value: string; onChange: (val: string) => void; placeholder?: string }) {
+  const [editing, setEditing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResize = () => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    }
+  };
+
+  useEffect(() => {
+    if (editing) {
+      autoResize();
+      textareaRef.current?.focus();
+    }
+  }, [editing]);
+
+  if (editing) {
+    return (
+      <Textarea
+        ref={textareaRef}
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setTimeout(autoResize, 0); }}
+        onBlur={() => setEditing(false)}
+        placeholder={placeholder}
+        className="flex-1 min-h-[36px] resize-none py-2"
+        rows={1}
+      />
+    );
+  }
+
+  return (
+    <Input
+      value={value}
+      onFocus={() => setEditing(true)}
+      readOnly
+      placeholder={placeholder}
+      className="flex-1 truncate cursor-text"
+    />
+  );
+}
+
 function BulletList({ items, onChange, placeholder = 'Describe what you did...' }: { items: string[]; onChange: (items: string[]) => void; placeholder?: string }) {
   const stringItems = toStringItems(items);
   return (
