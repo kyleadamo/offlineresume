@@ -10,7 +10,7 @@ import { ExperienceItem, EducationItem, SkillCategory, ProjectItem, ReferenceIte
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { SortableList, toStringItems, fromStringItems, type StringItem } from '@/components/SortableList';
 
 const SECTIONS = ['profile', 'summary', 'experience', 'education', 'projects', 'skills', 'references', 'certifications', 'languages', 'awards', 'volunteer', 'publications', 'affiliations', 'patents', 'interests'];
@@ -209,6 +209,50 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
   );
 }
 
+function ExpandableBulletInput({ value, onChange, placeholder }: { value: string; onChange: (val: string) => void; placeholder?: string }) {
+  const [editing, setEditing] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const autoResize = () => {
+    const ta = textareaRef.current;
+    if (ta) {
+      ta.style.height = 'auto';
+      ta.style.height = ta.scrollHeight + 'px';
+    }
+  };
+
+  useEffect(() => {
+    if (editing) {
+      autoResize();
+      textareaRef.current?.focus();
+    }
+  }, [editing]);
+
+  if (editing) {
+    return (
+      <Textarea
+        ref={textareaRef}
+        value={value}
+        onChange={(e) => { onChange(e.target.value); setTimeout(autoResize, 0); }}
+        onBlur={() => setEditing(false)}
+        placeholder={placeholder}
+        className="flex-1 min-h-[36px] resize-none py-2"
+        rows={1}
+      />
+    );
+  }
+
+  return (
+    <Input
+      value={value}
+      onFocus={() => setEditing(true)}
+      readOnly
+      placeholder={placeholder}
+      className="flex-1 truncate cursor-text"
+    />
+  );
+}
+
 function BulletList({ items, onChange, placeholder = 'Describe what you did...' }: { items: string[]; onChange: (items: string[]) => void; placeholder?: string }) {
   const stringItems = toStringItems(items);
   return (
@@ -218,19 +262,18 @@ function BulletList({ items, onChange, placeholder = 'Describe what you did...' 
         onReorder={(reordered) => onChange(fromStringItems(reordered))}
         className="space-y-2"
         renderItem={(si, dragHandle) => (
-          <div className="flex gap-2 items-center">
-            {dragHandle}
-            <span className="text-muted-foreground text-xs">•</span>
-            <Input
+          <div className="flex gap-2 items-start">
+            <div className="mt-2.5">{dragHandle}</div>
+            <span className="text-muted-foreground text-xs mt-2.5">•</span>
+            <ExpandableBulletInput
               value={si.value}
-              onChange={(e) => {
+              onChange={(val) => {
                 const newItems = [...items];
                 const idx = stringItems.findIndex((s) => s.id === si.id);
-                newItems[idx] = e.target.value;
+                newItems[idx] = val;
                 onChange(newItems);
               }}
               placeholder={placeholder}
-              className="flex-1"
             />
             {items.length > 1 && (
               <button
