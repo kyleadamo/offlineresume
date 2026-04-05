@@ -233,9 +233,7 @@ function BuilderHeader({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <span className="text-xs text-muted-foreground">
-          Saved {new Date(activeResume.lastEdited).toLocaleTimeString()}
-        </span>
+        <div className="flex-1" />
         <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
           <Download className="w-4 h-4" />
           Download PDF
