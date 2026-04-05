@@ -227,7 +227,7 @@ function BuilderHeader({
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => { createResume(); }}>
+            <DropdownMenuItem onClick={() => { createResume(); }} className="hover:bg-transparent hover:text-accent">
               <Plus className="w-4 h-4 mr-2" />
               Add new resume
             </DropdownMenuItem>
