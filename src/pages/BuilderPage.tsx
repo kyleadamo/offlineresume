@@ -16,6 +16,18 @@ const BuilderPage = () => {
     if (!activeResume) navigate('/');
   }, [activeResume, navigate]);
 
+  // Handle scroll-to-section from landing page
+  useEffect(() => {
+    const section = sessionStorage.getItem('scroll-to-section');
+    if (section && activeResume) {
+      sessionStorage.removeItem('scroll-to-section');
+      // Delay to let the editor mount
+      setTimeout(() => {
+        window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
+      }, 300);
+    }
+  }, [activeResume]);
+
   if (!activeResume) return null;
 
   return (
