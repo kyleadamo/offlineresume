@@ -111,11 +111,12 @@ function BuilderHeader({
   showPageBreaks: boolean;
   onShowPageBreaksChange: (v: boolean) => void;
 }) {
-  const { activeResume, updateResume, duplicateResume } = useResume();
+  const { resumes, activeResume, updateResume, duplicateResume, deleteResume, setActive, createResume } = useResume();
   const navigate = useNavigate();
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [pageLayoutOpen, setPageLayoutOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   if (!activeResume) return null;
 
