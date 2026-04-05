@@ -220,10 +220,10 @@ function BuilderHeader({
               <DropdownMenuItem
                 key={r.id}
                 onClick={() => setActive(r.id)}
-                className={`flex flex-col items-start gap-0 ${r.id === activeResume.id ? 'bg-accent' : ''}`}
+                className={`flex flex-col items-start gap-0 ${r.id === activeResume.id ? 'bg-accent text-accent-foreground' : ''}`}
               >
                 <span className="truncate w-full">{r.title}</span>
-                <span className="text-[10px] text-muted-foreground">Saved {new Date(r.lastEdited).toLocaleTimeString()}</span>
+                <span className={`text-[10px] ${r.id === activeResume.id ? 'text-accent-foreground/70' : 'text-muted-foreground'}`}>Saved {new Date(r.lastEdited).toLocaleTimeString()}</span>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
