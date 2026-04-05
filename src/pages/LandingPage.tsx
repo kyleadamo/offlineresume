@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useResume } from '@/hooks/ResumeContext';
 import { Resume, TemplateId, DEFAULT_SECTION_ORDER } from '@/schema/resume';
@@ -66,18 +66,32 @@ const LandingPage = () => {
     }
   };
 
-  const handleEditResume = () => {
+  const ensureResumeActive = useCallback(() => {
     if (!previewResume) return;
     if (previewResume.id === 'demo') {
-      // Persist demo data as a real resume
       const { id, ...rest } = previewResume;
-      const newResume = createResume(rest);
-      navigate('/builder');
+      createResume(rest);
     } else {
       setActive(previewResume.id);
-      navigate('/builder');
     }
+  }, [previewResume, createResume, setActive]);
+
+  const handleEditResume = () => {
+    ensureResumeActive();
+    navigate('/builder');
   };
+
+  // Listen for section clicks in the preview and navigate to builder with that section
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const section = (e as CustomEvent).detail;
+      ensureResumeActive();
+      sessionStorage.setItem('scroll-to-section', section);
+      navigate('/builder');
+    };
+    window.addEventListener('scroll-to-section', handler);
+    return () => window.removeEventListener('scroll-to-section', handler);
+  }, [ensureResumeActive, navigate]);
 
   if (!previewResume) {
     return (
