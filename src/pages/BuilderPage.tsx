@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
-import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate } from 'lucide-react';
+import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -110,11 +111,12 @@ function BuilderHeader({
   showPageBreaks: boolean;
   onShowPageBreaksChange: (v: boolean) => void;
 }) {
-  const { activeResume, updateResume, duplicateResume } = useResume();
+  const { resumes, activeResume, updateResume, duplicateResume, deleteResume, setActive, createResume } = useResume();
   const navigate = useNavigate();
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [pageLayoutOpen, setPageLayoutOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
   if (!activeResume) return null;
 
@@ -206,9 +208,30 @@ function BuilderHeader({
           ← Studio
         </button>
         <div className="h-4 w-px bg-border" />
-        <span className="text-sm font-medium text-foreground truncate flex-1 min-w-0">
-          {activeResume.title}
-        </span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-sm font-medium text-foreground truncate min-w-0 flex items-center gap-1 hover:text-foreground/80 transition-colors max-w-[200px]">
+              <span className="truncate">{activeResume.title}</span>
+              <ChevronDown className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            {resumes.map((r) => (
+              <DropdownMenuItem
+                key={r.id}
+                onClick={() => setActive(r.id)}
+                className={r.id === activeResume.id ? 'bg-accent' : ''}
+              >
+                <span className="truncate">{r.title}</span>
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => { createResume(); }}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add new resume
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <span className="text-xs text-muted-foreground">
           Saved {new Date(activeResume.lastEdited).toLocaleTimeString()}
         </span>
@@ -238,6 +261,11 @@ function BuilderHeader({
             <DropdownMenuItem onClick={() => setPageLayoutOpen(true)}>
               <LayoutTemplate className="w-4 h-4 mr-2" />
               Page Layout
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive focus:text-destructive">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -296,6 +324,24 @@ function BuilderHeader({
               </Label>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Delete Resume</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete <span className="font-medium text-foreground">"{activeResume.title}"</span>? This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={() => { deleteResume(activeResume.id); setDeleteOpen(false); navigate('/'); }}>
+              Delete
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>
