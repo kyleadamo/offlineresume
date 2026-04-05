@@ -166,7 +166,7 @@ export const DEFAULT_SECTION_ORDER: SectionConfig[] = [
   { id: 'interests', label: 'Interests', visible: false },
 ];
 
-export type TemplateId = 'minimal' | 'professional' | 'modern' | 'brutalist' | 'compact' | 'editorial' | 'executive' | 'creative' | 'academic' | 'tech' | 'elegant' | 'infographic' | 'classic';
+export type TemplateId = 'minimal' | 'professional' | 'modern' | 'brutalist' | 'compact' | 'editorial' | 'executive' | 'creative' | 'academic' | 'tech' | 'elegant' | 'infographic' | 'classic' | 'keynote';
 
 export interface Resume {
   id: string;
