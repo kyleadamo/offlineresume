@@ -126,14 +126,20 @@ interface ResumePreviewProps {
   resume?: Resume;
   onTemplateChange?: (id: TemplateId) => void;
   hideControls?: boolean;
+  pageSize?: PageSize;
+  showPageBreaks?: boolean;
 }
 
-const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: ResumePreviewProps = {}) => {
+const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pageSize: pageSizeProp, showPageBreaks: showPageBreaksProp }: ResumePreviewProps = {}) => {
   const { activeResume: contextResume, updateResume } = useResume();
   const displayResume = resumeProp ?? contextResume;
   const [moreOpen, setMoreOpen] = useState(false);
-  const [pageSize, setPageSize] = useState<PageSize>('letter');
-  const [showPageBreaks, setShowPageBreaks] = useState(false);
+  const [pageSizeLocal, setPageSizeLocal] = useState<PageSize>('letter');
+  const [showPageBreaksLocal, setShowPageBreaksLocal] = useState(false);
+  const pageSize = pageSizeProp ?? pageSizeLocal;
+  const showPageBreaks = showPageBreaksProp ?? showPageBreaksLocal;
+  const setPageSize = setPageSizeLocal;
+  const setShowPageBreaks = setShowPageBreaksLocal;
   const printRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const visibleCount = useVisibleTemplateCount(stripRef);
@@ -233,6 +239,7 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls }: R
         <div
           ref={printRef}
           className="bg-white shadow-lg relative"
+          data-resume-print
           style={{ width: `${currentPage.widthMm}mm`, padding: '12mm 16mm' }}
           onClick={(e) => {
             let el = e.target as HTMLElement | null;
