@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState, useCallback, useRef } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
-import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate } from 'lucide-react';
+import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import {
