@@ -164,12 +164,6 @@ const ProfessionalTemplate = ({ resume }: TemplateProps) => {
 
       {visibleSections.map((id) => sectionRenderers[id]?.())}
 
-      {!profile.name && !summary && experience.length === 0 && (
-        <div className="text-center text-muted-foreground py-20 font-sans">
-          <p className="text-lg">Your resume will appear here</p>
-          <p className="text-sm mt-1">Start editing on the left panel</p>
-        </div>
-      )}
     </div>
   );
 };
