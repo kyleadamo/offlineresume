@@ -208,9 +208,30 @@ function BuilderHeader({
           ← Studio
         </button>
         <div className="h-4 w-px bg-border" />
-        <span className="text-sm font-medium text-foreground truncate flex-1 min-w-0">
-          {activeResume.title}
-        </span>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="text-sm font-medium text-foreground truncate min-w-0 flex items-center gap-1 hover:text-foreground/80 transition-colors max-w-[200px]">
+              <span className="truncate">{activeResume.title}</span>
+              <ChevronDown className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-56">
+            {resumes.map((r) => (
+              <DropdownMenuItem
+                key={r.id}
+                onClick={() => setActive(r.id)}
+                className={r.id === activeResume.id ? 'bg-accent' : ''}
+              >
+                <span className="truncate">{r.title}</span>
+              </DropdownMenuItem>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => { createResume(); }}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add new resume
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <span className="text-xs text-muted-foreground">
           Saved {new Date(activeResume.lastEdited).toLocaleTimeString()}
         </span>
