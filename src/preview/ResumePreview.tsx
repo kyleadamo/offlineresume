@@ -50,19 +50,20 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
 };
 
 const allTemplates: { id: TemplateId; label: string }[] = [
-  { id: 'minimal', label: 'Minimal' },
-  { id: 'professional', label: 'Professional' },
   { id: 'modern', label: 'Modern' },
-  { id: 'brutalist', label: 'Brutalist' },
-  { id: 'executive', label: 'Executive' },
+  { id: 'minimal', label: 'Minimal' },
   { id: 'creative', label: 'Creative' },
-  { id: 'compact', label: 'Compact' },
-  { id: 'academic', label: 'Academic' },
+  { id: 'brutalist', label: 'Brutalist' },
   { id: 'tech', label: 'Tech / Terminal' },
-  { id: 'elegant', label: 'Elegant' },
-  { id: 'infographic', label: 'Infographic' },
-  { id: 'classic', label: 'Classic' },
   { id: 'keynote', label: 'Keynote' },
+  { id: 'compact', label: 'Compact' },
+  { id: 'infographic', label: 'Infographic' },
+  { id: 'professional', label: 'Professional' },
+  { id: 'executive', label: 'Executive' },
+  { id: 'elegant', label: 'Elegant' },
+  { id: 'classic', label: 'Classic' },
+  { id: 'academic', label: 'Academic' },
+  { id: 'editorial', label: 'Editorial' },
 ];
 
 function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
