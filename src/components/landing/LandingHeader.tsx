@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import logo from '@/assets/offlineresume.png';
 
 interface LandingHeaderProps {
   hasSavedResumes: boolean;
@@ -10,7 +11,7 @@ const LandingHeader = ({ hasSavedResumes, onCreateClick, onMyResumesClick }: Lan
   return (
     <header className="fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 border-b border-border">
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
-        <span className="text-foreground font-semibold text-lg tracking-tight">Offline Resume</span>
+        <img src={logo} alt="Offline Resume" className="h-8" />
         <Button
           size="sm"
           onClick={hasSavedResumes ? onMyResumesClick : onCreateClick}
