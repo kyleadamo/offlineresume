@@ -1,70 +1,31 @@
 
 
-## Landing Page Refactor Plan
+## Fix: Resume Preview Inheriting Dark Mode on Landing Page
 
-### Overview
-Replace the current `Index.tsx` workspace entry page with a polished dark-mode landing page featuring an interactive resume preview as the hero element, conditional CTAs based on saved resume state, and clean entry flows into the builder.
+### Problem
+The landing page wraps everything in `<div className="dark">`, which changes CSS variables (e.g., `--foreground` becomes light, `--background` becomes dark). The resume templates use Tailwind classes like `text-foreground` and `bg-background`, so they inherit the dark theme — causing white text on dark backgrounds inside the preview.
 
-### Phase 1 — Foundation & Data
+### Fix
+Wrap the `ResumePreview` in the `HeroSection` with a light-mode reset div so templates render with their intended light-mode colors.
 
-**Goal**: Add demo data, make `ResumePreview` reusable outside the builder, and set up dark mode.
+### Change — `src/components/landing/HeroSection.tsx`
 
-**Files**:
-- **`public/demo-resume.json`** — Copy the Barclay JSON as the demo data file
-- **`src/preview/ResumePreview.tsx`** — Refactor to accept an optional `resume` prop and an optional `onTemplateChange` callback. When provided, these override the context-based `activeResume` and `updateResume`. This lets the landing page render a preview without touching the resume store. Also accept an optional `hideControls` prop to hide download/options buttons when used on the landing page
-- **`src/index.css`** — Add a `.dark` class scope for the landing page (Tailwind dark mode via class strategy)
+Add a `<div className="light">` wrapper (which resets to the `:root` CSS variables) around the resume preview container. Since Tailwind's dark mode uses the `dark` class, we need to explicitly scope a non-dark context. The simplest approach: add a wrapper div with an inline style or a class that resets to the light CSS variable values.
 
-### Phase 2 — Landing Page Components
+Specifically, wrap the preview `<div>` in a container that removes the `dark` class scope:
 
-**Goal**: Build the new landing page from composable components.
-
-**New files**:
-- **`src/pages/LandingPage.tsx`** — Main page component. On mount, checks `localStorage` for saved resumes. Loads demo JSON via fetch if none exist. Manages `previewResume`, `selectedTemplateId`, and `isCreateModalOpen` state. Wraps content in a `dark` class container for dark theming
-- **`src/components/landing/LandingHeader.tsx`** — Fixed header with "Offline Resume" on the left, conditional CTA button on the right ("Create my resume" vs "My resumes")
-- **`src/components/landing/HeroSection.tsx`** — Centered tagline + the `ResumePreview` component rendered in a contained, scrollable card with a hover/focus overlay showing "Edit this resume" button. Default template: Creative
-- **`src/components/landing/CreateResumeModal.tsx`** — Dialog with 3 options: Start from scratch, Import JSON, Convert existing resume. Each routes to the appropriate flow
-- **`src/components/landing/SavedResumesSheet.tsx`** — A sheet/dialog listing all saved resumes and cover letters with the existing Resumes/Cover Letters tab toggle, metadata display, and open/delete actions. Reuses existing context hooks
-
-### Phase 3 — Routing & Integration
-
-**Goal**: Wire everything together without breaking existing flows.
-
-**Files**:
-- **`src/App.tsx`** — Change `/` route from `Index` to `LandingPage`
-- **`src/pages/Index.tsx`** — Keep as-is temporarily (the saved resumes view logic can be referenced by `SavedResumesSheet`)
-
-### Component Interaction Flow
-
-```text
-LandingPage
-├── LandingHeader
-│   └── CTA button → CreateResumeModal (no resumes)
-│                   → SavedResumesSheet (has resumes)
-├── HeroSection
-│   ├── Tagline
-│   └── ResumePreview (with resume prop override)
-│       ├── Template switcher strip (reused from ResumePreview)
-│       └── Hover overlay → "Edit this resume" → navigate to /builder
-└── CreateResumeModal
-    ├── Start from scratch → createResume() → /builder
-    ├── Import JSON → /import?mode=json
-    └── Convert existing → /import?mode=paste
+```tsx
+{/* Reset to light mode for resume preview */}
+<div className="not-dark" style={{ colorScheme: 'light' }}>
+  <div className="relative w-full max-w-[900px] rounded-xl border border-border bg-card/50 overflow-hidden">
+    ...ResumePreview...
+  </div>
+</div>
 ```
 
-### Key Technical Decisions
+And add a small `.not-dark` rule in `src/index.css` that re-applies the `:root` (light) CSS variable values, ensuring all resume template styles render correctly.
 
-1. **ResumePreview prop override** — Adding `resume?: Resume` and `onTemplateChange?: (id: TemplateId) => void` props avoids duplicating template rendering. When these props are present, the component uses them instead of context
-2. **Dark mode scoping** — The landing page wraps itself in `<div className="dark bg-background min-h-screen">` so dark theme applies only to this page without affecting the builder
-3. **Demo data** — Loaded via `fetch('/demo-resume.json')` on mount, only when no saved resumes exist. The Creative template is selected by default per spec
-4. **"Edit this resume" flow** — For demo data: calls `createResume(demoData)` to persist it, then navigates to `/builder`. For saved resumes: calls `setActive(id)` then navigates
-
-### What stays the same
-- All existing builder, editor, template, and import pages remain untouched
-- Resume/cover letter storage logic unchanged
-- All 13 templates continue working as-is
-
-### Phases summary
-- **Phase 1**: 3 files touched — safe, no UI changes visible yet
-- **Phase 2**: 4 new component files — the new landing page, isolated
-- **Phase 3**: 1 file changed (`App.tsx` route swap) — the cutover
+### Files
+1. **`src/index.css`** — Add a `.not-dark` class that re-declares the light-mode CSS variables (copy from `:root`)
+2. **`src/components/landing/HeroSection.tsx`** — Wrap the preview container in `<div className="not-dark">`
 
