@@ -47,14 +47,11 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   editorial: ProfessionalTemplate,
 };
 
-const primaryTemplates: { id: TemplateId; label: string }[] = [
+const allTemplates: { id: TemplateId; label: string }[] = [
   { id: 'minimal', label: 'Minimal' },
   { id: 'professional', label: 'Professional' },
   { id: 'modern', label: 'Modern' },
   { id: 'brutalist', label: 'Brutalist' },
-];
-
-const moreTemplates: { id: TemplateId; label: string }[] = [
   { id: 'executive', label: 'Executive' },
   { id: 'creative', label: 'Creative' },
   { id: 'compact', label: 'Compact' },
@@ -64,6 +61,28 @@ const moreTemplates: { id: TemplateId; label: string }[] = [
   { id: 'infographic', label: 'Infographic' },
   { id: 'classic', label: 'Classic' },
 ];
+
+function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
+  const [count, setCount] = useState(4);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () => {
+      const w = el.clientWidth;
+      // ~80px per button + 70px for More button + gap
+      if (w >= 900) setCount(12);
+      else if (w >= 780) setCount(9);
+      else if (w >= 620) setCount(7);
+      else if (w >= 480) setCount(5);
+      else setCount(4);
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [containerRef]);
+  return count;
+}
 
 type PageSize = 'a4' | 'letter';
 
