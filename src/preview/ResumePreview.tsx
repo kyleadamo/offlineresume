@@ -54,7 +54,7 @@ const allTemplates: { id: TemplateId; label: string }[] = [
   { id: 'minimal', label: 'Minimal' },
   { id: 'creative', label: 'Creative' },
   { id: 'brutalist', label: 'Brutalist' },
-  { id: 'tech', label: 'Tech / Terminal' },
+  { id: 'tech', label: 'Terminal' },
   { id: 'keynote', label: 'Keynote' },
   { id: 'compact', label: 'Compact' },
   { id: 'infographic', label: 'Infographic' },
