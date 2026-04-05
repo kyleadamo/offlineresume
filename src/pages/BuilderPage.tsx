@@ -220,9 +220,10 @@ function BuilderHeader({
               <DropdownMenuItem
                 key={r.id}
                 onClick={() => setActive(r.id)}
-                className={r.id === activeResume.id ? 'bg-accent' : ''}
+                className={`flex flex-col items-start gap-0 ${r.id === activeResume.id ? 'bg-accent' : ''}`}
               >
-                <span className="truncate">{r.title}</span>
+                <span className="truncate w-full">{r.title}</span>
+                <span className="text-[10px] text-muted-foreground">Saved {new Date(r.lastEdited).toLocaleTimeString()}</span>
               </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
@@ -232,9 +233,7 @@ function BuilderHeader({
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <span className="text-xs text-muted-foreground">
-          Saved {new Date(activeResume.lastEdited).toLocaleTimeString()}
-        </span>
+        <div className="flex-1" />
         <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
           <Download className="w-4 h-4" />
           Download PDF
