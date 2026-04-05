@@ -262,6 +262,10 @@ function BuilderHeader({
               <LayoutTemplate className="w-4 h-4 mr-2" />
               Page Layout
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setDeleteOpen(true)} className="text-destructive focus:text-destructive">
+              <Trash2 className="w-4 h-4 mr-2" />
+              Delete
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
