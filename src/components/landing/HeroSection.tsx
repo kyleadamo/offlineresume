@@ -31,7 +31,7 @@ const HeroSection = ({ resume, onTemplateChange, onEditClick }: HeroSectionProps
       <div className="not-dark" style={{ colorScheme: 'light' }}>
         <div className="relative w-full max-w-[900px] rounded-xl border border-border bg-card/50 overflow-hidden">
           <div className="absolute inset-0 -z-10 bg-accent/5 blur-3xl rounded-full scale-75 opacity-50" />
-          <div className="max-h-[70vh] overflow-y-auto">
+          <div className="h-[1200px] overflow-y-auto">
             <ResumePreview
               resume={resume}
               onTemplateChange={onTemplateChange}
