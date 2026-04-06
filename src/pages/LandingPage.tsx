@@ -18,18 +18,20 @@ const LandingPage = () => {
 
   const hasSavedResumes = resumes.length > 0;
 
-  // Load preview resume: most recent saved, or demo data
+  // Load preview resume: most recent saved with a name, or demo data
   useEffect(() => {
-    if (hasSavedResumes) {
+    const hasNamedResume = hasSavedResumes && resumes.some(r => r.profile?.name?.trim());
+
+    if (hasNamedResume) {
       const sorted = [...resumes].sort(
         (a, b) => new Date(b.lastEdited).getTime() - new Date(a.lastEdited).getTime()
       );
-      setPreviewResume({ ...sorted[0] });
+      const best = sorted.find(r => r.profile?.name?.trim()) || sorted[0];
+      setPreviewResume({ ...best });
     } else {
       fetch('/demo-resume.json')
         .then((r) => r.json())
         .then((data) => {
-          // Ensure demo data has required fields
           const demo: Resume = {
             id: 'demo',
             title: data.title || 'Demo Resume',
