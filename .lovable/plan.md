@@ -1,15 +1,33 @@
 
 
-## Add Favicon
+## Show Demo Preview When Contact Name Is Blank
 
-Copy the uploaded image to the public directory and update `index.html` to reference it as the favicon.
+Currently, if any saved resume exists, the landing page shows the most recent one in the preview. The change: also check if the most recent resume's `profile.name` is blank — if so, fall back to demo data for the preview, while still keeping `hasSavedResumes` true so the CTA says "My resumes".
 
 ### Changes
 
-**1. Copy asset**
-- Copy `user-uploads://offlineresume_favicon.png` to `public/favicon.png`
-- Delete `public/favicon.ico` if it exists
+**`src/pages/LandingPage.tsx`** — Update the `useEffect` logic (lines 22-57):
+- Find the most recent resume as before
+- If its `profile.name` is empty/blank, load demo data instead
+- `hasSavedResumes` remains unchanged (still `true`), so the header CTA stays "My resumes"
 
-**2. `index.html`**
-- Add `<link rel="icon" href="/favicon.png" type="image/png">` in the `<head>`
+```typescript
+useEffect(() => {
+  const shouldShowDemo = !hasSavedResumes || 
+    (hasSavedResumes && !resumes.some(r => r.profile?.name?.trim()));
+    
+  if (!shouldShowDemo) {
+    const sorted = [...resumes].sort(
+      (a, b) => new Date(b.lastEdited).getTime() - new Date(a.lastEdited).getTime()
+    );
+    const best = sorted.find(r => r.profile?.name?.trim()) || sorted[0];
+    setPreviewResume({ ...best });
+  } else {
+    // Load demo data
+    fetch('/demo-resume.json')...
+  }
+}, [hasSavedResumes, resumes]);
+```
+
+This checks if **any** saved resume has a non-blank contact name. If none do, the preview falls back to demo data while the "My resumes" button remains visible.
 
