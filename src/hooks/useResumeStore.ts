@@ -64,6 +64,10 @@ export function useResumeStore() {
 
   const createResume = useCallback((base?: Partial<Resume>) => {
     const newResume: Resume = { ...createBlankResume(), ...base };
+    // Default title to "{Contact Name} Resume" if not explicitly set
+    if (!base?.title && newResume.profile?.name?.trim()) {
+      newResume.title = `${newResume.profile.name.trim()} Resume`;
+    }
     setResumes((prev) => [...prev, newResume]);
     setActiveId(newResume.id);
     return newResume;
