@@ -180,4 +180,9 @@
     break-inside: avoid;
   }
 
+  [data-section] > h3,
+  [data-section] > h2 {
+    break-after: avoid;
+  }
+
 }
