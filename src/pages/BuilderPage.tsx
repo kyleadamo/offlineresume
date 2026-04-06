@@ -153,6 +153,7 @@ function BuilderHeader({
             [data-section] { cursor: default !important; background: transparent !important; outline: none !important; box-shadow: none !important; }
             [data-section]:hover { background: transparent !important; outline: none !important; }
             [data-pdf-section] { break-inside: avoid; }
+            [data-section] > h3, [data-section] > h2 { break-after: avoid; }
             .page-break-line { display: none !important; }
             .print-footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 8pt; color: #666; padding: 0; }
           </style>
