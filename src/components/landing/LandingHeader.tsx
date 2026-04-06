@@ -15,7 +15,7 @@ const LandingHeader = ({ hasSavedResumes, onCreateClick, onMyResumesClick }: Lan
         <Button
           size="sm"
           onClick={hasSavedResumes ? onMyResumesClick : onCreateClick}
-          className="bg-white text-orange-700 border-2 border-orange-700 hover:bg-orange-50"
+          className="bg-accent text-accent-foreground hover:bg-accent/90"
         >
           {hasSavedResumes ? 'My resumes' : 'Create my resume'}
         </Button>
