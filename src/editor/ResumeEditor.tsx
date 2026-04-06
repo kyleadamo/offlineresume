@@ -142,8 +142,13 @@ const ResumeEditor = () => {
 
 function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Partial<Resume>) => void }) {
   const p = resume.profile;
-  const set = (field: string, value: string) =>
-    onUpdate({ profile: { ...p, [field]: value } });
+  const set = (field: string, value: string) => {
+    const updates: Partial<Resume> = { profile: { ...p, [field]: value } };
+    if (field === 'name' && value.trim() && resume.title === 'Untitled Resume') {
+      updates.title = `${value.trim()} Resume`;
+    }
+    onUpdate(updates);
+  };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
