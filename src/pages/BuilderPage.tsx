@@ -206,7 +206,7 @@ function BuilderHeader({
           onClick={() => navigate('/')}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
-          ← Studio
+          ← Home
         </button>
         <div className="h-4 w-px bg-border" />
         <DropdownMenu>
