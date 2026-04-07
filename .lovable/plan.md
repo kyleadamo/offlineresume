@@ -1,24 +1,28 @@
 
 
-## Auto-rename "Untitled Resume" on Contact Name Entry
+## Move Auto-Rename to onBlur
 
-When the user types a contact name in the builder's profile editor, if the resume title is still "Untitled Resume", automatically update it to `{Contact Name} Resume`.
+Currently the title updates on every keystroke. Instead, move the rename logic to a `onBlur` handler on the name input, so the title only updates when the user leaves the field.
 
 ### Changes
 
-**`src/editor/ResumeEditor.tsx`** — Update `ProfileEditor`'s `set` function (~line 145):
-- After setting the profile field, check if the field being changed is `name`, the new value is non-empty, and the current `resume.title` is `"Untitled Resume"`
-- If so, also call `onUpdate` with the new title `{value.trim()} Resume`
+**`src/editor/ResumeEditor.tsx`**
 
-```typescript
-const set = (field: string, value: string) => {
-  const updates: Partial<Resume> = { profile: { ...p, [field]: value } };
-  if (field === 'name' && value.trim() && resume.title === 'Untitled Resume') {
-    updates.title = `${value.trim()} Resume`;
-  }
-  onUpdate(updates);
-};
+1. **Remove** the title-update logic from the `set` function (lines 147-149) — revert it to just updating the profile field.
+
+2. **Add an `onBlur` handler** to the name `<Input>` at line 186:
+```tsx
+<Input
+  value={p.name}
+  onChange={(e) => set('name', e.target.value)}
+  onBlur={() => {
+    if (p.name.trim() && resume.title === 'Untitled Resume') {
+      onUpdate({ title: `${p.name.trim()} Resume` });
+    }
+  }}
+  placeholder="Full name"
+/>
 ```
 
-Single file, single function change.
+This way the title stays as "Untitled Resume" while the user types, and only updates to "{Name} Resume" once they click or tab away from the name field.
 
