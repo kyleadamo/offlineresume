@@ -143,11 +143,7 @@ const ResumeEditor = () => {
 function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Partial<Resume>) => void }) {
   const p = resume.profile;
   const set = (field: string, value: string) => {
-    const updates: Partial<Resume> = { profile: { ...p, [field]: value } };
-    if (field === 'name' && value.trim() && resume.title === 'Untitled Resume') {
-      updates.title = `${value.trim()} Resume`;
-    }
-    onUpdate(updates);
+    onUpdate({ profile: { ...p, [field]: value } });
   };
 
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -183,7 +179,7 @@ function ProfileEditor({ resume, onUpdate }: { resume: Resume; onUpdate: (c: Par
           )}
         </div>
         <div className="flex-1">
-          <Input value={p.name} onChange={(e) => set('name', e.target.value)} placeholder="Full name" />
+          <Input value={p.name} onChange={(e) => set('name', e.target.value)} onBlur={() => { if (p.name.trim() && resume.title === 'Untitled Resume') { onUpdate({ title: `${p.name.trim()} Resume` }); } }} placeholder="Full name" />
         </div>
       </div>
       <div className="grid grid-cols-2 gap-3">
