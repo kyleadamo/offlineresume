@@ -29,7 +29,7 @@ const LandingHeader = ({ hasSavedResumes, onCreateClick, onMyResumesClick }: Lan
       <div className="max-w-7xl mx-auto px-6 h-14 flex items-center justify-between">
         <div className="flex items-center gap-3">
           <LogoIcon />
-          <div className="flex flex-col">
+          <div className="hidden md:flex flex-col">
             <span
               style={{ fontFamily: "'DM Serif Display', Georgia, serif", fontSize: '22px', color: '#F0EEE8' }}
             >
