@@ -1,13 +1,24 @@
 
 
-## Hide Wordmark on Mobile
+## Fix Builder Preview Color Scheme
 
-Add `hidden md:flex` to the wordmark text container (line 32) so only the SVG icon shows on small screens.
+The landing page wraps `ResumePreview` in a `<div className="not-dark">` which forces light-mode CSS variables. The builder page lacks this wrapper, so the resume content inherits dark theme colors (light text on a would-be-white page).
 
 ### Changes
 
-**`src/components/landing/LandingHeader.tsx`** — Line 32:
-- Change `<div className="flex flex-col">` to `<div className="hidden md:flex flex-col">`
+**`src/pages/BuilderPage.tsx`** — Wrap the `ResumePreview` in a `not-dark` container (around line 86-92):
 
-Single line change. The logo icon remains visible at all sizes; the "OfflineResume" text and tagline hide below the `md` (768px) breakpoint.
+```tsx
+<div className="h-full overflow-y-auto">
+  <div className="not-dark" style={{ colorScheme: 'light' }}>
+    <ResumePreview
+      hideControls
+      pageSize={pageSize}
+      showPageBreaks={showPageBreaks}
+    />
+  </div>
+</div>
+```
+
+Single wrapper addition. The template selector bar and surrounding chrome remain in dark mode; only the resume document itself gets light-mode variables.
 
