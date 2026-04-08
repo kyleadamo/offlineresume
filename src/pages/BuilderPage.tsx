@@ -84,11 +84,13 @@ const BuilderPage = () => {
         )}
         <ResizablePanel defaultSize={editorCollapsed ? 100 : 60} className="bg-secondary/50 overflow-hidden">
           <div className="h-full overflow-y-auto">
-            <ResumePreview
-              hideControls
-              pageSize={pageSize}
-              showPageBreaks={showPageBreaks}
-            />
+            <div className="not-dark" style={{ colorScheme: 'light' }}>
+              <ResumePreview
+                hideControls
+                pageSize={pageSize}
+                showPageBreaks={showPageBreaks}
+              />
+            </div>
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
