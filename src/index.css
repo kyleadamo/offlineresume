@@ -160,6 +160,13 @@
 }
 
 @media print {
+  .pagedjs_page {
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+}
+
+@media print {
   body * {
     visibility: hidden;
   }
