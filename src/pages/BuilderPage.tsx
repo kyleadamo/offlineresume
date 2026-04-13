@@ -42,7 +42,7 @@ const BuilderPage = () => {
   const navigate = useNavigate();
   const [editorCollapsed, setEditorCollapsed] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>('letter');
-  const [showPageBreaks, setShowPageBreaks] = useState(false);
+  const [pageSize, setPageSize] = useState<PageSize>('letter');
 
   useEffect(() => {
     if (!activeResume) navigate('/');
@@ -67,8 +67,6 @@ const BuilderPage = () => {
         onToggleEditor={() => setEditorCollapsed((c) => !c)}
         pageSize={pageSize}
         onPageSizeChange={setPageSize}
-        showPageBreaks={showPageBreaks}
-        onShowPageBreaksChange={setShowPageBreaks}
       />
       <ResizablePanelGroup direction="horizontal" className="flex-1 overflow-hidden">
         {!editorCollapsed && (
@@ -87,7 +85,6 @@ const BuilderPage = () => {
               <ResumePreview
                 hideControls
                 pageSize={pageSize}
-                showPageBreaks={showPageBreaks}
               />
             </div>
           </div>
