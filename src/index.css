@@ -146,6 +146,26 @@
   }
 }
 
+/* Paged.js preview sheets */
+.pagedjs_page {
+  background: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  margin-bottom: 24px;
+}
+
+.pagedjs_pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media print {
+  .pagedjs_page {
+    box-shadow: none;
+    margin-bottom: 0;
+  }
+}
+
 @media print {
   body * {
     visibility: hidden;

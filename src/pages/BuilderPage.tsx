@@ -1,6 +1,6 @@
 import { useResume } from '@/hooks/ResumeContext';
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
 import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate, ChevronDown, Plus, Trash2 } from 'lucide-react';
@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
 import {
   Select,
   SelectContent,
@@ -43,7 +42,6 @@ const BuilderPage = () => {
   const navigate = useNavigate();
   const [editorCollapsed, setEditorCollapsed] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>('letter');
-  const [showPageBreaks, setShowPageBreaks] = useState(false);
 
   useEffect(() => {
     if (!activeResume) navigate('/');
@@ -68,8 +66,6 @@ const BuilderPage = () => {
         onToggleEditor={() => setEditorCollapsed((c) => !c)}
         pageSize={pageSize}
         onPageSizeChange={setPageSize}
-        showPageBreaks={showPageBreaks}
-        onShowPageBreaksChange={setShowPageBreaks}
       />
       <ResizablePanelGroup direction="horizontal" className="flex-1 overflow-hidden">
         {!editorCollapsed && (
@@ -88,7 +84,6 @@ const BuilderPage = () => {
               <ResumePreview
                 hideControls
                 pageSize={pageSize}
-                showPageBreaks={showPageBreaks}
               />
             </div>
           </div>
@@ -103,15 +98,11 @@ function BuilderHeader({
   onToggleEditor,
   pageSize,
   onPageSizeChange,
-  showPageBreaks,
-  onShowPageBreaksChange,
 }: {
   editorCollapsed: boolean;
   onToggleEditor: () => void;
   pageSize: PageSize;
   onPageSizeChange: (v: PageSize) => void;
-  showPageBreaks: boolean;
-  onShowPageBreaksChange: (v: boolean) => void;
 }) {
   const { resumes, activeResume, updateResume, duplicateResume, deleteResume, setActive, createResume } = useResume();
   const navigate = useNavigate();
@@ -314,16 +305,6 @@ function BuilderHeader({
                   <SelectItem value="a4">A4</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="page-breaks-layout"
-                checked={showPageBreaks}
-                onCheckedChange={(checked) => onShowPageBreaksChange(checked === true)}
-              />
-              <Label htmlFor="page-breaks-layout" className="text-sm cursor-pointer">
-                Show page breaks
-              </Label>
             </div>
           </div>
         </DialogContent>
