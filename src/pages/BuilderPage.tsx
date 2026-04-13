@@ -42,7 +42,6 @@ const BuilderPage = () => {
   const navigate = useNavigate();
   const [editorCollapsed, setEditorCollapsed] = useState(false);
   const [pageSize, setPageSize] = useState<PageSize>('letter');
-  const [pageSize, setPageSize] = useState<PageSize>('letter');
 
   useEffect(() => {
     if (!activeResume) navigate('/');
@@ -99,15 +98,11 @@ function BuilderHeader({
   onToggleEditor,
   pageSize,
   onPageSizeChange,
-  showPageBreaks,
-  onShowPageBreaksChange,
 }: {
   editorCollapsed: boolean;
   onToggleEditor: () => void;
   pageSize: PageSize;
   onPageSizeChange: (v: PageSize) => void;
-  showPageBreaks: boolean;
-  onShowPageBreaksChange: (v: boolean) => void;
 }) {
   const { resumes, activeResume, updateResume, duplicateResume, deleteResume, setActive, createResume } = useResume();
   const navigate = useNavigate();
@@ -310,16 +305,6 @@ function BuilderHeader({
                   <SelectItem value="a4">A4</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-            <div className="flex items-center gap-2">
-              <Checkbox
-                id="page-breaks-layout"
-                checked={showPageBreaks}
-                onCheckedChange={(checked) => onShowPageBreaksChange(checked === true)}
-              />
-              <Label htmlFor="page-breaks-layout" className="text-sm cursor-pointer">
-                Show page breaks
-              </Label>
             </div>
           </div>
         </DialogContent>
