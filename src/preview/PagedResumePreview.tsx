@@ -81,7 +81,9 @@ const PagedResumePreview = ({
       {/* Hidden full-height container that renders the template at correct width.
           This is measured to determine page count, and is the source for clipping. */}
       <div
+        className="resume-document"
         data-resume-print
+        data-resume-document
         style={{
           position: 'absolute',
           left: '-9999px',
@@ -90,6 +92,7 @@ const PagedResumePreview = ({
           padding: `${PAGE_MARGIN_TOP_MM}mm ${PAGE_MARGIN_X_MM}mm ${PAGE_MARGIN_BOTTOM_MM}mm`,
           visibility: 'hidden',
           pointerEvents: 'none',
+          colorScheme: 'light',
         }}
       >
         <div ref={contentRef}>
@@ -110,12 +113,13 @@ const PagedResumePreview = ({
             return (
               <div
                 key={i}
-                className="bg-white shadow-lg relative"
+                className="resume-document bg-white shadow-lg relative"
                 style={{
                   width: `${pageWidthMm}mm`,
                   height: `${pageContentHeight + (PAGE_MARGIN_TOP_MM + PAGE_MARGIN_BOTTOM_MM) * 3.7795}px`,
                   padding: `${PAGE_MARGIN_TOP_MM}mm ${PAGE_MARGIN_X_MM}mm ${PAGE_MARGIN_BOTTOM_MM}mm`,
                   overflow: 'hidden',
+                  colorScheme: 'light',
                 }}
                 onClick={(e) => {
                   let el = e.target as HTMLElement | null;

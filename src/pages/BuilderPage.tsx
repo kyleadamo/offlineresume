@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
+import { exportResumeToPrint } from '@/preview/exportPrint';
 import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate, ChevronDown, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
@@ -116,50 +117,8 @@ function BuilderHeader({
   const handleDownloadPDF = () => {
     const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
     if (!printTarget) return;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-
     const currentPage = PAGE_SIZES[pageSize];
-    const content = printTarget.innerHTML;
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map((el) => el.outerHTML)
-      .join('\n');
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title></title>
-          ${styles}
-          <style>
-            @page {
-              size: ${currentPage.cssSize};
-              margin: 12mm 16mm 16mm 16mm;
-            }
-            html, body {
-              margin: 0; padding: 0; background: white;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            body { width: ${currentPage.widthMm}mm; }
-            .resume-print-content { width: 100%; }
-            [data-section] { cursor: default !important; background: transparent !important; outline: none !important; box-shadow: none !important; }
-            [data-section]:hover { background: transparent !important; outline: none !important; }
-            [data-pdf-section] { break-inside: avoid; }
-            [data-section] > h3, [data-section] > h2 { break-after: avoid; }
-            .page-break-line { display: none !important; }
-            .print-footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 8pt; color: #666; padding: 0; }
-          </style>
-        </head>
-        <body>
-          <div class="resume-print-content">${content}</div>
-          <div class="print-footer">${activeResume.profile.email || ''}</div>
-        </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
+    exportResumeToPrint(printTarget, currentPage, activeResume.profile.email || '');
   };
 
   const handleExportJSON = () => {

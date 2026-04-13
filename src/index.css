@@ -100,6 +100,32 @@
   }
 }
 
+/* Self-contained light theme for resume documents.
+   Ensures correct colors in preview AND in exported print windows,
+   regardless of surrounding dark-mode chrome. */
+.resume-document {
+  color-scheme: light;
+  --background: 60 20% 97%;
+  --foreground: 215 29% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 29% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 29% 13%;
+  --primary: 215 29% 13%;
+  --primary-foreground: 60 20% 97%;
+  --secondary: 216 12% 95%;
+  --secondary-foreground: 215 29% 13%;
+  --muted: 216 12% 95%;
+  --muted-foreground: 215 13% 50%;
+  --accent: 262 52% 47%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 76% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 216 12% 92%;
+  --input: 216 12% 89%;
+  --ring: 262 52% 47%;
+}
+
 @layer base {
   * {
     @apply border-border;

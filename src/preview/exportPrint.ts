@@ -9,6 +9,33 @@ interface PageConfig {
   cssSize: string;
 }
 
+/* Light-theme CSS variables embedded directly into the print window
+   so exported HTML never depends on the app's dark-mode tokens. */
+const RESUME_DOCUMENT_THEME = `
+.resume-document {
+  color-scheme: light;
+  --background: 60 20% 97%;
+  --foreground: 215 29% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 29% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 29% 13%;
+  --primary: 215 29% 13%;
+  --primary-foreground: 60 20% 97%;
+  --secondary: 216 12% 95%;
+  --secondary-foreground: 215 29% 13%;
+  --muted: 216 12% 95%;
+  --muted-foreground: 215 13% 50%;
+  --accent: 262 52% 47%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 76% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 216 12% 92%;
+  --input: 216 12% 89%;
+  --ring: 262 52% 47%;
+}
+`;
+
 export function exportResumeToPrint(
   printElement: HTMLElement,
   pageConfig: PageConfig,
@@ -17,7 +44,12 @@ export function exportResumeToPrint(
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
-  const content = printElement.innerHTML;
+  // Prefer the themed document root; fall back to wrapping raw content
+  const docRoot = printElement.closest('[data-resume-document]') as HTMLElement | null;
+  const content = docRoot
+    ? docRoot.innerHTML
+    : printElement.innerHTML;
+
   const styles = Array.from(
     document.querySelectorAll('style, link[rel="stylesheet"]')
   )
@@ -31,6 +63,7 @@ export function exportResumeToPrint(
         <title></title>
         ${styles}
         <style>
+          ${RESUME_DOCUMENT_THEME}
           @page {
             size: ${pageConfig.cssSize};
             margin: 12mm 16mm 16mm 16mm;
@@ -55,7 +88,6 @@ export function exportResumeToPrint(
           [data-pdf-section] { break-inside: avoid; }
           [data-section] > h3, [data-section] > h2 { break-after: avoid; }
           .page-break-line { display: none !important; }
-          /* Hide paged.js chrome in print */
           .pagedjs_margin-content { display: none !important; }
           .print-footer {
             position: fixed; bottom: 0; left: 0; right: 0;
@@ -64,7 +96,7 @@ export function exportResumeToPrint(
         </style>
       </head>
       <body>
-        <div class="resume-print-content">${content}</div>
+        <div class="resume-document resume-print-content">${content}</div>
         ${footerEmail ? `<div class="print-footer">${footerEmail}</div>` : ''}
       </body>
     </html>
@@ -72,7 +104,6 @@ export function exportResumeToPrint(
 
   printWindow.document.close();
 
-  // Wait for fonts and styles to load before printing
   const tryPrint = () => {
     if (printWindow.document.fonts) {
       printWindow.document.fonts.ready.then(() => {
