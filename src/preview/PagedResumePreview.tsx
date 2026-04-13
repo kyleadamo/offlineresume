@@ -117,7 +117,17 @@ const PagedResumePreview = ({
                   padding: `${PAGE_MARGIN_TOP_MM}mm ${PAGE_MARGIN_X_MM}mm ${PAGE_MARGIN_BOTTOM_MM}mm`,
                   overflow: 'hidden',
                 }}
-                
+                onClick={(e) => {
+                  let el = e.target as HTMLElement | null;
+                  while (el && !el.getAttribute('data-section')) {
+                    if (el === e.currentTarget) { el = null; break; }
+                    el = el.parentElement;
+                  }
+                  if (el) {
+                    const section = el.getAttribute('data-section')!;
+                    window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
+                  }
+                }}
               >
                 <div
                   style={{
