@@ -15,7 +15,6 @@ import KeynoteTemplate from '@/templates/KeynoteTemplate';
 import { Resume, TemplateId } from '@/schema/resume';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import {
   DropdownMenu,
@@ -31,6 +30,8 @@ import {
 } from '@/components/ui/select';
 import { Download, ChevronDown, MoreVertical } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import PagedResumePreview from './PagedResumePreview';
+import { exportResumeToPrint } from './exportPrint';
 
 const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   minimal: MinimalTemplate,
@@ -73,11 +74,10 @@ function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
     const container = containerRef.current;
     if (!container) return;
 
-    const GAP = 8; // gap-2
-    const MORE_BTN_WIDTH = 72; // approximate "More ▾" button width
+    const GAP = 8;
+    const MORE_BTN_WIDTH = 72;
 
     const measure = () => {
-      // Temporarily render all buttons off-screen to measure their widths
       const probe = document.createElement('div');
       probe.style.cssText = 'position:absolute;visibility:hidden;display:flex;gap:8px;white-space:nowrap;';
       allTemplates.forEach((t) => {
@@ -98,7 +98,6 @@ function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
 
       for (let i = 0; i < btnWidths.length; i++) {
         const needed = usedWidth + btnWidths[i] + (i > 0 ? GAP : 0);
-        // If not the last button, reserve space for "More" button
         const remaining = i < btnWidths.length - 1 ? MORE_BTN_WIDTH + GAP : 0;
         if (needed + remaining > containerWidth) break;
         usedWidth = needed;
@@ -124,27 +123,20 @@ const PAGE_SIZES: Record<PageSize, { label: string; widthMm: number; heightMm: n
   letter: { label: 'US Letter', widthMm: 215.9, heightMm: 279.4, cssSize: 'letter' },
 };
 
-const PAGE_MARGIN_Y_MM = 12;
-
 interface ResumePreviewProps {
   resume?: Resume;
   onTemplateChange?: (id: TemplateId) => void;
   hideControls?: boolean;
   pageSize?: PageSize;
-  showPageBreaks?: boolean;
 }
 
-const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pageSize: pageSizeProp, showPageBreaks: showPageBreaksProp }: ResumePreviewProps = {}) => {
+const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pageSize: pageSizeProp }: ResumePreviewProps = {}) => {
   const { activeResume: contextResume, updateResume } = useResume();
   const displayResume = resumeProp ?? contextResume;
   const [moreOpen, setMoreOpen] = useState(false);
   const [pageSizeLocal, setPageSizeLocal] = useState<PageSize>('letter');
-  const [showPageBreaksLocal, setShowPageBreaksLocal] = useState(false);
   const pageSize = pageSizeProp ?? pageSizeLocal;
-  const showPageBreaks = showPageBreaksProp ?? showPageBreaksLocal;
   const setPageSize = setPageSizeLocal;
-  const setShowPageBreaks = setShowPageBreaksLocal;
-  const printRef = useRef<HTMLDivElement>(null);
   const stripRef = useRef<HTMLDivElement>(null);
   const visibleCount = useVisibleTemplateCount(stripRef);
 
@@ -161,7 +153,6 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
   const isMoreActive = overflowTemplates.some((t) => t.id === displayResume.templateId);
   const activeMoreLabel = overflowTemplates.find((t) => t.id === displayResume.templateId)?.label;
   const currentPage = PAGE_SIZES[pageSize];
-  const usableHeightMm = currentPage.heightMm - PAGE_MARGIN_Y_MM * 2;
 
   return (
     <div className="py-8 px-6 space-y-4 max-w-[1200px] mx-auto">
@@ -223,15 +214,12 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
             {!hideControls && (
               <div className="ml-auto flex items-center gap-1.5">
                 <DownloadPdfButton
-                  printRef={printRef}
                   resume={displayResume}
                   currentPage={currentPage}
                 />
                 <OptionsMenu
                   pageSize={pageSize}
                   onPageSizeChange={setPageSize}
-                  showPageBreaks={showPageBreaks}
-                  onShowPageBreaksChange={setShowPageBreaks}
                 />
               </div>
             )}
@@ -240,31 +228,12 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
       </div>
 
       <div className="flex justify-center">
-        <div
-          ref={printRef}
-          className="bg-white shadow-lg relative"
-          data-resume-print
-          style={{ width: `${currentPage.widthMm}mm`, padding: '12mm 16mm' }}
-          onClick={(e) => {
-            let el = e.target as HTMLElement | null;
-            while (el && !el.getAttribute('data-section')) {
-              if (el === e.currentTarget) { el = null; break; }
-              el = el.parentElement;
-            }
-            if (el) {
-              const section = el.getAttribute('data-section')!;
-              window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
-            }
-          }}
-        >
-          <TemplateComponent resume={displayResume} />
-          <PageBreakOverlay
-            printRef={printRef}
-            showPageBreaks={showPageBreaks}
-            usableHeightMm={usableHeightMm}
-            resume={displayResume}
-          />
-        </div>
+        <PagedResumePreview
+          resume={displayResume}
+          pageSize={pageSize}
+          TemplateComponent={TemplateComponent}
+          currentPage={currentPage}
+        />
       </div>
     </div>
   );
@@ -272,60 +241,17 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
 
 /* ── Download PDF button ── */
 function DownloadPdfButton({
-  printRef,
   resume,
   currentPage,
 }: {
-  printRef: React.RefObject<HTMLDivElement>;
   resume: any;
   currentPage: { widthMm: number; cssSize: string };
 }) {
   const handleDownloadPDF = useCallback(() => {
-    if (!printRef.current) return;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
-
-    const content = printRef.current.innerHTML;
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map((el) => el.outerHTML)
-      .join('\n');
-
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title></title>
-          ${styles}
-          <style>
-            @page {
-              size: ${currentPage.cssSize};
-              margin: 12mm 16mm 16mm 16mm;
-            }
-            html, body {
-              margin: 0; padding: 0; background: white;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            body { width: ${currentPage.widthMm}mm; }
-            .resume-print-content { width: 100%; }
-            [data-section] { cursor: default !important; background: transparent !important; outline: none !important; box-shadow: none !important; }
-            [data-section]:hover { background: transparent !important; outline: none !important; }
-            [data-pdf-section] { break-inside: avoid; }
-            [data-section] > h3, [data-section] > h2 { break-after: avoid; }
-            .page-break-line { display: none !important; }
-            .print-footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 8pt; color: #666; padding: 0; }
-          </style>
-        </head>
-        <body>
-          <div class="resume-print-content">${content}</div>
-          <div class="print-footer">${resume.profile.email || ''}</div>
-        </body>
-      </html>
-    `);
-
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-  }, [printRef, resume, currentPage]);
+    const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
+    if (!printTarget) return;
+    exportResumeToPrint(printTarget, currentPage, resume.profile.email || '');
+  }, [resume, currentPage]);
 
   return (
     <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
@@ -339,13 +265,9 @@ function DownloadPdfButton({
 function OptionsMenu({
   pageSize,
   onPageSizeChange,
-  showPageBreaks,
-  onShowPageBreaksChange,
 }: {
   pageSize: PageSize;
   onPageSizeChange: (v: PageSize) => void;
-  showPageBreaks: boolean;
-  onShowPageBreaksChange: (v: boolean) => void;
 }) {
   return (
     <DropdownMenu>
@@ -367,76 +289,8 @@ function OptionsMenu({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="page-breaks-toggle"
-            checked={showPageBreaks}
-            onCheckedChange={(checked) => onShowPageBreaksChange(checked === true)}
-          />
-          <Label htmlFor="page-breaks-toggle" className="text-xs text-muted-foreground cursor-pointer">
-            Show page breaks
-          </Label>
-        </div>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-/* ── Page break overlay lines ── */
-function PageBreakOverlay({
-  printRef,
-  showPageBreaks,
-  usableHeightMm,
-  resume,
-}: {
-  printRef: React.RefObject<HTMLDivElement>;
-  showPageBreaks: boolean;
-  usableHeightMm: number;
-  resume: any;
-}) {
-  const [lines, setLines] = useState<number[]>([]);
-
-  useEffect(() => {
-    if (!showPageBreaks || !printRef.current) {
-      setLines([]);
-      return;
-    }
-    const calculate = () => {
-      if (!printRef.current) return;
-      const containerHeight = printRef.current.scrollHeight;
-      const usableHeightPx = usableHeightMm * 3.7795;
-      const result: number[] = [];
-      let pos = usableHeightPx;
-      while (pos < containerHeight) {
-        result.push(pos);
-        pos += usableHeightPx;
-      }
-      setLines(result);
-    };
-    calculate();
-    const observer = new ResizeObserver(calculate);
-    observer.observe(printRef.current);
-    return () => observer.disconnect();
-  }, [showPageBreaks, resume, usableHeightMm, printRef]);
-
-  if (!showPageBreaks || lines.length === 0) return null;
-
-  return (
-    <>
-      {lines.map((top, i) => (
-        <div
-          key={i}
-          className="absolute left-0 right-0 pointer-events-none page-break-line"
-          style={{ top: `${top}px` }}
-        >
-          <div className="border-t-2 border-dashed border-destructive/60 relative">
-            <span className="absolute -top-3 right-2 text-[10px] font-medium text-destructive/60 bg-white px-1">
-              Page {i + 1} → {i + 2}
-            </span>
-          </div>
-        </div>
-      ))}
-    </>
   );
 }
 
