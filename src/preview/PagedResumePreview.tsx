@@ -81,6 +81,7 @@ const PagedResumePreview = ({
       {/* Hidden full-height container that renders the template at correct width.
           This is measured to determine page count, and is the source for clipping. */}
       <div
+        data-resume-print
         style={{
           position: 'absolute',
           left: '-9999px',
@@ -116,7 +117,7 @@ const PagedResumePreview = ({
                   padding: `${PAGE_MARGIN_TOP_MM}mm ${PAGE_MARGIN_X_MM}mm ${PAGE_MARGIN_BOTTOM_MM}mm`,
                   overflow: 'hidden',
                 }}
-                data-resume-print={i === 0 ? '' : undefined}
+                
               >
                 <div
                   style={{
