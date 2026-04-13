@@ -1,132 +1,41 @@
 
+Fix the regression by making the resume document carry its own light-theme scope instead of relying on surrounding page chrome.
 
-## Integrate Paged.js for Paginated Resume Preview
+1. Root cause
+- The builder print/export flow is exporting raw resume HTML into a new window without the light document wrapper.
+- Templates use semantic classes like `text-foreground`, `text-muted-foreground`, and `text-accent`, so in print they resolve against the app’s dark root tokens and become too light on white paper.
+- This keeps recurring because there are two print paths: the shared export utility and a separate builder-header implementation.
 
-### Overview
+2. Create one source of truth for resume document theming
+- In `src/index.css`, add a dedicated resume-document theme class that defines the light document tokens and `color-scheme: light`.
+- Reuse the current light resume token values from `.not-dark` so the document appearance stays consistent.
+- Keep `.not-dark` as an alias or migrate existing wrappers to the new class.
 
-Replace the current fake page-break overlay with Paged.js, which will chunk the resume HTML into discrete visual pages in the preview. The existing templates remain untouched — Paged.js operates on the rendered DOM output.
+3. Move theme ownership into the preview component
+- In `src/preview/PagedResumePreview.tsx`, add a real `data-resume-document` wrapper around the template render and apply the resume-document theme class there.
+- Use that same themed wrapper for both:
+  - the hidden export source
+  - the visible paged sheets
+- This prevents future builder chrome/theme changes from affecting resume colors.
 
-### How Paged.js works
+4. Make export use the same themed document root
+- In `src/preview/exportPrint.ts`, export the marked document root (`data-resume-document`) instead of raw `innerHTML`.
+- If needed, use `outerHTML` or wrap cloned content in the resume-document theme class before writing the print window.
+- Keep only print-specific CSS there (`@page`, print color-adjust, page chrome cleanup), not theme definitions scattered in multiple places.
+- Add a fallback guard so export still wraps content in the light document class if the marked root is missing.
 
-Paged.js is a CSS Paged Media polyfill. You give it an HTML container and it splits it into page-sized chunks, applying `@page` rules, `break-inside: avoid`, etc. It outputs a DOM structure with `.pagedjs_page` elements, each representing one sheet.
+5. Remove the duplicate builder print path
+- In `src/pages/BuilderPage.tsx`, replace the local `handleDownloadPDF` window-print implementation with the shared `exportResumeToPrint` utility.
+- This gives builder preview and builder download the same rendering contract and removes the main source of reintroducing this bug.
 
-### Files to create / modify
+6. Keep scope tight
+- No resume template rewrites.
+- No new PDF backend work.
+- No cover letter changes.
+- Only harden resume preview/export theming and centralize the print path.
 
-#### 1. Install `pagedjs` package
-```
-npm install pagedjs
-```
-
-#### 2. Create `src/preview/PagedResumePreview.tsx` (new file)
-
-A wrapper component that:
-- Renders the selected template into a hidden "source" container
-- Uses a `useEffect` to run `new Paged.Previewer().preview(sourceHTML, pagedStyles, targetContainer)` whenever resume data, template, or page size changes
-- Debounces re-pagination (300ms) to avoid flicker during typing
-- Shows a loading spinner during pagination
-- Displays the paginated output: discrete page sheets with shadows and gaps between them
-- Exposes a ref (`data-resume-print`) for the PDF export to grab content from
-- Preserves the `data-section` click handler for scroll-to-section behavior
-
-Key structure:
-```tsx
-function PagedResumePreview({ resume, pageSize, TemplateComponent }) {
-  const sourceRef = useRef<HTMLDivElement>(null);
-  const targetRef = useRef<HTMLDivElement>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // Debounced: render template to sourceRef, then call
-    // Paged.Previewer to paginate into targetRef
-    // Set loading=false when done
-  }, [resume, pageSize, TemplateComponent]);
-
-  return (
-    <>
-      {/* Hidden source container where React renders the template */}
-      <div ref={sourceRef} style={{ position: 'absolute', visibility: 'hidden' }}>
-        <TemplateComponent resume={resume} />
-      </div>
-      {/* Visible paginated output */}
-      {loading && <Spinner />}
-      <div ref={targetRef} data-resume-print />
-    </>
-  );
-}
-```
-
-#### 3. Create `src/preview/pagedStyles.ts` (new file)
-
-Exports a CSS string for Paged.js containing:
-- `@page` rules for letter and A4 with margins `12mm 16mm`
-- `[data-pdf-section] { break-inside: avoid; }`
-- `[data-section] > h2, [data-section] > h3 { break-after: avoid; }`
-- Page background white, body reset styles
-- Named page sizes so switching letter/A4 works
-
-#### 4. Modify `src/preview/ResumePreview.tsx`
-
-- Remove the `PageBreakOverlay` component entirely (no longer needed)
-- Remove `showPageBreaks` prop handling and the `usableHeightMm` calculation
-- Replace the single `printRef` div with `PagedResumePreview`
-- Keep the template selector strip, download button, and options menu
-- The options menu loses the "Show page breaks" checkbox (pages are always shown)
-- Pass `pageSize` and `resume` to `PagedResumePreview`
-
-The preview area becomes:
-```tsx
-<div className="flex justify-center">
-  <PagedResumePreview
-    resume={displayResume}
-    pageSize={pageSize}
-    TemplateComponent={TemplateComponent}
-    currentPage={currentPage}
-  />
-</div>
-```
-
-#### 5. Modify `src/pages/BuilderPage.tsx`
-
-- Remove `showPageBreaks` state (no longer needed)
-- Remove `showPageBreaks` prop from `BuilderHeader` and `ResumePreview`
-- Remove the "Show page breaks" checkbox from the Page Layout dialog
-- Keep the page size selector
-
-#### 6. Update `src/index.css`
-
-- Add Paged.js preview styling:
-```css
-/* Paged.js preview sheets */
-.pagedjs_page {
-  background: white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  margin-bottom: 24px;
-}
-```
-- Keep existing `@media print` rules; add a rule to hide `.pagedjs_page` shadows in print
-
-#### 7. Refactor PDF export (both in `BuilderPage.tsx` header and `ResumePreview.tsx`)
-
-- The export function grabs `[data-resume-print]` innerHTML as before
-- Add the paged styles CSS to the print window
-- The content is already paginated DOM, so print output is more accurate
-- Structure the export as a standalone `exportResumeToPrint(element, pageConfig)` utility in `src/preview/exportPrint.ts` for future Puppeteer reuse
-
-### What stays the same
-
-- All 14 template components — zero changes
-- `useResumeStore`, `ResumeContext`, schema — unchanged
-- Template selector strip UI — unchanged
-- Cover letter preview — unchanged
-
-### Limitations remaining after this change
-
-- PDF export still uses browser print dialog (not pixel-perfect)
-- Browser print may add headers/footers depending on user settings
-- Fonts must be loaded before pagination runs (handled via `document.fonts.ready`)
-- Very long single items that exceed one page height cannot be split mid-element
-
-### Recommended next step for future PDF export
-
-Create a backend edge function that receives the paginated HTML, runs headless Chromium/Puppeteer, and returns a PDF blob — reusing the same HTML + CSS that `PagedResumePreview` generates.
-
+Validation
+- Verify builder preview and browser print preview with at least Infographic, Creative, and Modern templates.
+- Confirm the name, contact row, headings, and body text keep correct dark-on-light contrast.
+- Check both Letter and A4.
+- Confirm the landing/index preview still matches the current good state.
