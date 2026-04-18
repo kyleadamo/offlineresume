@@ -1,6 +1,8 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
+import { createRoot, Root } from 'react-dom/client';
 import { Resume } from '@/schema/resume';
 import { Loader2 } from 'lucide-react';
+import { getPagedStyles } from './pagedStyles';
 
 interface PagedResumePreviewProps {
   resume: Resume;
@@ -9,16 +11,17 @@ interface PagedResumePreviewProps {
   currentPage: { widthMm: number; heightMm: number };
 }
 
-const PAGE_MARGIN_TOP_MM = 12;
-const PAGE_MARGIN_BOTTOM_MM = 16;
-const PAGE_MARGIN_X_MM = 16;
-
 /**
- * PagedResumePreview renders the resume template directly, then
- * visually splits it into discrete page-sized sheets using CSS clipping.
+ * PagedResumePreview uses Paged.js to chunk the rendered resume HTML
+ * into discrete `.pagedjs_page` sheets — real CSS Paged Media behavior.
  *
- * This avoids Paged.js DOM manipulation issues while giving the
- * appearance of real paginated pages with shadows and gaps.
+ * Two fixes vs. the earlier failed attempt:
+ *  1. Theme tokens are injected into the chunker via getPagedStyles(),
+ *     so the cloned tree (which sits outside our React .resume-document
+ *     wrapper) still resolves the light document palette.
+ *  2. Click-to-scroll uses event delegation on the output container
+ *     instead of React handlers, so it survives the HTML serialization
+ *     that Paged.js performs internally.
  */
 const PagedResumePreview = ({
   resume,
@@ -26,144 +29,144 @@ const PagedResumePreview = ({
   TemplateComponent,
   currentPage,
 }: PagedResumePreviewProps) => {
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [pages, setPages] = useState<number[]>([]);
-  const [contentHeight, setContentHeight] = useState(0);
+  // Hidden React mount point — kept live so Tailwind JIT + handlers work
+  const sourceHostRef = useRef<HTMLDivElement>(null);
+  const sourceRootRef = useRef<Root | null>(null);
+
+  // Visible Paged.js render target
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  const [loading, setLoading] = useState(true);
+  const [pageCount, setPageCount] = useState(0);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const runIdRef = useRef(0);
 
-  // Usable content height per page (page height minus top+bottom margins)
-  const usableHeightMm = currentPage.heightMm - PAGE_MARGIN_TOP_MM - PAGE_MARGIN_BOTTOM_MM;
+  // Mount the React source tree once
+  useEffect(() => {
+    if (!sourceHostRef.current) return;
+    sourceRootRef.current = createRoot(sourceHostRef.current);
+    return () => {
+      sourceRootRef.current?.unmount();
+      sourceRootRef.current = null;
+    };
+  }, []);
 
-  const calculatePages = useCallback(() => {
-    const el = contentRef.current;
-    if (!el) return;
+  // Render current resume into the source tree
+  useEffect(() => {
+    if (!sourceRootRef.current) return;
+    sourceRootRef.current.render(<TemplateComponent resume={resume} />);
+  }, [resume, TemplateComponent]);
 
-    const totalHeight = el.scrollHeight;
-    setContentHeight(totalHeight);
+  const repaginate = useCallback(async () => {
+    const source = sourceHostRef.current;
+    const target = targetRef.current;
+    if (!source || !target) return;
 
-    // Convert usable height from mm to px (1mm ≈ 3.7795px at 96dpi)
-    const usableHeightPx = usableHeightMm * 3.7795;
+    const runId = ++runIdRef.current;
+    setLoading(true);
 
-    const pageCount = Math.max(1, Math.ceil(totalHeight / usableHeightPx));
-    const offsets: number[] = [];
-    for (let i = 0; i < pageCount; i++) {
-      offsets.push(i * usableHeightPx);
+    // Clear any previous output
+    target.innerHTML = '';
+
+    try {
+      await document.fonts.ready;
+
+      // Dynamic import keeps pagedjs out of the initial bundle
+      const pagedModule: any = await import('pagedjs');
+      const Previewer = pagedModule.Previewer || pagedModule.default?.Previewer;
+      if (!Previewer) throw new Error('pagedjs Previewer not found');
+
+      const previewer = new Previewer();
+      const html = source.innerHTML;
+      const stylesheet = getPagedStyles(pageSize);
+
+      const flow = await previewer.preview(
+        html,
+        [{ _: stylesheet }],
+        target,
+      );
+
+      // Drop result if a newer run started during pagination
+      if (runId !== runIdRef.current) return;
+
+      setPageCount(flow?.total ?? target.querySelectorAll('.pagedjs_page').length);
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.error('[PagedResumePreview] pagination failed', err);
+    } finally {
+      if (runId === runIdRef.current) setLoading(false);
     }
-    setPages(offsets);
-  }, [usableHeightMm]);
+  }, [pageSize]);
 
+  // Debounced re-pagination on inputs that affect layout
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      // Wait for fonts before measuring
-      document.fonts.ready.then(calculatePages);
-    }, 200);
-
+    debounceRef.current = setTimeout(repaginate, 300);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-  }, [calculatePages, resume, pageSize]);
+  }, [repaginate, resume, pageSize, TemplateComponent]);
 
-  // Also observe resize changes on the content
+  // Delegated click-to-scroll — works on Paged.js cloned DOM
   useEffect(() => {
-    const el = contentRef.current;
-    if (!el) return;
-    const ro = new ResizeObserver(() => calculatePages());
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [calculatePages]);
+    const target = targetRef.current;
+    if (!target) return;
 
-  const usableHeightPx = usableHeightMm * 3.7795;
-  const pageWidthMm = currentPage.widthMm;
+    const onClick = (e: MouseEvent) => {
+      let el = e.target as HTMLElement | null;
+      while (el && el !== target) {
+        const section = el.getAttribute?.('data-section');
+        if (section) {
+          window.dispatchEvent(
+            new CustomEvent('scroll-to-section', { detail: section }),
+          );
+          return;
+        }
+        el = el.parentElement;
+      }
+    };
+
+    target.addEventListener('click', onClick);
+    return () => target.removeEventListener('click', onClick);
+  }, []);
 
   return (
-    <div style={{ width: `${pageWidthMm}mm` }} className="mx-auto">
-      {/* Hidden full-height container that renders the template at correct width.
-          This is measured to determine page count, and is the source for clipping. */}
+    <div style={{ width: `${currentPage.widthMm}mm` }} className="mx-auto relative">
+      {/* Hidden, live React source — Tailwind/handlers stay intact here */}
       <div
+        ref={sourceHostRef}
         className="resume-document"
-        data-resume-print
-        data-resume-document
+        data-resume-source
         style={{
           position: 'absolute',
-          left: '-9999px',
+          left: '-99999px',
           top: 0,
-          width: `${pageWidthMm}mm`,
-          padding: `${PAGE_MARGIN_TOP_MM}mm ${PAGE_MARGIN_X_MM}mm ${PAGE_MARGIN_BOTTOM_MM}mm`,
+          width: `${currentPage.widthMm}mm`,
           visibility: 'hidden',
           pointerEvents: 'none',
           colorScheme: 'light',
         }}
-      >
-        <div ref={contentRef}>
-          <TemplateComponent resume={resume} />
-        </div>
-      </div>
+      />
 
-      {/* Visible page sheets — each clips a portion of the template */}
-      {pages.length > 0 ? (
-        <div className="flex flex-col items-center gap-6">
-          {pages.map((offset, i) => {
-            const isLastPage = i === pages.length - 1;
-            const remainingHeight = contentHeight - offset;
-            const pageContentHeight = isLastPage
-              ? Math.min(usableHeightPx, remainingHeight)
-              : usableHeightPx;
+      {/* Visible Paged.js output — wrapped so light tokens cascade in */}
+      <div
+        ref={targetRef}
+        className="resume-document paged-output"
+        data-resume-print
+        data-resume-document
+        style={{ colorScheme: 'light' }}
+      />
 
-            return (
-              <div
-                key={i}
-                className="resume-document bg-white shadow-lg relative"
-                style={{
-                  width: `${pageWidthMm}mm`,
-                  height: `${pageContentHeight + (PAGE_MARGIN_TOP_MM + PAGE_MARGIN_BOTTOM_MM) * 3.7795}px`,
-                  padding: `${PAGE_MARGIN_TOP_MM}mm ${PAGE_MARGIN_X_MM}mm ${PAGE_MARGIN_BOTTOM_MM}mm`,
-                  overflow: 'hidden',
-                  colorScheme: 'light',
-                }}
-                onClick={(e) => {
-                  let el = e.target as HTMLElement | null;
-                  while (el && !el.getAttribute('data-section')) {
-                    if (el === e.currentTarget) { el = null; break; }
-                    el = el.parentElement;
-                  }
-                  if (el) {
-                    const section = el.getAttribute('data-section')!;
-                    window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
-                  }
-                }}
-              >
-                <div
-                  style={{
-                    marginTop: `-${offset}px`,
-                    height: `${contentHeight}px`,
-                  }}
-                >
-                  <TemplateComponent resume={resume} />
-                </div>
-
-                {/* Page number */}
-                <div
-                  className="absolute bottom-2 right-4 text-[10px] text-gray-400"
-                  style={{ pointerEvents: 'none' }}
-                >
-                  {i + 1} / {pages.length}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
+      {loading && (
         <div className="flex items-center justify-center py-16">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
-          <span className="ml-2 text-sm text-muted-foreground">Loading…</span>
+          <span className="ml-2 text-sm text-muted-foreground">Paginating…</span>
         </div>
       )}
 
-      {/* Page count */}
-      {pages.length > 1 && (
+      {!loading && pageCount > 1 && (
         <div className="text-center py-2 text-xs text-muted-foreground">
-          {pages.length} pages
+          {pageCount} pages
         </div>
       )}
     </div>

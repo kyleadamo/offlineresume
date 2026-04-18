@@ -44,7 +44,8 @@ export function exportResumeToPrint(
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
-  // Prefer the themed document root; fall back to wrapping raw content
+  // Prefer the themed document root (which now contains the Paged.js output);
+  // fall back to wrapping raw content.
   const docRoot = printElement.closest('[data-resume-document]') as HTMLElement | null;
   const content = docRoot
     ? docRoot.innerHTML
@@ -89,6 +90,9 @@ export function exportResumeToPrint(
           [data-section] > h3, [data-section] > h2 { break-after: avoid; }
           .page-break-line { display: none !important; }
           .pagedjs_margin-content { display: none !important; }
+          /* Strip preview chrome from paginated sheets when printing */
+          .pagedjs_page { box-shadow: none !important; margin: 0 !important; background: white !important; }
+          .pagedjs_pages { gap: 0 !important; display: block !important; }
           .print-footer {
             position: fixed; bottom: 0; left: 0; right: 0;
             font-size: 8pt; color: #666; padding: 0;
