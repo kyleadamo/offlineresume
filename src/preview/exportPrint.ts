@@ -44,7 +44,8 @@ export function exportResumeToPrint(
   const printWindow = window.open('', '_blank');
   if (!printWindow) return;
 
-  // Prefer the themed document root; fall back to wrapping raw content
+  // Prefer the themed document root (which now contains the Paged.js output);
+  // fall back to wrapping raw content.
   const docRoot = printElement.closest('[data-resume-document]') as HTMLElement | null;
   const content = docRoot
     ? docRoot.innerHTML
