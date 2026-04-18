@@ -1,74 +1,63 @@
 
 
-## Reintroduce Paged.js — Properly This Time
+## Prompt: Build Puppeteer-Based PDF Export
 
-The two earlier blockers are solvable. Here's how.
+Below is a ready-to-paste prompt the user can send to kick off the implementation. It's grounded in this codebase: `PagedResumePreview` already produces a paginated `.resume-document` DOM, `exportResumeToPrint` is the current export entry point, and Lovable Cloud / Supabase Edge Functions are available.
 
-### Root cause recap
+---
 
-1. **Tailwind/CSS scoping broke** — Paged.js moved content into `.pagedjs_pages` outside our `.resume-document` wrapper, so light-theme CSS variables stopped resolving.
-2. **React handlers lost** — We fed Paged.js an HTML *string* via `previewer.preview(html, ...)`, which serializes and clones. The new DOM has no React fiber attached.
+### The prompt
 
-### Solutions
+> Build a Puppeteer-based PDF export that replaces the current browser-print fallback while keeping it as a backup. Reuse the exact same paginated HTML that `src/preview/PagedResumePreview.tsx` already produces — do not rebuild templates server-side.
+>
+> **Architecture**
+> - Add a Supabase Edge Function `supabase/functions/render-pdf/index.ts` that accepts `{ html, css, pageSize: 'letter' | 'a4', filename }`, launches headless Chromium, sets the page content, waits for fonts + network idle, and returns a PDF blob.
+> - Use `@sparticuz/chromium` + `puppeteer-core` (Deno-compatible build) so it runs inside the Edge runtime. If that proves too heavy for Edge, fall back to Browserless.io with an API key stored as a secret — ask me which I prefer before committing.
+> - Add CORS headers, validate input with Zod, cap HTML size (e.g. 2MB), and return `application/pdf` with a `Content-Disposition` header.
+>
+> **Client side**
+> 1. In `src/preview/PagedResumePreview.tsx`, expose a method (or a ref) that returns:
+>    - the serialized `outerHTML` of the `data-resume-document` Paged.js output
+>    - the concatenated CSS from `getPagedStyles()` plus the `.resume-document` light-theme tokens from `src/index.css` plus the Google Fonts `<link>` URL
+> 2. Create `src/preview/exportPdfRemote.ts` that POSTs the payload to the new edge function via `supabase.functions.invoke('render-pdf')`, downloads the returned blob, and triggers a save with the resume name.
+> 3. Update `src/preview/exportPrint.ts` to remain as a "Print (browser)" fallback. Wire the builder header's primary "Download PDF" button to `exportPdfRemote` and add a secondary menu item for the browser fallback.
+>
+> **Fidelity requirements**
+> - Embed the same Inter + Source Serif 4 fonts the preview loads; wait for `page.evaluateHandle('document.fonts.ready')` before printing.
+> - Set viewport to the page size in pixels at 96dpi so Paged.js chunks identically to the preview.
+> - Use `printBackground: true`, `preferCSSPageSize: true`, no header/footer template (the document supplies its own).
+> - Pass `@page { size: letter|a4; margin: 12mm 16mm 16mm 16mm }` so margins match `pagedStyles.ts`.
+>
+> **Theming safety (this has regressed 3 times — protect against it)**
+> - The HTML sent to the edge function must be wrapped in `<div class="resume-document">…</div>` and the CSS must include the full `.resume-document` light-theme token block. Do not rely on the app's global tokens. Add a comment in `exportPdfRemote.ts` documenting why.
+>
+> **UX**
+> - Show a loading state on the Download button while the request is in flight.
+> - Toast on success ("PDF downloaded") and on failure with a "Try browser print instead" action that calls the existing `exportResumeToPrint`.
+> - Log errors to console with the request id returned by the function.
+>
+> **Out of scope**
+> - No template rewrites
+> - No changes to cover letter export (yet — note as follow-up)
+> - No auth-gating the function (resumes are user-supplied content; rely on rate limits)
+>
+> **Validation**
+> - Test Modern, Creative, Infographic, Brutalist templates in both Letter and A4
+> - Confirm exported PDF matches the on-screen Paged.js preview page-for-page
+> - Confirm fonts, accent colors, and muted text all render correctly
+> - Confirm the browser-print fallback still works when the edge function is unreachable
+>
+> Before writing code, ask me:
+> 1. Puppeteer-in-Edge vs Browserless.io vs a separate Node service?
+> 2. Should the PDF be returned inline or also stored in Supabase Storage for re-download?
 
-**Fix 1 — CSS scoping**
-Apply `.resume-document` to the Paged.js *output container*, not just the source. Two options:
-- Wrap Paged.js's render target in a div with `class="resume-document"` so all generated `.pagedjs_page` descendants inherit the light tokens.
-- Inject our resume-document CSS variables into the Paged.js chunker's stylesheet list so they apply inside the cloned tree.
+---
 
-Use `previewer.preview(content, [stylesheets], renderTo)` where `stylesheets` includes a synthesized stylesheet containing `.pagedjs_page { /* light tokens */ }`.
+### Why this prompt works for this codebase
 
-**Fix 2 — React handlers**
-Use **event delegation** instead of per-element handlers. Attach a single `click` listener to the Paged.js output container that walks up looking for `[data-section]` and dispatches the existing `scroll-to-section` event. This already works with serialized DOM because we only need the data attribute, not React fibers.
-
-For anything more interactive in the future, use the same delegation pattern — data attributes + container-level listeners.
-
-**Fix 3 — Render flow**
-- Render templates to a hidden React mount point as today
-- Pass `mountNode.innerHTML` to Paged.js (one-shot serialization is fine)
-- Debounce re-pagination (300ms) on resume/template/pageSize changes
-- Show a spinner overlay during chunking so users don't see flicker
-- Wait for `document.fonts.ready` before each pagination pass
-
-### Files to change
-
-1. **`src/preview/PagedResumePreview.tsx`** — Rewrite to use `pagedjs` Previewer:
-   - Hidden React source container (current approach)
-   - Visible Paged.js target container wrapped in `.resume-document`
-   - Effect: serialize source → call `previewer.preview()` → set loading false
-   - Single delegated click listener on target for `data-section`
-   - Debounced re-run on deps change
-
-2. **`src/preview/pagedStyles.ts`** — Re-activate. Export CSS string with:
-   - `@page { size: letter|a4; margin: 12mm 16mm 16mm 16mm }`
-   - `.pagedjs_page { background: white; box-shadow: ...; margin-bottom: 24px }`
-   - **Embed the full light-theme token block** scoped to `.pagedjs_page` so colors resolve inside the cloned tree
-   - `[data-pdf-section] { break-inside: avoid }`, heading break rules
-
-3. **`src/preview/exportPrint.ts`** — Update to grab the Paged.js output (already paginated) and feed it to the print window, keeping the existing light-theme injection as a safety net.
-
-4. **`src/index.css`** — Add `.pagedjs_page` polish rules (sheet shadows, page-break gap in screen view, hide shadows in `@media print`).
-
-5. **`package.json`** — `pagedjs` already installed; keep it.
-
-### What we gain
-
-- Real CSS Paged Media break behavior (much smarter than viewport clipping)
-- Foundation for `@page :first`, running headers/footers, page numbers
-- Same paginated DOM can later be sent to a Puppeteer edge function for pixel-perfect PDFs
-- Better handling of long sections that span pages
-
-### What we accept
-
-- Pagination cost (~100–400ms per run) — mitigated by debouncing
-- Click-to-scroll uses delegation, not React handlers — fine for current needs
-- Slightly more complex than viewport clipping — worth it for the control gained
-
-### Validation
-
-- Switch through Modern, Creative, Infographic, Brutalist templates; confirm colors stay correct
-- Toggle Letter ↔ A4; confirm page dimensions update
-- Click a section in preview; confirm scroll-to-section still fires
-- Download PDF; confirm output matches preview
-- Verify dark builder chrome doesn't leak into pages
+- Anchors to real files (`PagedResumePreview.tsx`, `exportPrint.ts`, `pagedStyles.ts`, `index.css`) so the implementer doesn't reinvent structure.
+- Forces reuse of the already-paginated DOM — no double rendering path.
+- Bakes in the recurring light-theme regression guard.
+- Leaves the browser print as a graceful fallback so nothing breaks during rollout.
+- Defers two real architectural choices (runtime + storage) to you instead of guessing.
 
