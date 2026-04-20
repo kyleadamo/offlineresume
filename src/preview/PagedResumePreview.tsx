@@ -11,37 +11,34 @@ interface PagedResumePreviewProps {
   currentPage: { widthMm: number; heightMm: number };
 }
 
-/**
- * PagedResumePreview uses Paged.js to chunk the rendered resume HTML
- * into discrete `.pagedjs_page` sheets — real CSS Paged Media behavior.
- *
- * Two fixes vs. the earlier failed attempt:
- *  1. Theme tokens are injected into the chunker via getPagedStyles(),
- *     so the cloned tree (which sits outside our React .resume-document
- *     wrapper) still resolves the light document palette.
- *  2. Click-to-scroll uses event delegation on the output container
- *     instead of React handlers, so it survives the HTML serialization
- *     that Paged.js performs internally.
- */
+// 1mm = 96/25.4 px at standard CSS DPI
+const MM_TO_PX = 96 / 25.4;
+
 const PagedResumePreview = ({
   resume,
   pageSize,
   TemplateComponent,
   currentPage,
 }: PagedResumePreviewProps) => {
-  // Hidden React mount point — kept live so Tailwind JIT + handlers work
   const sourceHostRef = useRef<HTMLDivElement>(null);
   const sourceRootRef = useRef<Root | null>(null);
 
-  // Visible Paged.js render target
+  // Outer container — its width drives the scale factor
+  const outerRef = useRef<HTMLDivElement>(null);
+  // Scaled wrapper (width: pageWidthMm, transform: scale(s))
+  const scaleWrapperRef = useRef<HTMLDivElement>(null);
+  // Visible Paged.js render target (true page width)
   const targetRef = useRef<HTMLDivElement>(null);
 
   const [loading, setLoading] = useState(true);
   const [pageCount, setPageCount] = useState(0);
+  const [scale, setScale] = useState(1);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const runIdRef = useRef(0);
 
-  // Mount the React source tree once
+  const pageWidthPx = currentPage.widthMm * MM_TO_PX;
+
+  // Mount React source tree
   useEffect(() => {
     if (!sourceHostRef.current) return;
     sourceRootRef.current = createRoot(sourceHostRef.current);
@@ -51,11 +48,42 @@ const PagedResumePreview = ({
     };
   }, []);
 
-  // Render current resume into the source tree
   useEffect(() => {
     if (!sourceRootRef.current) return;
     sourceRootRef.current.render(<TemplateComponent resume={resume} />);
   }, [resume, TemplateComponent]);
+
+  // Recompute outer height so vertical flow accounts for the scale transform
+  const updateOuterHeight = useCallback(() => {
+    const target = targetRef.current;
+    const outer = outerRef.current;
+    if (!target || !outer) return;
+    const naturalHeight = target.getBoundingClientRect().height / (scale || 1);
+    // Use the scaled height so layout reserves correct vertical space
+    outer.style.height = `${naturalHeight * scale}px`;
+  }, [scale]);
+
+  // Compute scale factor from container width
+  useEffect(() => {
+    const outer = outerRef.current;
+    if (!outer) return;
+
+    const compute = () => {
+      const w = outer.clientWidth;
+      const next = Math.min(1, w / pageWidthPx);
+      setScale(next);
+    };
+
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(outer);
+    return () => ro.disconnect();
+  }, [pageWidthPx]);
+
+  // Whenever scale changes, sync outer height
+  useEffect(() => {
+    updateOuterHeight();
+  }, [scale, updateOuterHeight, pageCount]);
 
   const repaginate = useCallback(async () => {
     const source = sourceHostRef.current;
@@ -65,13 +93,11 @@ const PagedResumePreview = ({
     const runId = ++runIdRef.current;
     setLoading(true);
 
-    // Clear any previous output
     target.innerHTML = '';
 
     try {
       await document.fonts.ready;
 
-      // Dynamic import keeps pagedjs out of the initial bundle
       const pagedModule: any = await import('pagedjs');
       const Previewer = pagedModule.Previewer || pagedModule.default?.Previewer;
       if (!Previewer) throw new Error('pagedjs Previewer not found');
@@ -80,25 +106,23 @@ const PagedResumePreview = ({
       const html = source.innerHTML;
       const stylesheet = getPagedStyles(pageSize);
 
-      const flow = await previewer.preview(
-        html,
-        [{ _: stylesheet }],
-        target,
-      );
+      const flow = await previewer.preview(html, [{ _: stylesheet }], target);
 
-      // Drop result if a newer run started during pagination
       if (runId !== runIdRef.current) return;
 
       setPageCount(flow?.total ?? target.querySelectorAll('.pagedjs_page').length);
+      // Allow layout to settle before measuring
+      requestAnimationFrame(() => {
+        if (runId === runIdRef.current) updateOuterHeight();
+      });
     } catch (err) {
       // eslint-disable-next-line no-console
       console.error('[PagedResumePreview] pagination failed', err);
     } finally {
       if (runId === runIdRef.current) setLoading(false);
     }
-  }, [pageSize]);
+  }, [pageSize, updateOuterHeight]);
 
-  // Debounced re-pagination on inputs that affect layout
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(repaginate, 300);
@@ -107,7 +131,6 @@ const PagedResumePreview = ({
     };
   }, [repaginate, resume, pageSize, TemplateComponent]);
 
-  // Delegated click-to-scroll — works on Paged.js cloned DOM
   useEffect(() => {
     const target = targetRef.current;
     if (!target) return;
@@ -131,8 +154,8 @@ const PagedResumePreview = ({
   }, []);
 
   return (
-    <div style={{ width: `${currentPage.widthMm}mm` }} className="mx-auto relative">
-      {/* Hidden, live React source — Tailwind/handlers stay intact here */}
+    <div ref={outerRef} className="w-full mx-auto relative" style={{ maxWidth: `${currentPage.widthMm}mm` }}>
+      {/* Hidden React source */}
       <div
         ref={sourceHostRef}
         className="resume-document"
@@ -148,24 +171,33 @@ const PagedResumePreview = ({
         }}
       />
 
-      {/* Visible Paged.js output — wrapped so light tokens cascade in */}
+      {/* Scaled wrapper — true page width, visually scaled to fit */}
       <div
-        ref={targetRef}
-        className="resume-document paged-output"
-        data-resume-print
-        data-resume-document
-        style={{ colorScheme: 'light' }}
-      />
+        ref={scaleWrapperRef}
+        style={{
+          width: `${currentPage.widthMm}mm`,
+          transform: `scale(${scale})`,
+          transformOrigin: 'top left',
+        }}
+      >
+        <div
+          ref={targetRef}
+          className="resume-document paged-output"
+          data-resume-print
+          data-resume-document
+          style={{ colorScheme: 'light' }}
+        />
+      </div>
 
       {loading && (
-        <div className="flex items-center justify-center py-16">
+        <div className="flex items-center justify-center py-16 absolute inset-x-0 top-0">
           <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           <span className="ml-2 text-sm text-muted-foreground">Paginating…</span>
         </div>
       )}
 
       {!loading && pageCount > 1 && (
-        <div className="text-center py-2 text-xs text-muted-foreground">
+        <div className="text-center py-2 text-xs text-muted-foreground absolute -bottom-8 inset-x-0">
           {pageCount} pages
         </div>
       )}
