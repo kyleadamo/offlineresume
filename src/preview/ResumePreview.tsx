@@ -28,10 +28,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Download, ChevronDown, MoreVertical } from 'lucide-react';
+import { Download, ChevronDown, MoreVertical, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import PagedResumePreview from './PagedResumePreview';
 import { exportResumeToPrint } from './exportPrint';
+import { exportResumePdfRemote } from './exportPdfRemote';
+import { toast } from '@/hooks/use-toast';
+import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   minimal: MinimalTemplate,
@@ -216,10 +222,13 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
                 <DownloadPdfButton
                   resume={displayResume}
                   currentPage={currentPage}
+                  pageSize={pageSize}
                 />
                 <OptionsMenu
                   pageSize={pageSize}
                   onPageSizeChange={setPageSize}
+                  resume={displayResume}
+                  currentPage={currentPage}
                 />
               </div>
             )}
@@ -239,24 +248,54 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
   );
 };
 
-/* ── Download PDF button ── */
+/* ── Download PDF button (remote Browserless render with browser-print fallback) ── */
 function DownloadPdfButton({
   resume,
   currentPage,
+  pageSize,
 }: {
   resume: any;
   currentPage: { widthMm: number; cssSize: string };
+  pageSize: 'letter' | 'a4';
 }) {
-  const handleDownloadPDF = useCallback(() => {
+  const [loading, setLoading] = useState(false);
+
+  const filename = useCallback(() => {
+    const name = resume?.profile?.fullName || resume?.title || 'resume';
+    return `${String(name).trim().replace(/\s+/g, '_')}.pdf`;
+  }, [resume]);
+
+  const browserFallback = useCallback(() => {
     const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
     if (!printTarget) return;
     exportResumeToPrint(printTarget, currentPage, resume.profile.email || '');
   }, [resume, currentPage]);
 
+  const handleDownloadPDF = useCallback(async () => {
+    const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
+    if (!printTarget) return;
+
+    setLoading(true);
+    try {
+      await exportResumePdfRemote(printTarget, { pageSize, filename: filename() });
+      toast({ title: 'PDF downloaded' });
+    } catch (err) {
+      console.error('[DownloadPdfButton] remote export failed', err);
+      toast({
+        title: 'PDF generation failed',
+        description: 'Falling back to browser print.',
+        variant: 'destructive',
+      });
+      browserFallback();
+    } finally {
+      setLoading(false);
+    }
+  }, [pageSize, filename, browserFallback]);
+
   return (
-    <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
-      <Download className="w-4 h-4" />
-      Download PDF
+    <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={loading}>
+      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+      {loading ? 'Generating…' : 'Download PDF'}
     </Button>
   );
 }
@@ -265,10 +304,20 @@ function DownloadPdfButton({
 function OptionsMenu({
   pageSize,
   onPageSizeChange,
+  resume,
+  currentPage,
 }: {
   pageSize: PageSize;
   onPageSizeChange: (v: PageSize) => void;
+  resume: any;
+  currentPage: { widthMm: number; cssSize: string };
 }) {
+  const handleBrowserPrint = useCallback(() => {
+    const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
+    if (!printTarget) return;
+    exportResumeToPrint(printTarget, currentPage, resume?.profile?.email || '');
+  }, [resume, currentPage]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -289,6 +338,10 @@ function OptionsMenu({
             </SelectContent>
           </Select>
         </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={handleBrowserPrint} className="text-xs cursor-pointer">
+          Print via browser
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
