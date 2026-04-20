@@ -161,9 +161,9 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
   const currentPage = PAGE_SIZES[pageSize];
 
   return (
-    <div className="py-8 px-6 space-y-4 max-w-[1200px] mx-auto">
+    <div className="py-4 sm:py-8 px-3 sm:px-6 space-y-4 max-w-[1200px] mx-auto">
       <div className="flex justify-center">
-        <div ref={stripRef} style={{ width: `${currentPage.widthMm}mm` }}>
+        <div ref={stripRef} className="w-full" style={{ maxWidth: `${currentPage.widthMm}mm` }}>
           <div className="flex items-center gap-2 flex-wrap">
             {visibleTemplates.map((t) => (
               <button
@@ -295,7 +295,8 @@ function DownloadPdfButton({
   return (
     <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={loading}>
       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
-      {loading ? 'Generating…' : 'Download PDF'}
+      <span className="hidden sm:inline">{loading ? 'Generating…' : 'Download PDF'}</span>
+      <span className="sr-only sm:hidden">{loading ? 'Generating PDF' : 'Download PDF'}</span>
     </Button>
   );
 }

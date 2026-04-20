@@ -10,7 +10,7 @@ interface HeroSectionProps {
 
 const HeroSection = ({ resume, onTemplateChange, onEditClick }: HeroSectionProps) => {
   return (
-    <section className="flex flex-col items-center pt-24 pb-16 px-6">
+    <section className="flex flex-col items-center pt-20 sm:pt-24 pb-16 px-3 sm:px-6">
       <div className="text-center mb-10 max-w-2xl">
         <h1 className="text-foreground text-4xl md:text-5xl font-semibold tracking-tight mb-4" style={{ fontFamily: "'Merriweather', serif" }}>
           Offline Resume
@@ -28,7 +28,7 @@ const HeroSection = ({ resume, onTemplateChange, onEditClick }: HeroSectionProps
         Edit this resume
       </button>
 
-      <div className="not-dark w-full max-w-[900px]" style={{ colorScheme: 'light' }}>
+      <div className="not-dark w-full sm:max-w-[900px]" style={{ colorScheme: 'light' }}>
         <ResumePreview
           resume={resume}
           onTemplateChange={onTemplateChange}
