@@ -45,8 +45,24 @@ const LandingFooter = () => {
           More posts →
         </Link>
 
-        <p className="mt-12 text-center text-sm text-muted-foreground">
-          Made with ❤️ and ☕ in 🇨🇦
+        <p className="mt-12 text-center text-sm text-muted-foreground flex items-center justify-center gap-1.5">
+          <span>Made with ❤️ and ☕ in</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 60 30"
+            width="20"
+            height="10"
+            aria-label="Canada"
+            className="inline-block rounded-sm"
+          >
+            <rect width="60" height="30" fill="#fff" />
+            <rect width="15" height="30" fill="#FF0000" />
+            <rect x="45" width="15" height="30" fill="#FF0000" />
+            <path
+              fill="#FF0000"
+              d="M30 7 l1.6 3.2 3.4-.8-1.2 3.2 2.6 2-3 1 .4 3.2-3-1-1.4 3-1.4-3-3 1 .4-3.2-3-1 2.6-2-1.2-3.2 3.4.8z"
+            />
+          </svg>
         </p>
       </div>
     </footer>
