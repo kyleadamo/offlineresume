@@ -38,13 +38,13 @@ export function track(eventType: AnalyticsEvent, payload: TrackPayload = {}): vo
   try {
     supabase
       .from('analytics_events')
-      .insert({
+      .insert([{
         event_type: eventType,
         visitor_id: getVisitorId(),
         path: payload.path ?? null,
         template_id: payload.templateId ?? null,
         metadata: payload.metadata ?? {},
-      })
+      }])
       .then(({ error }) => {
         if (error) console.debug('[analytics] insert failed', error.message);
       });

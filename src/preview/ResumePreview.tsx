@@ -34,6 +34,7 @@ import PagedResumePreview from './PagedResumePreview';
 import { exportResumeToPrint } from './exportPrint';
 import { exportResumePdfRemote } from './exportPdfRemote';
 import { toast } from '@/hooks/use-toast';
+import { track } from '@/lib/analytics';
 import {
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -275,6 +276,7 @@ function DownloadPdfButton({
     setLoading(true);
     try {
       await exportResumePdfRemote(printTarget, { pageSize, filename: filename() });
+      track('pdf_download', { templateId: resume?.templateId, metadata: { mode: 'remote', pageSize } });
       toast({ title: 'PDF downloaded' });
     } catch (err) {
       console.error('[DownloadPdfButton] remote export failed', err);
@@ -284,10 +286,11 @@ function DownloadPdfButton({
         variant: 'destructive',
       });
       browserFallback();
+      track('pdf_download', { templateId: resume?.templateId, metadata: { mode: 'browser_print_fallback', pageSize } });
     } finally {
       setLoading(false);
     }
-  }, [pageSize, filename, browserFallback]);
+  }, [pageSize, filename, browserFallback, resume]);
 
   return (
     <Button
@@ -319,6 +322,7 @@ function OptionsMenu({
     const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
     if (!printTarget) return;
     exportResumeToPrint(printTarget, currentPage, resume?.profile?.email || '');
+    track('pdf_download', { templateId: resume?.templateId, metadata: { mode: 'browser_print' } });
   }, [resume, currentPage]);
 
   return (
