@@ -4,6 +4,7 @@ import { useResume } from '@/hooks/ResumeContext';
 import { Resume, TemplateId, DEFAULT_SECTION_ORDER } from '@/schema/resume';
 import LandingHeader from '@/components/landing/LandingHeader';
 import HeroSection from '@/components/landing/HeroSection';
+import LandingFooter from '@/components/landing/LandingFooter';
 import CreateResumeModal from '@/components/landing/CreateResumeModal';
 import SavedResumesSheet from '@/components/landing/SavedResumesSheet';
 import { track } from '@/lib/analytics';
@@ -120,6 +121,7 @@ const LandingPage = () => {
         onTemplateChange={handleTemplateChange}
         onEditClick={handleEditResume}
       />
+      <LandingFooter />
       <CreateResumeModal
         open={isCreateModalOpen}
         onOpenChange={setIsCreateModalOpen}
