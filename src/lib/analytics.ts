@@ -43,7 +43,7 @@ export function track(eventType: AnalyticsEvent, payload: TrackPayload = {}): vo
         visitor_id: getVisitorId(),
         path: payload.path ?? null,
         template_id: payload.templateId ?? null,
-        metadata: payload.metadata ?? {},
+        metadata: (payload.metadata ?? {}) as any,
       }])
       .then(({ error }) => {
         if (error) console.debug('[analytics] insert failed', error.message);
