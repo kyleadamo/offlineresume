@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface LandingHeaderProps {
   hasSavedResumes: boolean;
@@ -42,13 +43,21 @@ const LandingHeader = ({ hasSavedResumes, onCreateClick, onMyResumesClick }: Lan
             </span>
           </div>
         </div>
-        <Button
-          size="sm"
-          onClick={hasSavedResumes ? onMyResumesClick : onCreateClick}
-          className="bg-accent text-accent-foreground hover:bg-accent/90"
-        >
-          {hasSavedResumes ? 'My resumes' : 'Create my resume'}
-        </Button>
+        <div className="flex items-center gap-4">
+          <Link
+            to="/blog"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors hidden sm:inline"
+          >
+            Blog
+          </Link>
+          <Button
+            size="sm"
+            onClick={hasSavedResumes ? onMyResumesClick : onCreateClick}
+            className="bg-accent text-accent-foreground hover:bg-accent/90"
+          >
+            {hasSavedResumes ? 'My resumes' : 'Create my resume'}
+          </Button>
+        </div>
       </div>
     </header>
   );
