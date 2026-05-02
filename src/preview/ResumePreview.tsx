@@ -171,10 +171,9 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
                 onClick={() => handleTemplateChange(t.id)}
                 className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 ${
                   displayResume.templateId === t.id
-                    ? 'font-medium text-white'
+                    ? 'font-medium bg-primary text-primary-foreground'
                     : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                 }`}
-                style={displayResume.templateId === t.id ? { backgroundColor: '#FF4500' } : undefined}
               >
                 {t.label}
               </button>
@@ -186,10 +185,9 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
                   <button
                   className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
                       isMoreActive
-                        ? 'font-medium text-white'
+                        ? 'font-medium bg-primary text-primary-foreground'
                         : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                     }`}
-                    style={isMoreActive ? { backgroundColor: '#FF4500' } : undefined}
                   >
                     {isMoreActive ? activeMoreLabel : 'More'}
                     <ChevronDown className="w-3 h-3" />
@@ -205,10 +203,9 @@ const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pag
                       }}
                       className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
                         displayResume.templateId === t.id
-                          ? 'font-medium text-white'
+                          ? 'font-medium bg-primary text-primary-foreground'
                           : 'text-foreground hover:bg-muted'
                       }`}
-                      style={displayResume.templateId === t.id ? { backgroundColor: '#FF4500' } : undefined}
                     >
                       {t.label}
                     </button>
@@ -293,7 +290,12 @@ function DownloadPdfButton({
   }, [pageSize, filename, browserFallback]);
 
   return (
-    <Button variant="outline" size="sm" onClick={handleDownloadPDF} disabled={loading}>
+    <Button
+      size="sm"
+      onClick={handleDownloadPDF}
+      disabled={loading}
+      className="bg-primary text-primary-foreground font-semibold tracking-wide shadow-lg btn-primary-glow hover:opacity-90 transition-opacity"
+    >
       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
       <span className="hidden sm:inline">{loading ? 'Generating…' : 'Download PDF'}</span>
       <span className="sr-only sm:hidden">{loading ? 'Generating PDF' : 'Download PDF'}</span>
