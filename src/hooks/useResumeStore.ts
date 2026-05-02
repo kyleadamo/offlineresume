@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
 import { Resume, createBlankResume, DEFAULT_SECTION_ORDER } from '@/schema/resume';
+import { track } from '@/lib/analytics';
 
 const STORAGE_KEY = 'resume-studio-resumes';
 const ACTIVE_KEY = 'resume-studio-active';
@@ -70,6 +71,7 @@ export function useResumeStore() {
     }
     setResumes((prev) => [...prev, newResume]);
     setActiveId(newResume.id);
+    track('resume_created', { templateId: newResume.templateId });
     return newResume;
   }, []);
 

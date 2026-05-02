@@ -6,6 +6,7 @@ import LandingHeader from '@/components/landing/LandingHeader';
 import HeroSection from '@/components/landing/HeroSection';
 import CreateResumeModal from '@/components/landing/CreateResumeModal';
 import SavedResumesSheet from '@/components/landing/SavedResumesSheet';
+import { track } from '@/lib/analytics';
 
 const STORAGE_KEY = 'resume-studio-resumes';
 
@@ -17,6 +18,10 @@ const LandingPage = () => {
   const [isResumesSheetOpen, setIsResumesSheetOpen] = useState(false);
 
   const hasSavedResumes = resumes.length > 0;
+
+  useEffect(() => {
+    track('page_view', { path: '/' });
+  }, []);
 
   // Load preview resume: most recent saved with a name, or demo data
   useEffect(() => {
