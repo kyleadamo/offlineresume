@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.render-pdf]
 verify_jwt = false
+
+[functions.analytics-summary]
+verify_jwt = false

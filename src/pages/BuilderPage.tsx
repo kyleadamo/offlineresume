@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import ResumeEditor from '@/editor/ResumeEditor';
 import ResumePreview from '@/preview/ResumePreview';
 import { exportResumeToPrint } from '@/preview/exportPrint';
+import { track } from '@/lib/analytics';
 import { Download, PanelLeftClose, PanelLeftOpen, MoreVertical, FileJson, Copy, PenLine, LayoutTemplate, ChevronDown, Plus, Trash2, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
