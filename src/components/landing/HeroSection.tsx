@@ -35,10 +35,6 @@ const HeroSection = ({ resume, onTemplateChange, onEditClick }: HeroSectionProps
           hideControls
         />
       </div>
-
-      <footer className="mt-16 pb-8 text-center text-sm text-muted-foreground">
-        Made with ❤️ and ☕ in 🇨🇦
-      </footer>
     </section>
   );
 };
