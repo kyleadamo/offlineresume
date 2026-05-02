@@ -1,64 +1,97 @@
+## Goal
 
+Add lightweight, privacy-respecting analytics so you can see:
+1. **Visitors** — unique + total page views on the landing/builder
+2. **Resumes created** — count of `createResume` calls
+3. **PDF downloads** — count of "Download PDF" button clicks (remote + browser print fallback)
 
-## Make Preview Mobile-Friendly (Landing + Builder)
+Plus a simple **admin-only dashboard** to view the numbers.
 
-### Problem
+This stays consistent with the MVP "no user accounts" rule — we track anonymous events only, no auth required.
 
-The resume preview is fixed at the page's physical width (`216mm` ≈ `816px` for Letter). On a 360px phone, that overflows by 2.3×. The builder additionally uses a side-by-side resizable split (editor + preview) which is unusable below ~768px.
+---
 
-### Approach: scale-to-fit, don't reflow
+## Approach
 
-The resume MUST stay at true page dimensions (Paged.js paginates against `mm` units — reflowing would change page breaks and break PDF parity). The fix is **CSS `transform: scale()`** to visually fit narrow viewports while preserving the underlying layout.
+### 1. Backend (Lovable Cloud)
+
+Create one `analytics_events` table:
 
 ```text
-┌─ container (100% viewport width) ─────────┐
-│  ┌─ scaled wrapper (width: 216mm) ─────┐  │
-│  │  transform: scale(viewport/216mm)   │  │
-│  │  transform-origin: top left          │  │
-│  │  ┌─ PagedResumePreview (216mm) ──┐  │  │
-│  │  │  ...real Paged.js sheets...   │  │  │
-│  │  └────────────────────────────────┘  │  │
-│  └──────────────────────────────────────┘  │
-└────────────────────────────────────────────┘
+analytics_events
+  id           uuid pk
+  event_type   text  -- 'page_view' | 'resume_created' | 'pdf_download'
+  visitor_id   text  -- random uuid stored in localStorage, anon
+  path         text  -- '/', '/builder', etc. (for page_view)
+  template_id  text  -- for pdf_download / resume_created (optional)
+  metadata     jsonb -- future-proof
+  created_at   timestamptz default now()
 ```
 
-A `ResizeObserver` on the container computes scale; the wrapper's height is set to `naturalHeight * scale` so the page reserves the right vertical space.
+RLS:
+- `INSERT`: allowed for anyone (anon role) — needed so the client can log events without auth.
+- `SELECT`: denied for anon. Reading is done via an edge function gated by an admin key.
 
-### Changes
+Index on `(event_type, created_at)` for fast aggregation.
 
-**1. `src/preview/PagedResumePreview.tsx`** — add fit-to-width scaling
-- Wrap the visible target in an outer `div` whose width tracks the container.
-- Inner div keeps `width: ${widthMm}mm`; apply `transform: scale(s)` where `s = min(1, containerPx / pageWidthPx)`.
-- Set outer height to `targetHeight * s` after each repagination so layout flows correctly.
-- Recompute on resize and after pagination completes.
+### 2. Client tracking
 
-**2. `src/preview/ResumePreview.tsx`** — mobile-friendly controls
-- Template strip: on `<sm`, collapse all templates into the existing "More" popover (show only current + More button) so 360px doesn't horizontally scroll.
-- Container: drop `width: ${widthMm}mm` on the strip wrapper at small sizes; use `width: 100%` and let scaling handle the preview.
-- Download / options: keep visible; they already fit.
+New file `src/lib/analytics.ts` with a single `track(eventType, payload?)` helper that:
+- Reads/creates a `visitor_id` in `localStorage` (random uuid, no PII).
+- Best-effort fire-and-forget `supabase.from('analytics_events').insert(...)`.
+- Silently swallows errors (analytics must never break the app).
+- Respects `navigator.doNotTrack` — skip if user opted out.
 
-**3. `src/components/landing/HeroSection.tsx`** — tighten mobile spacing
-- `pt-24 → pt-20 sm:pt-24`, `px-6 → px-3 sm:px-6`.
-- Drop `max-w-[900px]` cap on small screens; use `w-full`.
-- H1 already responsive — fine.
+Wire-in points (3 only — minimal surface):
+- **`src/pages/LandingPage.tsx`** + **`src/pages/BuilderPage.tsx`**: `track('page_view', { path })` in a `useEffect` on mount.
+- **`src/hooks/useResumeStore.ts`** `createResume`: `track('resume_created', { templateId })`.
+- **`src/preview/ResumePreview.tsx`** `DownloadPdfButton.handleDownloadPDF` (and the browser-print fallback in `OptionsMenu`): `track('pdf_download', { templateId, mode: 'remote' | 'browser_print' })`.
 
-**4. `src/pages/BuilderPage.tsx`** — stack on mobile
-- Below `md` (768px): replace `ResizablePanelGroup` with a tabbed view: **Edit** | **Preview** tabs (shadcn `Tabs`), each filling the viewport.
-- At `md+`: keep current resizable split unchanged.
-- Header: hide the "← Home" text label on `<sm`, keep just an icon button. Title dropdown already truncates.
-- "Download PDF" button: show icon-only on `<sm` (`<Download/>` + sr-only label).
+### 3. Admin dashboard
 
-**5. `src/components/landing/LandingHeader.tsx`** — already mostly fine
-- No change needed; logo + button fit at 360px.
+New route `/admin/analytics` (not linked from anywhere — security through obscurity is not enough, see below).
 
-### Out of scope
-- Editor internal layout changes (forms already stack vertically and work on mobile).
-- Cover letter pages (separate follow-up if needed).
-- Touch gestures for swiping between Edit/Preview tabs.
+- New edge function `analytics-summary` (verify_jwt = false, but requires an `x-admin-key` header matching a new `ADMIN_ANALYTICS_KEY` secret).
+- Returns aggregated counts: total/unique visitors, resumes created, PDF downloads, plus daily series for last 30 days and breakdown by template.
+- New page `src/pages/AdminAnalyticsPage.tsx`: prompts for admin key (stored only in `sessionStorage`), then renders cards + a simple line chart using Recharts (already in the stack via shadcn).
 
-### Validation
-- 360×595 (current), 390×844, 768×1024, 1280×800, 1920×1080.
-- Landing: preview fits without horizontal scroll; template picker doesn't overflow; click-to-scroll still navigates to builder.
-- Builder: tabs appear <md, resizable split appears ≥md; PDF download works in both modes.
-- Confirm Paged.js page count is identical scaled vs unscaled (it should be — only visual transform changes).
+### 4. Secret needed
 
+`ADMIN_ANALYTICS_KEY` — a random string you choose. Used to gate the summary endpoint. I'll request it via the secrets tool when implementing.
+
+---
+
+## Technical details
+
+**Files to create**
+- `src/lib/analytics.ts` — `track()` + `getVisitorId()`
+- `src/pages/AdminAnalyticsPage.tsx` — dashboard UI
+- `supabase/functions/analytics-summary/index.ts` — aggregation endpoint
+- Migration: `analytics_events` table + RLS + index
+
+**Files to edit**
+- `src/App.tsx` — add `/admin/analytics` route
+- `src/pages/LandingPage.tsx` — page_view tracking
+- `src/pages/BuilderPage.tsx` — page_view tracking
+- `src/hooks/useResumeStore.ts` — resume_created tracking
+- `src/preview/ResumePreview.tsx` — pdf_download tracking (both remote + fallback)
+- `supabase/config.toml` — register `analytics-summary` function
+
+**Privacy notes**
+- `visitor_id` is a random uuid — not derived from IP, fingerprint, or any PII.
+- No email, name, resume content, or IP is stored in events.
+- DNT browsers are skipped.
+
+**Why a custom table instead of Supabase analytics**
+The built-in Supabase analytics tracks API calls, not product events like "resume created" or "PDF downloaded". A purpose-built table is the right tool here and stays cheap (a few rows per visit).
+
+---
+
+## What you'll see in the dashboard
+
+- Total visitors (unique by `visitor_id`)
+- Total page views
+- Resumes created (all-time + last 30 days)
+- PDF downloads (all-time + last 30 days, split remote vs browser print)
+- Top templates by download
+- Daily trend chart (last 30 days)
