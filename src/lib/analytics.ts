@@ -24,7 +24,7 @@ function dntEnabled(): boolean {
   }
 }
 
-export type AnalyticsEvent = 'page_view' | 'resume_created' | 'pdf_download';
+export type AnalyticsEvent = 'page_view' | 'resume_created' | 'pdf_download' | 'resume_imported';
 
 interface TrackPayload {
   path?: string;

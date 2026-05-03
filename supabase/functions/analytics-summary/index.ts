@@ -51,6 +51,10 @@ Deno.serve(async (req) => {
   let pdfRemote = 0;
   let pdfBrowser = 0;
   const templateCounts: Record<string, number> = {};
+  const importMethodCounts: Record<string, number> = { paste: 0, pdf: 0, url: 0, json: 0 };
+  const importMethodCounts30: Record<string, number> = { paste: 0, pdf: 0, url: 0, json: 0 };
+  let resumesImported = 0;
+  let resumesImported30 = 0;
   const dailyMap: Record<string, { date: string; visitors: Set<string>; pdf: number; created: number }> = {};
 
   for (const e of events ?? []) {
@@ -75,6 +79,12 @@ Deno.serve(async (req) => {
         resumesCreated30++;
         dailyMap[day].created++;
       }
+    } else if (e.event_type === 'resume_imported') {
+      resumesImported++;
+      if (recent) resumesImported30++;
+      const method = String((e.metadata as any)?.method ?? 'unknown');
+      importMethodCounts[method] = (importMethodCounts[method] || 0) + 1;
+      if (recent) importMethodCounts30[method] = (importMethodCounts30[method] || 0) + 1;
     } else if (e.event_type === 'pdf_download') {
       pdfDownloads++;
       if (recent) {
@@ -108,14 +118,18 @@ Deno.serve(async (req) => {
         pdfDownloads,
         pdfRemote,
         pdfBrowserPrint: pdfBrowser,
+        resumesImported,
       },
       last30Days: {
         uniqueVisitors: visitors30.size,
         pageViews: pageViews30,
         resumesCreated: resumesCreated30,
         pdfDownloads: pdfDownloads30,
+        resumesImported: resumesImported30,
       },
       topTemplates,
+      importMethods: importMethodCounts,
+      importMethods30: importMethodCounts30,
       daily,
       eventsSampled: events?.length ?? 0,
     }),

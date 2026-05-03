@@ -18,14 +18,18 @@ interface Summary {
     pdfDownloads: number;
     pdfRemote: number;
     pdfBrowserPrint: number;
+    resumesImported: number;
   };
   last30Days: {
     uniqueVisitors: number;
     pageViews: number;
     resumesCreated: number;
     pdfDownloads: number;
+    resumesImported: number;
   };
   topTemplates: { template_id: string; count: number }[];
+  importMethods: Record<string, number>;
+  importMethods30: Record<string, number>;
   daily: { date: string; visitors: number; pdf: number; created: number }[];
   eventsSampled: number;
 }
@@ -202,6 +206,33 @@ export default function AdminAnalyticsPage() {
                   <span className="font-medium">{t.count.toLocaleString()}</span>
                 </li>
               ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">Resume imports by method</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {Object.values(data.importMethods).every((v) => !v) ? (
+            <p className="text-sm text-muted-foreground">No imports yet.</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {Object.entries(data.importMethods)
+                .sort((a, b) => b[1] - a[1])
+                .map(([method, count]) => (
+                  <li key={method} className="flex justify-between py-2 text-sm">
+                    <span className="capitalize">{method}</span>
+                    <span className="font-medium">
+                      {count.toLocaleString()}
+                      <span className="text-muted-foreground font-normal ml-2">
+                        ({(data.importMethods30[method] ?? 0).toLocaleString()} last 30d)
+                      </span>
+                    </span>
+                  </li>
+                ))}
             </ul>
           )}
         </CardContent>
