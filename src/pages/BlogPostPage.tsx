@@ -42,6 +42,10 @@ export default function BlogPostPage() {
   }
 
   const url = typeof window !== 'undefined' ? window.location.href : undefined;
+  const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+  const markdownUrl = `${SUPABASE_URL}/functions/v1/llms/blog/${post.slug}.md`;
+  const wordCount = post.content_md ? post.content_md.trim().split(/\s+/).length : undefined;
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
@@ -50,12 +54,27 @@ export default function BlogPostPage() {
     image: post.cover_image_url ?? undefined,
     datePublished: post.published_at ?? undefined,
     dateModified: post.updated_at,
+    inLanguage: 'en',
+    wordCount,
     author: { '@type': 'Person', name: post.author_name },
     publisher: {
       '@type': 'Organization',
       name: 'Offline Resume',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${origin}/favicon.png`,
+      },
     },
     mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+  };
+  const breadcrumbsLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Blog', item: `${origin}/blog` },
+      { '@type': 'ListItem', position: 3, name: post.title, item: url },
+    ],
   };
 
   return (
@@ -68,7 +87,8 @@ export default function BlogPostPage() {
         publishedTime={post.published_at ?? undefined}
         modifiedTime={post.updated_at}
         author={post.author_name}
-        jsonLd={jsonLd}
+        jsonLd={[jsonLd, breadcrumbsLd]}
+        alternateMarkdown={markdownUrl}
       />
       <LandingHeader />
       <main className="min-h-screen bg-background">
