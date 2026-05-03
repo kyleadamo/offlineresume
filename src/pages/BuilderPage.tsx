@@ -212,7 +212,13 @@ function BuilderHeader({
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="flex-1" />
-        <Button variant="outline" size={isMobile ? 'icon' : 'sm'} onClick={handleDownloadPDF} className={isMobile ? 'h-9 w-9' : ''} title="Download PDF">
+        <Button
+          variant="outline"
+          size={isMobile ? 'icon' : 'sm'}
+          onClick={handleDownloadPDF}
+          className={`bg-accent text-accent-foreground border-accent hover:bg-teal-600 hover:border-teal-600 hover:text-white ${isMobile ? 'h-9 w-9' : ''}`}
+          title="Download PDF"
+        >
           <Download className="w-4 h-4" />
           <span className="hidden sm:inline">Download PDF</span>
         </Button>
