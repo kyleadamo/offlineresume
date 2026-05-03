@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft, Upload, ClipboardPaste, Globe, Sparkles, FileText, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { track } from '@/lib/analytics';
 
 /* ── PDF text extraction ───────────────────────────────── */
 async function extractPdfText(file: File): Promise<string> {
@@ -69,6 +70,7 @@ const ImportPage = () => {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
+  const importMethodRef = useRef<'paste' | 'pdf' | 'url' | 'json'>('paste');
 
   /* ── AI-powered import ──────────────────────────────── */
   const handleAIParse = useCallback(async (payload: { text?: string; url?: string }) => {
@@ -102,6 +104,7 @@ const ImportPage = () => {
       lastEdited: new Date().toISOString(),
     };
     createResume(resume);
+    track('resume_imported', { metadata: { method: importMethodRef.current } });
     toast.success('Resume imported successfully!');
     navigate('/builder');
   }, [preview, createResume, navigate]);
@@ -118,6 +121,7 @@ const ImportPage = () => {
         lastEdited: new Date().toISOString(),
       };
       createResume(resume);
+      track('resume_imported', { metadata: { method: 'json' } });
       navigate('/builder');
     } catch {
       setError("Something didn't parse correctly. Check the JSON format and try again.");
@@ -158,6 +162,7 @@ const ImportPage = () => {
       if (!extractedText.trim()) {
         throw new Error('Could not extract text from this PDF. It may be scanned/image-based.');
       }
+      importMethodRef.current = 'pdf';
       await handleAIParse({ text: extractedText });
     } catch (err: any) {
       setError(err.message || 'Failed to process PDF.');
@@ -283,7 +288,7 @@ const ImportPage = () => {
                 />
                 {error && <p className="text-destructive text-sm flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {error}</p>}
                 <Button
-                  onClick={() => handleAIParse({ text })}
+                  onClick={() => { importMethodRef.current = 'paste'; handleAIParse({ text }); }}
                   disabled={!text.trim() || loading}
                   className="gap-2"
                 >
@@ -353,7 +358,7 @@ const ImportPage = () => {
                 />
                 {error && <p className="text-destructive text-sm flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {error}</p>}
                 <Button
-                  onClick={() => handleAIParse({ url })}
+                  onClick={() => { importMethodRef.current = 'url'; handleAIParse({ url }); }}
                   disabled={!url.trim() || loading}
                   className="gap-2"
                 >
