@@ -15,13 +15,29 @@ export default function BlogIndexPage() {
       .catch((e) => setError(e?.message ?? 'Failed to load posts'));
   }, []);
 
-  const jsonLd = {
+  const origin = typeof window !== 'undefined' ? window.location.origin : '';
+  const blogUrl = typeof window !== 'undefined' ? window.location.href : undefined;
+  const blogJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: 'Offline Resume Blog',
     description: 'Resume tips, career advice, and product updates.',
-    url: typeof window !== 'undefined' ? window.location.href : undefined,
+    url: blogUrl,
+    inLanguage: 'en',
   };
+  const itemListJsonLd = posts && posts.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        itemListElement: posts.slice(0, 25).map((p, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `${origin}/blog/${p.slug}`,
+          name: p.title,
+        })),
+      }
+    : null;
+  const jsonLd = itemListJsonLd ? [blogJsonLd, itemListJsonLd] : blogJsonLd;
 
   return (
     <>
