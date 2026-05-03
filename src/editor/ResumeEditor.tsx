@@ -108,7 +108,7 @@ const ResumeEditor = () => {
       </Collapsible>
 
       <Accordion type="multiple" value={openSections} onValueChange={setOpenSections}>
-        <AccordionItem value="profile" id="editor-section-profile" className="bg-secondary/30 border rounded-lg mb-3 px-4 border-orange-700">
+        <AccordionItem value="profile" id="editor-section-profile" className="bg-secondary/30 border rounded-lg mb-3 px-4 border-accent">
           <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">Contact</AccordionTrigger>
           <AccordionContent>
             <ProfileEditor resume={activeResume} onUpdate={update} />
@@ -123,7 +123,7 @@ const ResumeEditor = () => {
               key={section.id}
               value={section.id}
               id={`editor-section-${section.id}`}
-              className={`bg-secondary/30 border rounded-lg mb-3 px-4 border-orange-700 ${!section.visible ? 'opacity-40' : ''}`}
+              className={`bg-secondary/30 border rounded-lg mb-3 px-4 border-accent ${!section.visible ? 'opacity-40' : ''}`}
             >
               <AccordionTrigger className="text-sm font-semibold uppercase tracking-wide text-foreground">
                 {editor.label}
