@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import SEO from '@/components/SEO';
+import LandingHeader from '@/components/landing/LandingHeader';
 import { getPublishedPostBySlug, formatDate, readingTimeMinutes, type BlogPost } from '@/lib/blog';
 import { Loader2 } from 'lucide-react';
 
@@ -69,6 +70,7 @@ export default function BlogPostPage() {
         author={post.author_name}
         jsonLd={jsonLd}
       />
+      <LandingHeader />
       <main className="min-h-screen bg-background">
         <article className="max-w-3xl mx-auto px-4 sm:px-6 pt-24 pb-16">
           <Link to="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
