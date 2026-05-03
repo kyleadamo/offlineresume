@@ -57,8 +57,11 @@ Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response(null, { headers: corsHeaders });
 
   const url = new URL(req.url);
-  // The function is mounted at /functions/v1/llms; strip that prefix to get our route.
-  const path = url.pathname.replace(/^\/functions\/v1\/llms/, '') || '/';
+  // The function may be invoked at /functions/v1/llms/... or /llms/...
+  const path =
+    url.pathname
+      .replace(/^\/functions\/v1\/llms/, '')
+      .replace(/^\/llms/, '') || '/';
   const supabase = await getSupabase();
 
   // Per-post Markdown: /blog/<slug>.md or /blog/<slug>.txt
