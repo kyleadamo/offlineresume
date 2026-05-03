@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import SEO from '@/components/SEO';
+import LandingHeader from '@/components/landing/LandingHeader';
 import { listPublishedPosts, formatDate, type BlogPost } from '@/lib/blog';
 import { Loader2 } from 'lucide-react';
 
@@ -29,14 +30,12 @@ export default function BlogIndexPage() {
         description="Resume tips, career advice, and product updates from Offline Resume."
         jsonLd={jsonLd}
       />
+      <LandingHeader />
       <main className="min-h-screen bg-background">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-24 pb-16">
           <header className="mb-12">
-            <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-              ← Home
-            </Link>
             <h1
-              className="text-4xl sm:text-5xl font-semibold tracking-tight mt-4"
+              className="text-4xl sm:text-5xl font-semibold tracking-tight"
               style={{ fontFamily: "'Merriweather', serif" }}
             >
               Blog
