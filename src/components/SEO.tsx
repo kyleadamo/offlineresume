@@ -10,6 +10,8 @@ interface SEOProps {
   modifiedTime?: string;
   author?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  keywords?: string[];
+  alternateMarkdown?: string;
 }
 
 export default function SEO({
@@ -22,6 +24,8 @@ export default function SEO({
   modifiedTime,
   author,
   jsonLd,
+  keywords,
+  alternateMarkdown,
 }: SEOProps) {
   const siteName = 'Offline Resume';
   const fullTitle = title.includes(siteName) ? title : `${title} | ${siteName}`;
@@ -32,6 +36,12 @@ export default function SEO({
       <title>{fullTitle}</title>
       {description && <meta name="description" content={description} />}
       {url && <link rel="canonical" href={url} />}
+      {keywords && keywords.length > 0 && (
+        <meta name="keywords" content={keywords.join(', ')} />
+      )}
+      {alternateMarkdown && (
+        <link rel="alternate" type="text/markdown" href={alternateMarkdown} />
+      )}
 
       <meta property="og:title" content={fullTitle} />
       {description && <meta property="og:description" content={description} />}
