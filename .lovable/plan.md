@@ -1,37 +1,27 @@
-## Goal
+## Style the "Download PDF" button with the teal accent
 
-Add a footer to the landing page (`/`) that displays the 5 most recent published blog post titles, plus a final "More posts" link to `/blog`.
+Update the Download PDF button in `src/pages/BuilderPage.tsx` (line 215) so it uses the teal accent as its default fill, with a darker teal on hover.
 
-## Implementation
+### Change
 
-### 1. New component: `src/components/landing/LandingFooter.tsx`
+Replace the current `outline` button styling with accent-colored classes:
 
-- On mount, fetch published posts via `listPublishedPosts()` from `src/lib/blog.ts`.
-- Take the first 5 (already ordered by `published_at` desc).
-- Render a footer section with:
-  - Heading: "From the blog"
-  - List of 5 post titles, each a `<Link to={\`/blog/${slug}\`}>` showing title + formatted publish date (using `formatDate` from `src/lib/blog.ts`).
-  - Final row: `<Link to="/blog">More posts →</Link>` styled as the accent link.
-- Hide the whole list area gracefully if there are no posts (still render the "More posts" link so the footer remains useful).
-- Move the existing "Made with ❤️ and ☕ in 🇨🇦" tagline (currently in `HeroSection.tsx`) into this footer for a cleaner structure.
+```tsx
+<Button
+  variant="outline"
+  size={isMobile ? 'icon' : 'sm'}
+  onClick={handleDownloadPDF}
+  className={`bg-accent text-accent-foreground border-accent hover:bg-teal-600 hover:border-teal-600 hover:text-white ${isMobile ? 'h-9 w-9' : ''}`}
+  title="Download PDF"
+>
+  <Download className="w-4 h-4" />
+  <span className="hidden sm:inline">Download PDF</span>
+</Button>
+```
 
-### 2. Update `src/components/landing/HeroSection.tsx`
+### Notes
 
-- Remove the inline `<footer>` tagline (now lives in `LandingFooter`).
-
-### 3. Update `src/pages/LandingPage.tsx`
-
-- Import and render `<LandingFooter />` after `<HeroSection />` inside the main `<div className="dark min-h-screen bg-background">`.
-
-## Styling
-
-- Match existing landing aesthetic: dark background, `border-t border-border`, max width container (`max-w-4xl mx-auto px-6`), generous vertical padding.
-- Post titles: `text-foreground` with `hover:text-accent` transition.
-- Dates: small, `text-muted-foreground`, `text-xs uppercase tracking-wider`.
-- Subtle divider between rows (`border-b border-border/50`).
-
-## Notes
-
-- No new packages, no schema changes.
-- Reuses existing `blog_posts` table (public RLS already allows reading published posts).
-- No analytics tracking added (can be added later if desired).
+- Default state uses `bg-accent` (the existing teal `#00D4AA` token from `--accent`), keeping the button consistent with other accent UI on the site.
+- Hover uses Tailwind's `teal-600` (`#0d9488`), a darker teal that gives a clear pressed/hover feedback.
+- Text/icon stay on `accent-foreground` for contrast in both states.
+- No other files change; the `Button` component and design tokens stay as-is.
