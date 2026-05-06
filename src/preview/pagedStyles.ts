@@ -50,10 +50,12 @@ export function getPagedStyles(pageSize: 'letter' | 'a4'): string {
 
     /* Break control */
     [data-pdf-section] { break-inside: avoid; }
-    [data-section]     { break-inside: avoid; }
     [data-section] > h2,
     [data-section] > h3,
     h2, h3 { break-after: avoid; }
+    [data-section] > h2:first-child,
+    [data-section] > h3:first-child { break-after: avoid-page; }
+    [data-pdf-section]:first-of-type { break-before: avoid; }
     li, .experience-entry, .education-entry { break-inside: avoid; }
 
     /* Cursor for delegated click-to-scroll */
