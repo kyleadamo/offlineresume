@@ -88,6 +88,8 @@ export function exportResumeToPrint(
           }
           [data-pdf-section] { break-inside: avoid; }
           [data-section] > h3, [data-section] > h2 { break-after: avoid; }
+          [data-section] > h3:first-child, [data-section] > h2:first-child { break-after: avoid-page; }
+          [data-pdf-section]:first-of-type { break-before: avoid; }
           .page-break-line { display: none !important; }
           .pagedjs_margin-content { display: none !important; }
           /* Strip preview chrome from paginated sheets when printing */
