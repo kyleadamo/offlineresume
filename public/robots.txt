@@ -63,7 +63,7 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://ctkgvbndbizbzqjgdsir.supabase.co/functions/v1/sitemap
+Sitemap: https://offlineresume.com/sitemap.xml
 
 # LLM-friendly index of the site (llms.txt convention)
 # https://ctkgvbndbizbzqjgdsir.supabase.co/functions/v1/llms/llms.txt
