@@ -12,6 +12,7 @@ import { ArrowLeft, Upload, ClipboardPaste, Globe, Sparkles, FileText, Loader2, 
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import { track } from '@/lib/analytics';
+import SEO from '@/components/SEO';
 
 /* ── PDF text extraction ───────────────────────────────── */
 async function extractPdfText(file: File): Promise<string> {
@@ -180,6 +181,11 @@ const ImportPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-6">
+      <SEO
+        title="Import Your Resume — URL, PDF, Text, or JSON"
+        description="Bring an existing resume into Offline Resume. Import from a URL, paste text, upload a PDF, or load a portable JSON file. Everything stays in your browser."
+        canonical="https://offlineresume.com/import"
+      />
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
