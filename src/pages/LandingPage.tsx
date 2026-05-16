@@ -8,6 +8,7 @@ import LandingFooter from '@/components/landing/LandingFooter';
 import CreateResumeModal from '@/components/landing/CreateResumeModal';
 import SavedResumesSheet from '@/components/landing/SavedResumesSheet';
 import { track } from '@/lib/analytics';
+import SEO from '@/components/SEO';
 
 const STORAGE_KEY = 'resume-studio-resumes';
 
@@ -111,6 +112,45 @@ const LandingPage = () => {
 
   return (
     <div className="dark min-h-screen bg-background">
+      <SEO
+        title="Offline Resume — Private, Beautiful Resume Builder"
+        description="Build a beautiful resume from a dozen designer templates. Runs entirely in your browser — no accounts, no cloud, no tracking of your resume content."
+        canonical="https://offlineresume.com/"
+        keywords={[
+          'offline resume builder',
+          'private resume builder',
+          'free resume builder',
+          'resume builder no signup',
+          'ATS resume templates',
+          'cover letter builder',
+        ]}
+        jsonLd={{
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: [
+            {
+              '@type': 'Question',
+              name: 'Is Offline Resume really free?',
+              acceptedAnswer: { '@type': 'Answer', text: 'Yes. Offline Resume is free to use, with no account required and no paywalled templates or exports.' },
+            },
+            {
+              '@type': 'Question',
+              name: 'Do you store my resume on a server?',
+              acceptedAnswer: { '@type': 'Answer', text: 'No. Your resume data stays in your browser. We never upload, store, or read your resume content.' },
+            },
+            {
+              '@type': 'Question',
+              name: 'Are the templates ATS-friendly?',
+              acceptedAnswer: { '@type': 'Answer', text: 'Yes. Offline Resume includes single-column ATS-optimized templates alongside more visual multi-column designs.' },
+            },
+            {
+              '@type': 'Question',
+              name: 'Can I import an existing resume?',
+              acceptedAnswer: { '@type': 'Answer', text: 'Yes. You can import from a URL, pasted text, a PDF upload, or a portable JSON file.' },
+            },
+          ],
+        }}
+      />
       <LandingHeader
         hasSavedResumes={hasSavedResumes}
         onCreateClick={() => setIsCreateModalOpen(true)}
