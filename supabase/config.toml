@@ -1,0 +1,22 @@
+project_id = "ctkgvbndbizbzqjgdsir"
+
+[functions.parse-resume]
+verify_jwt = false
+
+[functions.render-pdf]
+verify_jwt = false
+
+[functions.analytics-summary]
+verify_jwt = false
+
+[functions.blog-admin]
+verify_jwt = false
+
+[functions.rss]
+verify_jwt = false
+
+[functions.sitemap]
+verify_jwt = false
+
+[functions.llms]
+verify_jwt = false

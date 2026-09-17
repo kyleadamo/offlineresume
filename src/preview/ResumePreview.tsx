@@ -11,10 +11,10 @@ import TechTemplate from '@/templates/TechTemplate';
 import ElegantTemplate from '@/templates/ElegantTemplate';
 import InfographicTemplate from '@/templates/InfographicTemplate';
 import ClassicTemplate from '@/templates/ClassicTemplate';
-import { TemplateId } from '@/schema/resume';
+import KeynoteTemplate from '@/templates/KeynoteTemplate';
+import { Resume, TemplateId } from '@/schema/resume';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import {
   DropdownMenu,
@@ -28,8 +28,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Download, ChevronDown, MoreVertical } from 'lucide-react';
+import { Download, ChevronDown, MoreVertical, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect, useCallback } from 'react';
+import PagedResumePreview from './PagedResumePreview';
+import { exportResumeToPrint } from './exportPrint';
+import { exportResumePdfRemote } from './exportPdfRemote';
+import { toast } from '@/hooks/use-toast';
+import { track } from '@/lib/analytics';
+import {
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
 
 const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   minimal: MinimalTemplate,
@@ -45,25 +54,74 @@ const templateMap: Record<TemplateId, React.ComponentType<any>> = {
   infographic: InfographicTemplate,
   classic: ClassicTemplate,
   editorial: ProfessionalTemplate,
+  keynote: KeynoteTemplate,
 };
 
-const primaryTemplates: { id: TemplateId; label: string }[] = [
-  { id: 'minimal', label: 'Minimal' },
-  { id: 'professional', label: 'Professional' },
+const allTemplates: { id: TemplateId; label: string }[] = [
   { id: 'modern', label: 'Modern' },
+  { id: 'minimal', label: 'Minimal' },
+  { id: 'creative', label: 'Creative' },
   { id: 'brutalist', label: 'Brutalist' },
+  { id: 'tech', label: 'Terminal' },
+  { id: 'keynote', label: 'Keynote' },
+  { id: 'compact', label: 'Compact' },
+  { id: 'infographic', label: 'Infographic' },
+  { id: 'professional', label: 'Professional' },
+  { id: 'executive', label: 'Executive' },
+  { id: 'elegant', label: 'Elegant' },
+  { id: 'classic', label: 'Classic' },
+  { id: 'academic', label: 'Academic' },
+  { id: 'editorial', label: 'Editorial' },
 ];
 
-const moreTemplates: { id: TemplateId; label: string }[] = [
-  { id: 'executive', label: 'Executive' },
-  { id: 'creative', label: 'Creative' },
-  { id: 'compact', label: 'Compact' },
-  { id: 'academic', label: 'Academic' },
-  { id: 'tech', label: 'Tech / Terminal' },
-  { id: 'elegant', label: 'Elegant' },
-  { id: 'infographic', label: 'Infographic' },
-  { id: 'classic', label: 'Classic' },
-];
+function useVisibleTemplateCount(containerRef: React.RefObject<HTMLElement>) {
+  const [count, setCount] = useState(allTemplates.length);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const GAP = 8;
+    const MORE_BTN_WIDTH = 72;
+
+    const measure = () => {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:absolute;visibility:hidden;display:flex;gap:8px;white-space:nowrap;';
+      allTemplates.forEach((t) => {
+        const btn = document.createElement('button');
+        btn.className = 'text-xs px-3 py-1.5 rounded-md';
+        btn.textContent = t.label;
+        probe.appendChild(btn);
+      });
+      container.appendChild(probe);
+
+      const buttons = Array.from(probe.children) as HTMLElement[];
+      const btnWidths = buttons.map((b) => b.offsetWidth);
+      probe.remove();
+
+      const containerWidth = container.clientWidth;
+      let usedWidth = 0;
+      let fit = 0;
+
+      for (let i = 0; i < btnWidths.length; i++) {
+        const needed = usedWidth + btnWidths[i] + (i > 0 ? GAP : 0);
+        const remaining = i < btnWidths.length - 1 ? MORE_BTN_WIDTH + GAP : 0;
+        if (needed + remaining > containerWidth) break;
+        usedWidth = needed;
+        fit++;
+      }
+
+      setCount(Math.max(2, fit));
+    };
+
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(container);
+    return () => ro.disconnect();
+  }, [containerRef]);
+
+  return count;
+}
 
 type PageSize = 'a4' | 'letter';
 
@@ -72,179 +130,178 @@ const PAGE_SIZES: Record<PageSize, { label: string; widthMm: number; heightMm: n
   letter: { label: 'US Letter', widthMm: 215.9, heightMm: 279.4, cssSize: 'letter' },
 };
 
-const PAGE_MARGIN_Y_MM = 12;
+interface ResumePreviewProps {
+  resume?: Resume;
+  onTemplateChange?: (id: TemplateId) => void;
+  hideControls?: boolean;
+  pageSize?: PageSize;
+}
 
-const ResumePreview = () => {
-  const { activeResume, updateResume } = useResume();
+const ResumePreview = ({ resume: resumeProp, onTemplateChange, hideControls, pageSize: pageSizeProp }: ResumePreviewProps = {}) => {
+  const { activeResume: contextResume, updateResume } = useResume();
+  const displayResume = resumeProp ?? contextResume;
   const [moreOpen, setMoreOpen] = useState(false);
-  const [pageSize, setPageSize] = useState<PageSize>('letter');
-  const [showPageBreaks, setShowPageBreaks] = useState(false);
-  const [pageBreakLines, setPageBreakLines] = useState<number[]>([]);
-  const printRef = useRef<HTMLDivElement>(null);
+  const [pageSizeLocal, setPageSizeLocal] = useState<PageSize>('letter');
+  const pageSize = pageSizeProp ?? pageSizeLocal;
+  const setPageSize = setPageSizeLocal;
+  const stripRef = useRef<HTMLDivElement>(null);
+  const visibleCount = useVisibleTemplateCount(stripRef);
 
-  if (!activeResume) return null;
+  if (!displayResume) return null;
 
-  const TemplateComponent = templateMap[activeResume.templateId] || MinimalTemplate;
-  const isMoreActive = moreTemplates.some((t) => t.id === activeResume.templateId);
-  const activeMoreLabel = moreTemplates.find((t) => t.id === activeResume.templateId)?.label;
+  const handleTemplateChange = (id: TemplateId) => {
+    if (onTemplateChange) onTemplateChange(id);
+    else if (displayResume) updateResume(displayResume.id, { templateId: id });
+  };
+
+  const TemplateComponent = templateMap[displayResume.templateId] || MinimalTemplate;
+  const visibleTemplates = allTemplates.slice(0, visibleCount);
+  const overflowTemplates = allTemplates.slice(visibleCount);
+  const isMoreActive = overflowTemplates.some((t) => t.id === displayResume.templateId);
+  const activeMoreLabel = overflowTemplates.find((t) => t.id === displayResume.templateId)?.label;
   const currentPage = PAGE_SIZES[pageSize];
-  const usableHeightMm = currentPage.heightMm - PAGE_MARGIN_Y_MM * 2;
 
   return (
-    <div className="py-8 px-6 space-y-4 max-w-[1200px] mx-auto">
-      <div className="flex items-center gap-2 flex-wrap">
-        {primaryTemplates.map((t) => (
-          <button
-            key={t.id}
-            onClick={() => updateResume(activeResume.id, { templateId: t.id })}
-            className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 ${
-              activeResume.templateId === t.id
-                ? 'bg-foreground text-background font-medium'
-                : 'bg-card border border-border text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-
-        <Popover open={moreOpen} onOpenChange={setMoreOpen}>
-          <PopoverTrigger asChild>
-            <button
-              className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
-                isMoreActive
-                  ? 'bg-foreground text-background font-medium'
-                  : 'bg-card border border-border text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              {isMoreActive ? activeMoreLabel : 'More'}
-              <ChevronDown className="w-3 h-3" />
-            </button>
-          </PopoverTrigger>
-          <PopoverContent className="w-44 p-1" align="start">
-            {moreTemplates.map((t) => (
+    <div className="py-4 sm:py-8 px-3 sm:px-6 space-y-4 max-w-[1200px] mx-auto">
+      <div className="flex justify-center">
+        <div ref={stripRef} className="w-full" style={{ maxWidth: `${currentPage.widthMm}mm` }}>
+          <div className="flex items-center gap-2 flex-wrap">
+            {visibleTemplates.map((t) => (
               <button
                 key={t.id}
-                onClick={() => {
-                  updateResume(activeResume.id, { templateId: t.id });
-                  setMoreOpen(false);
-                }}
-                className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
-                  activeResume.templateId === t.id
-                    ? 'bg-foreground text-background font-medium'
-                    : 'text-foreground hover:bg-muted'
+                onClick={() => handleTemplateChange(t.id)}
+                className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 ${
+                  displayResume.templateId === t.id
+                    ? 'font-medium bg-primary text-primary-foreground'
+                    : 'bg-card border border-border text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {t.label}
               </button>
             ))}
-          </PopoverContent>
-        </Popover>
 
-        <div className="ml-auto flex items-center gap-1.5">
-          <DownloadPdfButton
-            printRef={printRef}
-            resume={activeResume}
-            currentPage={currentPage}
-          />
-          <OptionsMenu
-            pageSize={pageSize}
-            onPageSizeChange={setPageSize}
-            showPageBreaks={showPageBreaks}
-            onShowPageBreaksChange={setShowPageBreaks}
-          />
+            {overflowTemplates.length > 0 && (
+              <Popover open={moreOpen} onOpenChange={setMoreOpen}>
+                <PopoverTrigger asChild>
+                  <button
+                  className={`text-xs px-3 py-1.5 rounded-md transition-all duration-200 flex items-center gap-1 ${
+                      isMoreActive
+                        ? 'font-medium bg-primary text-primary-foreground'
+                        : 'bg-card border border-border text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    {isMoreActive ? activeMoreLabel : 'More'}
+                    <ChevronDown className="w-3 h-3" />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-44 p-1" align="start">
+                  {overflowTemplates.map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        handleTemplateChange(t.id);
+                        setMoreOpen(false);
+                      }}
+                      className={`w-full text-left text-xs px-3 py-2 rounded transition-colors ${
+                        displayResume.templateId === t.id
+                          ? 'font-medium bg-primary text-primary-foreground'
+                          : 'text-foreground hover:bg-muted'
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
+                </PopoverContent>
+              </Popover>
+            )}
+
+            {!hideControls && (
+              <div className="ml-auto flex items-center gap-1.5">
+                <DownloadPdfButton
+                  resume={displayResume}
+                  currentPage={currentPage}
+                  pageSize={pageSize}
+                />
+                <OptionsMenu
+                  pageSize={pageSize}
+                  onPageSizeChange={setPageSize}
+                  resume={displayResume}
+                  currentPage={currentPage}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       <div className="flex justify-center">
-        <div
-          ref={printRef}
-          className="bg-white shadow-lg relative"
-          style={{ width: `${currentPage.widthMm}mm`, padding: '12mm 16mm' }}
-          onClick={(e) => {
-            let el = e.target as HTMLElement | null;
-            while (el && !el.getAttribute('data-section')) {
-              if (el === e.currentTarget) { el = null; break; }
-              el = el.parentElement;
-            }
-            if (el) {
-              const section = el.getAttribute('data-section')!;
-              window.dispatchEvent(new CustomEvent('scroll-to-section', { detail: section }));
-            }
-          }}
-        >
-          <TemplateComponent resume={activeResume} />
-          <PageBreakOverlay
-            printRef={printRef}
-            showPageBreaks={showPageBreaks}
-            usableHeightMm={usableHeightMm}
-            resume={activeResume}
-          />
-        </div>
+        <PagedResumePreview
+          resume={displayResume}
+          pageSize={pageSize}
+          TemplateComponent={TemplateComponent}
+          currentPage={currentPage}
+        />
       </div>
     </div>
   );
 };
 
-/* ── Download PDF button ── */
+/* ── Download PDF button (remote Browserless render with browser-print fallback) ── */
 function DownloadPdfButton({
-  printRef,
   resume,
   currentPage,
+  pageSize,
 }: {
-  printRef: React.RefObject<HTMLDivElement>;
   resume: any;
   currentPage: { widthMm: number; cssSize: string };
+  pageSize: 'letter' | 'a4';
 }) {
-  const handleDownloadPDF = useCallback(() => {
-    if (!printRef.current) return;
-    const printWindow = window.open('', '_blank');
-    if (!printWindow) return;
+  const [loading, setLoading] = useState(false);
 
-    const content = printRef.current.innerHTML;
-    const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
-      .map((el) => el.outerHTML)
-      .join('\n');
+  const filename = useCallback(() => {
+    const name = resume?.profile?.fullName || resume?.title || 'resume';
+    return `${String(name).trim().replace(/\s+/g, '_')}.pdf`;
+  }, [resume]);
 
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title></title>
-          ${styles}
-          <style>
-            @page {
-              size: ${currentPage.cssSize};
-              margin: 12mm 16mm 16mm 16mm;
-            }
-            html, body {
-              margin: 0; padding: 0; background: white;
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-            }
-            body { width: ${currentPage.widthMm}mm; }
-            .resume-print-content { width: 100%; }
-            [data-section] { cursor: default !important; background: transparent !important; outline: none !important; box-shadow: none !important; }
-            [data-section]:hover { background: transparent !important; outline: none !important; }
-            [data-pdf-section] { break-inside: avoid; }
-            .page-break-line { display: none !important; }
-            .print-footer { position: fixed; bottom: 0; left: 0; right: 0; font-size: 8pt; color: #666; padding: 0; }
-          </style>
-        </head>
-        <body>
-          <div class="resume-print-content">${content}</div>
-          <div class="print-footer">${resume.profile.email || ''}</div>
-        </body>
-      </html>
-    `);
+  const browserFallback = useCallback(() => {
+    const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
+    if (!printTarget) return;
+    exportResumeToPrint(printTarget, currentPage, resume.profile.email || '');
+  }, [resume, currentPage]);
 
-    printWindow.document.close();
-    setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-  }, [printRef, resume, currentPage]);
+  const handleDownloadPDF = useCallback(async () => {
+    const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
+    if (!printTarget) return;
+
+    setLoading(true);
+    try {
+      await exportResumePdfRemote(printTarget, { pageSize, filename: filename() });
+      track('pdf_download', { templateId: resume?.templateId, metadata: { mode: 'remote', pageSize } });
+      toast({ title: 'PDF downloaded' });
+    } catch (err) {
+      console.error('[DownloadPdfButton] remote export failed', err);
+      toast({
+        title: 'PDF generation failed',
+        description: 'Falling back to browser print.',
+        variant: 'destructive',
+      });
+      browserFallback();
+      track('pdf_download', { templateId: resume?.templateId, metadata: { mode: 'browser_print_fallback', pageSize } });
+    } finally {
+      setLoading(false);
+    }
+  }, [pageSize, filename, browserFallback, resume]);
 
   return (
-    <Button variant="outline" size="sm" onClick={handleDownloadPDF}>
-      <Download className="w-4 h-4" />
-      Download PDF
+    <Button
+      size="sm"
+      onClick={handleDownloadPDF}
+      disabled={loading}
+      className="bg-primary text-primary-foreground font-semibold tracking-wide shadow-lg btn-primary-glow hover:opacity-90 transition-opacity"
+    >
+      {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
+      <span className="hidden sm:inline">{loading ? 'Generating…' : 'Download PDF'}</span>
+      <span className="sr-only sm:hidden">{loading ? 'Generating PDF' : 'Download PDF'}</span>
     </Button>
   );
 }
@@ -253,14 +310,21 @@ function DownloadPdfButton({
 function OptionsMenu({
   pageSize,
   onPageSizeChange,
-  showPageBreaks,
-  onShowPageBreaksChange,
+  resume,
+  currentPage,
 }: {
   pageSize: PageSize;
   onPageSizeChange: (v: PageSize) => void;
-  showPageBreaks: boolean;
-  onShowPageBreaksChange: (v: boolean) => void;
+  resume: any;
+  currentPage: { widthMm: number; cssSize: string };
 }) {
+  const handleBrowserPrint = useCallback(() => {
+    const printTarget = document.querySelector('[data-resume-print]') as HTMLDivElement | null;
+    if (!printTarget) return;
+    exportResumeToPrint(printTarget, currentPage, resume?.profile?.email || '');
+    track('pdf_download', { templateId: resume?.templateId, metadata: { mode: 'browser_print' } });
+  }, [resume, currentPage]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -281,76 +345,12 @@ function OptionsMenu({
             </SelectContent>
           </Select>
         </div>
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="page-breaks-toggle"
-            checked={showPageBreaks}
-            onCheckedChange={(checked) => onShowPageBreaksChange(checked === true)}
-          />
-          <Label htmlFor="page-breaks-toggle" className="text-xs text-muted-foreground cursor-pointer">
-            Show page breaks
-          </Label>
-        </div>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onSelect={handleBrowserPrint} className="text-xs cursor-pointer">
+          Print via browser
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
-  );
-}
-
-/* ── Page break overlay lines ── */
-function PageBreakOverlay({
-  printRef,
-  showPageBreaks,
-  usableHeightMm,
-  resume,
-}: {
-  printRef: React.RefObject<HTMLDivElement>;
-  showPageBreaks: boolean;
-  usableHeightMm: number;
-  resume: any;
-}) {
-  const [lines, setLines] = useState<number[]>([]);
-
-  useEffect(() => {
-    if (!showPageBreaks || !printRef.current) {
-      setLines([]);
-      return;
-    }
-    const calculate = () => {
-      if (!printRef.current) return;
-      const containerHeight = printRef.current.scrollHeight;
-      const usableHeightPx = usableHeightMm * 3.7795;
-      const result: number[] = [];
-      let pos = usableHeightPx;
-      while (pos < containerHeight) {
-        result.push(pos);
-        pos += usableHeightPx;
-      }
-      setLines(result);
-    };
-    calculate();
-    const observer = new ResizeObserver(calculate);
-    observer.observe(printRef.current);
-    return () => observer.disconnect();
-  }, [showPageBreaks, resume, usableHeightMm, printRef]);
-
-  if (!showPageBreaks || lines.length === 0) return null;
-
-  return (
-    <>
-      {lines.map((top, i) => (
-        <div
-          key={i}
-          className="absolute left-0 right-0 pointer-events-none page-break-line"
-          style={{ top: `${top}px` }}
-        >
-          <div className="border-t-2 border-dashed border-destructive/60 relative">
-            <span className="absolute -top-3 right-2 text-[10px] font-medium text-destructive/60 bg-white px-1">
-              Page {i + 1} → {i + 2}
-            </span>
-          </div>
-        </div>
-      ))}
-    </>
   );
 }
 

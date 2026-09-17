@@ -6,76 +6,154 @@
 
 @layer base {
   :root {
-    --background: 60 20% 97%;
-    --foreground: 215 29% 13%;
+    /* Deep dark theme as default */
+    --background: 230 15% 7%;
+    --foreground: 220 15% 94%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 215 29% 13%;
+    --card: 228 15% 11%;
+    --card-foreground: 220 15% 94%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 215 29% 13%;
+    --popover: 228 15% 11%;
+    --popover-foreground: 220 15% 94%;
 
-    --primary: 215 29% 13%;
-    --primary-foreground: 60 20% 97%;
+    --primary: 250 87% 70%;          /* Indigo-violet #6C63FF */
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 216 12% 95%;
-    --secondary-foreground: 215 29% 13%;
+    --secondary: 228 15% 16%;
+    --secondary-foreground: 220 15% 80%;
 
-    --muted: 216 12% 95%;
-    --muted-foreground: 215 13% 50%;
+    --muted: 228 15% 14%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 243 75% 59%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 168 100% 42%;          /* Teal-mint #00D4AA */
+    --accent-foreground: 228 15% 7%;
 
-    --destructive: 0 76% 42%;
+    --destructive: 0 84% 70%;
     --destructive-foreground: 0 0% 100%;
 
-    --success: 142 72% 29%;
-    --success-foreground: 0 0% 100%;
+    --success: 168 100% 42%;
+    --success-foreground: 228 15% 7%;
 
-    --warning: 32 91% 37%;
-    --warning-foreground: 0 0% 100%;
+    --warning: 38 92% 60%;
+    --warning-foreground: 228 15% 7%;
 
-    --border: 216 12% 92%;
-    --input: 216 12% 89%;
-    --ring: 243 75% 59%;
+    --border: 228 12% 20%;
+    --input: 228 12% 20%;
+    --ring: 250 87% 70%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 243 75% 59%;
+    --font-sans: 'Inter', system-ui, sans-serif;
+    --font-serif: 'Georgia', serif;
 
-    --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
-    --font-serif: 'Source Serif 4', Georgia, serif;
+    --sidebar-background: 228 15% 10%;
+    --sidebar-foreground: 220 15% 85%;
+    --sidebar-primary: 250 87% 70%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 228 15% 16%;
+    --sidebar-accent-foreground: 220 15% 85%;
+    --sidebar-border: 228 12% 18%;
+    --sidebar-ring: 250 87% 70%;
   }
 
   .dark {
-    --background: 215 29% 8%;
-    --foreground: 60 20% 97%;
-    --card: 215 29% 11%;
-    --card-foreground: 60 20% 97%;
-    --popover: 215 29% 11%;
-    --popover-foreground: 60 20% 97%;
-    --primary: 60 20% 97%;
-    --primary-foreground: 215 29% 13%;
-    --secondary: 215 20% 18%;
-    --secondary-foreground: 60 20% 97%;
-    --muted: 215 20% 18%;
-    --muted-foreground: 215 13% 60%;
-    --accent: 243 75% 65%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
+    --background: 230 15% 7%;
+    --foreground: 220 15% 94%;
+    --card: 228 15% 11%;
+    --card-foreground: 220 15% 94%;
+    --popover: 228 15% 11%;
+    --popover-foreground: 220 15% 94%;
+    --primary: 250 87% 70%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 228 15% 16%;
+    --secondary-foreground: 220 15% 80%;
+    --muted: 228 15% 14%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 168 100% 42%;
+    --accent-foreground: 228 15% 7%;
+    --destructive: 0 84% 70%;
     --destructive-foreground: 0 0% 100%;
-    --border: 215 20% 20%;
-    --input: 215 20% 20%;
-    --ring: 243 75% 65%;
+    --border: 228 12% 20%;
+    --input: 228 12% 20%;
+    --ring: 250 87% 70%;
   }
+
+  /* Light mode override */
+  .light {
+    --background: 220 20% 97%;
+    --foreground: 228 15% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 228 15% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 228 15% 10%;
+    --primary: 250 80% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 92%;
+    --secondary-foreground: 228 15% 20%;
+    --muted: 220 15% 94%;
+    --muted-foreground: 220 10% 45%;
+    --accent: 168 80% 38%;
+    --accent-foreground: 0 0% 100%;
+    --border: 220 13% 88%;
+    --input: 220 13% 88%;
+    --ring: 250 80% 58%;
+    --sidebar-background: 220 20% 94%;
+    --sidebar-foreground: 228 15% 15%;
+    --sidebar-primary: 250 80% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 15% 89%;
+    --sidebar-accent-foreground: 228 15% 15%;
+    --sidebar-border: 220 13% 85%;
+    --sidebar-ring: 250 80% 58%;
+  }
+
+  .not-dark {
+    --background: 60 20% 97%;
+    --foreground: 215 29% 13%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 29% 13%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 29% 13%;
+    --primary: 215 29% 13%;
+    --primary-foreground: 60 20% 97%;
+    --secondary: 216 12% 95%;
+    --secondary-foreground: 215 29% 13%;
+    --muted: 216 12% 95%;
+    --muted-foreground: 215 13% 50%;
+    --accent: 262 52% 47%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 76% 42%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 216 12% 92%;
+    --input: 216 12% 89%;
+    --ring: 262 52% 47%;
+  }
+}
+
+/* Self-contained light theme for resume documents.
+   Ensures correct colors in preview AND in exported print windows,
+   regardless of surrounding dark-mode chrome. */
+.resume-document {
+  color-scheme: light;
+  --background: 60 20% 97%;
+  --foreground: 215 29% 13%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 29% 13%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 29% 13%;
+  --primary: 215 29% 13%;
+  --primary-foreground: 60 20% 97%;
+  --secondary: 216 12% 95%;
+  --secondary-foreground: 215 29% 13%;
+  --muted: 216 12% 95%;
+  --muted-foreground: 215 13% 50%;
+  --accent: 262 52% 47%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 76% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 216 12% 92%;
+  --input: 216 12% 89%;
+  --ring: 262 52% 47%;
 }
 
 @layer base {
@@ -85,6 +163,10 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
 
   h1 {
@@ -124,17 +206,84 @@
   }
 }
 
+/* ── Global polish ─────────────────────────────────────── */
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: hsl(var(--background)); }
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+
+/* Card hover lift effect */
+.card-hover {
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.card-hover:hover {
+  box-shadow: 0 8px 30px rgba(108, 99, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Focus rings */
+*:focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Primary button glow */
+.btn-primary-glow {
+  box-shadow: 0 0 20px rgba(108, 99, 255, 0.3);
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+}
+.btn-primary-glow:hover {
+  box-shadow: 0 0 28px rgba(108, 99, 255, 0.5);
+}
+
+/* Paged.js preview sheets */
+.paged-output .pagedjs_pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.paged-output .pagedjs_page {
+  background: white;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.18);
+  margin: 0;
+}
+
+/* Hide Paged.js margin boxes (page headers/footers slots) by default */
+.paged-output .pagedjs_margin-content {
+  display: none;
+}
+
+@media print {
+  .paged-output .pagedjs_page {
+    box-shadow: none;
+  }
+  .paged-output .pagedjs_pages {
+    gap: 0;
+  }
+}
+
 @media print {
   body * {
     visibility: hidden;
   }
 
   .resume-print-content,
-  .resume-print-content * {
+  .resume-print-content *,
+  .cl-print-content,
+  .cl-print-content * {
     visibility: visible;
   }
 
-  .resume-print-content {
+  .resume-print-content,
+  .cl-print-content {
     position: absolute;
     left: 0;
     top: 0;
@@ -153,6 +302,11 @@
 
   [data-pdf-section] {
     break-inside: avoid;
+  }
+
+  [data-section] > h3,
+  [data-section] > h2 {
+    break-after: avoid;
   }
 
 }

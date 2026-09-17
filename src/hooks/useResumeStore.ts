@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { Resume, createBlankResume } from '@/schema/resume';
+import { Resume, createBlankResume, DEFAULT_SECTION_ORDER } from '@/schema/resume';
+import { track } from '@/lib/analytics';
 
 const STORAGE_KEY = 'resume-studio-resumes';
 const ACTIVE_KEY = 'resume-studio-active';
@@ -10,7 +11,26 @@ function loadResumes(): Resume[] {
     if (!raw) return [];
     const parsed = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed;
+    return parsed.map((r: Resume) => {
+      let sectionOrder = r.sectionOrder ?? DEFAULT_SECTION_ORDER.map(s => ({ ...s }));
+      for (const def of DEFAULT_SECTION_ORDER) {
+        if (!sectionOrder.find(s => s.id === def.id)) {
+          sectionOrder = [...sectionOrder, { ...def }];
+        }
+      }
+      return {
+        ...r,
+        references: r.references ?? [],
+        sectionOrder,
+        languages: r.languages ?? [],
+        awards: r.awards ?? [],
+        volunteer: r.volunteer ?? [],
+        publications: r.publications ?? [],
+        affiliations: r.affiliations ?? [],
+        patents: r.patents ?? [],
+        interests: r.interests ?? [],
+      };
+    });
   } catch {
     return [];
   }
@@ -45,8 +65,13 @@ export function useResumeStore() {
 
   const createResume = useCallback((base?: Partial<Resume>) => {
     const newResume: Resume = { ...createBlankResume(), ...base };
+    // Default title to "{Contact Name} Resume" if not explicitly set
+    if (!base?.title && newResume.profile?.name?.trim()) {
+      newResume.title = `${newResume.profile.name.trim()} Resume`;
+    }
     setResumes((prev) => [...prev, newResume]);
     setActiveId(newResume.id);
+    track('resume_created', { templateId: newResume.templateId });
     return newResume;
   }, []);
 
@@ -64,7 +89,7 @@ export function useResumeStore() {
     const dup: Resume = {
       ...source,
       id: crypto.randomUUID(),
-      title: `${source.title} (Copy)`,
+      title: `Copy of ${source.title}`,
       lastEdited: new Date().toISOString(),
     };
     setResumes((prev) => [...prev, dup]);
